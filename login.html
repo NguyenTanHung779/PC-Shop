@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Log In | FirePCGaming</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </head>
+<body>
+    <!-- Header (unchanged) -->
+    <header class="text-white">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <a class="navbar-brand" href="index.html">
+                    <img src="images/FIREPCmini.png" alt="Logo" class="img-fluid" style="height: 50px;">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="index.html">HOME</a></li>
+                        <li class="nav-item"><a class="nav-link" href="contact.html">CONTACT</a></li>
+                        <li class="nav-item" id="login-register">
+                            <a class="nav-link login-btn d-flex align-items-center gap-2" href="login.html">
+                                <span class="login-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" class="bi bi-person" viewBox="0 0 16 16">
+                                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                    </svg>
+                                </span>
+                                Log In 
+                            </a>
+                        </li>
+                        <li class="nav-item" id="register-link">
+                            <a class="nav-link login-btn d-flex align-items-center gap-2" href="register.html">
+                                <span class="login-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" class="bi bi-person-plus" viewBox="0 0 16 16">
+                                        <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                        <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+                                    </svg>
+                                </span>
+                                Register
+                            </a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="profile.html" style="display: none;" id="profile">Profile</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="cart.html">
+                                <img src="images/Crate icon.png" alt="Cart Icon" class="cart-icon">
+                                <span id="cart-count" class="badge bg-primary">0</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Login Section -->
+    <section class="login py-5">
+        <div class="container">
+            <h2 class="text-center mb-4" style="margin-top: 80px;"><strong>Log in</strong></h2>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <form id="login-form">
+                        <div class="mb-3">
+                            <label for="login-id" class="form-label">Username or Email</label>
+                            <input type="text" class="form-control" id="login-id" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Log In</button>
+                        <p class="text-center mt-3">Don't have an account? <a href="register.html">Register here</a></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (unchanged) -->
+    <footer class="text-white py-4">
+        <div class="container text-center">
+            <div class="mb-3">
+                <img src="images/FIREPCmini.png" alt="FirePCGaming Logo" style="height: 50px;">
+            </div>
+            <div class="d-flex justify-content-center mb-3">
+                <a href="https://youtu.be/dQw4w9WgXcQ?si=8-KmiNCbu7ubt8Oy" target="_blank" class="me-3">
+                    <img src="images/youtube.png" alt="YouTube" style="height: 30px;">
+                </a>
+                <a href="https://youtu.be/dQw4w9WgXcQ?si=8-KmiNCbu7ubt8Oy" target="_blank">
+                    <img src="images/discord.png" alt="Discord" style="height: 30px;">
+                </a>
+            </div>
+            <p>© 2025 by FirePCGaming LLC / Privacy Policy / Terms of Service / Warranty & Return Policy</p>
+        </div>
+    </footer>
+
+    <script>
+        $(document).ready(function () {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            const loginLink = document.getElementById('login-register');
+            const registerLink = document.getElementById('register-link');
+            const profile = document.getElementById('profile');
+
+            if (isLoggedIn) {
+                loginLink.style.display = 'none';
+                registerLink.style.display = 'none';
+                profile.style.display = 'block';
+            } else {
+                loginLink.style.display = 'block';
+                registerLink.style.display = 'block';
+                profile.style.display = 'none';
+            }
+
+            const cartCount = localStorage.getItem('cartCount') || 0;
+            $('#cart-count').text(cartCount);
+
+            $('#login-form').submit(function (e) {
+                e.preventDefault();
+                const loginId = $('#login-id').val();
+                const password = $('#password').val();
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+
+                // Check admin login
+                if (loginId === 'admin@firepcgaming.com' && password === 'admin123') {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('isAdmin', 'true');
+                    localStorage.setItem('userData', JSON.stringify({
+                        username: 'admin',
+                        email: 'admin@firepcgaming.com',
+                        password: 'admin123',
+                        firstName: 'Admin',
+                        lastName: 'User',
+                        phone: ''
+                    }));
+                    window.location.href = 'profile.html';
+                    return;
+                }
+
+                // Check registered users
+                const user = users.find(u => (u.username === loginId || u.email === loginId) && u.password === password);
+                if (user) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('isAdmin', 'false');
+                    localStorage.setItem('userData', JSON.stringify(user));
+                    window.location.href = 'profile.html';
+                } else {
+                    alert('Invalid username/email or password!');
+                }
+            });
+
+            let lastScrollTop = 0;
+            const navbar = $('header');
+            $(window).scroll(function () {
+                const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+                if (currentScroll > lastScrollTop) {
+                    navbar.css('top', '-100px');
+                } else {
+                    navbar.css('top', '0');
+                }
+                lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+            });
+        });
+    </script>
+</body>
+</html>
