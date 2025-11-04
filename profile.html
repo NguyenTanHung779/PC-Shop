@@ -22,8 +22,8 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link" href="index.html">HOME</a></li>
-                        <li class="nav-item"><a class="nav-link" href="contact.html">CONTACT</a></li>
+                        <li class="nav-item"><a class="nav-link" href="index.html">TRANG CHỦ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="contact.html">LIÊN HỆ</a></li>
                         <li class="nav-item" id="login-register">
                             <a class="nav-link login-btn d-flex align-items-center gap-2" href="login.html">
                                 <span class="login-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -31,7 +31,7 @@
                                         <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
                                     </svg>
                                 </span>
-                                Log In 
+                                Đăng Nhập 
                             </a>
                         </li>
                         <li class="nav-item" id="register-link">
@@ -42,10 +42,10 @@
                                         <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
                                     </svg>
                                 </span>
-                                Register
+                                Đăng Ký
                             </a>
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="profile.html" style="display: none;" id="profile">Profile</a></li>
+                        <li class="nav-item"><a class="nav-link" href="profile.html" style="display: none;" id="profile">Hồ Sơ</a></li>
                         <li class="nav-item">
                             <a class="nav-link" href="cart.html">
                                 <img src="images/Crate icon.png" alt="Cart Icon" class="cart-icon">
@@ -68,32 +68,32 @@
             <ul class="nav nav-tabs profile-tabs" id="profileTabs" role="tablist">
                 <!-- Tabs remain unchanged -->
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab" aria-controls="orders" aria-selected="false">My Orders</button>
+                    <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab" aria-controls="orders" aria-selected="false">Đơn Hàng Của Tôi</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="addresses-tab" data-bs-toggle="tab" data-bs-target="#addresses" type="button" role="tab" aria-controls="addresses" aria-selected="false">My Addresses</button>
+                    <button class="nav-link" id="addresses-tab" data-bs-toggle="tab" data-bs-target="#addresses" type="button" role="tab" aria-controls="addresses" aria-selected="false">Địa Chỉ Của Tôi</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="wallet-tab" data-bs-toggle="tab" data-bs-target="#wallet" type="button" role="tab" aria-controls="wallet" aria-selected="false">My Wallet</button>
+                    <button class="nav-link" id="wallet-tab" data-bs-toggle="tab" data-bs-target="#wallet" type="button" role="tab" aria-controls="wallet" aria-selected="false">Ví Của Tôi</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="subscription-tab" data-bs-toggle="tab" data-bs-target="#subscription" type="button" role="tab" aria-controls="subscription" aria-selected="false">My Subscription</button>
+                    <button class="nav-link" id="subscription-tab" data-bs-toggle="tab" data-bs-target="#subscription" type="button" role="tab" aria-controls="subscription" aria-selected="false">Gói Đăng Ký Của Tôi</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="account-tab" data-bs-toggle="tab" data-bs-target="#account" type="button" role="tab" aria-controls="account" aria-selected="true">My Account</button>
+                    <button class="nav-link active" id="account-tab" data-bs-toggle="tab" data-bs-target="#account" type="button" role="tab" aria-controls="account" aria-selected="true">Tài Khoản Của Tôi</button>
                 </li>
             </ul>
             <div class="tab-content profile-content" id="profileTabContent">
                 <!-- Other tabs remain unchanged -->
                 <div class="tab-pane fade show active" id="account" role="tabpanel" aria-labelledby="account-tab">
-                    <h3>Account</h3>
-                    <p>View and edit your personal info below (all fields optional except username and email).</p>
+                    <h3>Tài Khoản</h3>
+                    <p>Xem và chỉnh sửa thông tin cá nhân của bạn dưới đây (tất cả các trường đều tùy chọn ngoại trừ tên người dùng và email).</p>
                     <hr>
-                    <h4>Personal Info</h4>
+                    <h4>Thông Tin Cá Nhân</h4>
                     <form id="personal-info-form">
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="username" class="form-label">Username</label>
+                                <label for="username" class="form-label">Tên Người Dùng</label>
                                 <input type="text" class="form-control" id="username" readonly>
                             </div>
                             <div class="col-md-6">
@@ -103,29 +103,29 @@
                         </div>
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="first-name" class="form-label">First name (Optional)</label>
+                                <label for="first-name" class="form-label">Tên (Không bắt buộc)</label>
                                 <input type="text" class="form-control" id="first-name">
                             </div>
                             <div class="col-md-6">
-                                <label for="last-name" class="form-label">Last name (Optional)</label>
+                                <label for="last-name" class="form-label">Họ (Không bắt buộc)</label>
                                 <input type="text" class="form-control" id="last-name">
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="phone" class="form-label">Phone (Optional)</label>
+                            <label for="phone" class="form-label">Số điện thoại (Không bắt buộc)</label>
                             <input type="tel" class="form-control" id="phone">
                         </div>
                         <div class="d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-discard">Discard</button>
-                            <button type="submit" class="btn btn-update">Update Info</button>
+                            <button type="button" class="btn btn-discard">Hủy bỏ</button>
+                            <button type="submit" class="btn btn-update">Cập nhật</button>
                         </div>
                     </form>
                     <div class="login-info">
-                        <h4>Login Info</h4>
-                        <p><strong>Username:</strong> <span id="display-username"></span></p>
+                        <h4>Thông tin đăng nhập</h4>
+                        <p><strong>Tên đăng nhập:</strong> <span id="display-username"></span></p>
                         <p><strong>Email:</strong> <span id="display-email"></span></p>
-                        <p><strong>Password:</strong> ••••••••</p>
-                        <p><a href="#" id="change-password">Change Password</a></p>
+                        <p><strong>Mật khẩu:</strong> ••••••••</p>
+                        <p><a href="#" id="change-password">Đổi mật khẩu</a></p>
                     </div>
                 </div>
             </div>
@@ -146,7 +146,7 @@
                     <img src="images/discord.png" alt="Discord" style="height: 30px;">
                 </a>
             </div>
-            <p>© 2025 by FirePCGaming LLC / Privacy Policy / Terms of Service / Warranty & Return Policy</p>
+            <p>© 2025 bởi FirePCGaming LLC / Chính sách bảo mật / Điều khoản dịch vụ / Chính sách bảo hành & Đổi trả</p>
         </div>
     </footer>
 
@@ -201,13 +201,13 @@
                     localStorage.setItem('users', JSON.stringify(users));
                 }
     
-                alert('Profile updated successfully!');
+                alert('Hồ sơ đã được cập nhật thành công!');
                 location.reload();
             });
     
             $('#change-password').click(function (e) {
                 e.preventDefault();
-                alert('Change password functionality is a placeholder.');
+                alert('Chức năng đổi mật khẩu hiện chưa khả dụng.');
             });
     
             let lastScrollTop = 0;
