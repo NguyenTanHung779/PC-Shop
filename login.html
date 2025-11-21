@@ -99,72 +99,74 @@
         </div>
     </footer>
 
-    <script>
-        $(document).ready(function () {
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            const loginLink = document.getElementById('login-register');
-            const registerLink = document.getElementById('register-link');
-            const profile = document.getElementById('profile');
 
-            if (isLoggedIn) {
-                loginLink.style.display = 'none';
-                registerLink.style.display = 'none';
-                profile.style.display = 'block';
-            } else {
-                loginLink.style.display = 'block';
-                registerLink.style.display = 'block';
-                profile.style.display = 'none';
+<script>
+    $(document).ready(function () {
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        const loginLink = document.getElementById('login-register');
+        const registerLink = document.getElementById('register-link');
+        const profile = document.getElementById('profile');
+
+        if (isLoggedIn) {
+            loginLink.style.display = 'none';
+            registerLink.style.display = 'none';
+            profile.style.display = 'block';
+        } else {
+            loginLink.style.display = 'block';
+            registerLink.style.display = 'block';
+            profile.style.display = 'none';
+        }
+
+        const cartCount = localStorage.getItem('cartCount') || 0;
+        $('#cart-count').text(cartCount);
+
+        $('#login-form').submit(async function (e) {
+            e.preventDefault();
+            const loginId = $('#login-id').val();
+            const password = $('#password').val();
+
+            try {
+                const response = await fetch('http://localhost:5000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ loginId, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Check if admin role from database
+                    const isAdmin = data.user.role === 'admin';
+                    
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('isAdmin', isAdmin.toString());
+                    localStorage.setItem('userData', JSON.stringify(data.user));
+                    
+                    alert('✅ Login successful!');
+                    window.location.href = 'profile.html';
+                } else {
+                    alert(`❌ ${data.error || 'Invalid username/email or password!'}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Failed to connect to the server. Make sure the server is running on port 5000.');
             }
-
-            const cartCount = localStorage.getItem('cartCount') || 0;
-            $('#cart-count').text(cartCount);
-
-            $('#login-form').submit(function (e) {
-                e.preventDefault();
-                const loginId = $('#login-id').val();
-                const password = $('#password').val();
-                const users = JSON.parse(localStorage.getItem('users')) || [];
-
-                // Check admin login
-                if (loginId === 'admin@firepcgaming.com' && password === 'admin123') {
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('isAdmin', 'true');
-                    localStorage.setItem('userData', JSON.stringify({
-                        username: 'admin',
-                        email: 'admin@firepcgaming.com',
-                        password: 'admin123',
-                        firstName: 'Admin',
-                        lastName: 'User',
-                        phone: ''
-                    }));
-                    window.location.href = 'profile.html';
-                    return;
-                }
-
-                // Check registered users
-                const user = users.find(u => (u.username === loginId || u.email === loginId) && u.password === password);
-                if (user) {
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('isAdmin', 'false');
-                    localStorage.setItem('userData', JSON.stringify(user));
-                    window.location.href = 'profile.html';
-                } else {
-                    alert('Invalid username/email or password!');
-                }
-            });
-
-            let lastScrollTop = 0;
-            const navbar = $('header');
-            $(window).scroll(function () {
-                const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-                if (currentScroll > lastScrollTop) {
-                    navbar.css('top', '-100px');
-                } else {
-                    navbar.css('top', '0');
-                }
-                lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
-            });
         });
-    </script>
+
+        // Navbar scroll behavior
+        let lastScrollTop = 0;
+        const navbar = $('header');
+        $(window).scroll(function () {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            if (currentScroll > lastScrollTop) {
+                navbar.css('top', '-100px');
+            } else {
+                navbar.css('top', '0');
+            }
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        });
+    });
+</script>
+
 </body>
 </html>

@@ -108,41 +108,42 @@
     </footer>
 
     <script>
-    $(document).ready(function () {
-        $('#register-form').submit(async function (e) {
-            e.preventDefault();
+$(document).ready(function () {
+    $('#register-form').submit(async function (e) {
+        e.preventDefault();
 
-            const username = $('#username').val();
-            const email = $('#email').val();
-            const password = $('#password').val();
-            const confirmPassword = $('#confirm-password').val();
+        const username = $('#username').val();
+        const email = $('#email').val();
+        const password = $('#password').val();
+        const confirmPassword = $('#confirm-password').val();
 
-            if (password !== confirmPassword) {
-            alert('////////// Passwords do not match! //////////');
+        if (password !== confirmPassword) {
+            alert('Passwords do not match!');
             return;
-            }
+        }
 
-            try {
-            const response = await fetch('http://localhost:5000/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+        try {
+            const response = await fetch("http://localhost:5000/api/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, email, password })
             });
 
             const data = await response.json();
 
-            if (response.ok) {
-                alert('✅ Registration successful!');
-                window.location.href = 'login.html';
-            } else {
-                alert(`⚠️ ${data.error}`);
+            if (!response.ok) {
+                alert("❌ " + data.error);
+                return;
             }
-            } catch (error) {
-            console.error('Error:', error);
-            alert('❌ Failed to connect to the server.');
-            }
-        });
+
+            alert("🎉 Registration success!");
+            window.location.href = "login.html";
+        } catch (err) {
+            alert("❌ Could not connect to backend server!");
+        }
     });
-    </script>
+});
+</script>
+
 </body>
 </html>
