@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Contact Us | FirePCGaming</title>
+        <title>Liên Hệ | FirePCGaming</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="css/style.css">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -14,15 +14,15 @@
     <header class="text-white">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-dark">
-                <a class="navbar-brand" href="#">
-                    <img src="images/FIREPCmini.png" alt="Logo" class="img-fluid" style="height: 50px;">
+                <a class="navbar-brand" href="home.html">
+                    <img src="images/FIREPCmini.png" alt="Logo" class="img-fluid site-logo">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link" href="index.html">TRANG CHỦ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="home.html">TRANG CHỦ</a></li>
                         <li class="nav-item"><a class="nav-link" href="contact.html">LIÊN HỆ</a></li>
                         <li class="nav-item" id="login-register">
                             <a class="nav-link login-btn d-flex align-items-center gap-2" href="login.html">
@@ -45,10 +45,10 @@
                                 Đăng Ký
                             </a>
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="profile.html" style="display: none;" id="profile">Hồ Sơ</a></li>
+                        <li class="nav-item"><a class="nav-link hidden" href="profile.html" id="profile">Hồ Sơ</a></li>
                         <li class="nav-item">
-                            <a class="nav-link" href="cart.html">
-                                <img src="images/Crate icon.png" alt="Cart Icon" class="cart-icon">
+                            <a class="nav-link cart-toggle" href="#" role="button" id="cart-toggle">
+                                <img src="images/Crate icon.png" alt="Biểu Tượng Giỏ Hàng" class="cart-icon">
                                 <span id="cart-count" class="badge bg-primary">0</span>
                             </a>
                         </li>
@@ -57,6 +57,29 @@
             </nav>
         </div>
     </header>
+    <!-- Cart Drawer -->
+    <div id="cart-drawer" class="cart-drawer drawer drawer--end" aria-hidden="true">
+        <div class="cart-overlay"></div>
+        <div class="cart-inner">
+            <div class="cart-header d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <h3 class="mb-0">Giỏ Hàng <span id="drawer-cart-count" class="badge bg-primary">0</span></h3>
+                    <div id="drawer-preview" class="drawer-preview"></div>
+                </div>
+                <button class="btn-close" id="cart-close">✕</button>
+            </div>
+            <div class="cart-body">
+                <ul id="drawer-items" class="list-unstyled"></ul>
+            </div>
+            <div class="cart-footer">
+                <div class="d-flex justify-content-between">
+                    <div>Tạm tính</div>
+                    <div id="drawer-subtotal">$0.00</div>
+                </div>
+                <button class="btn btn-primary w-100 mt-3" id="drawer-checkout">Thanh Toán</button>
+            </div>
+        </div>
+    </div>
 
 <!-- Contact Section -->
 <section class="contact">
@@ -75,21 +98,41 @@
 </section>
 </section>
 <!-- Footer -->
-    <!-- Footer -->
-    <footer class="text-white py-4">
-        <div class="container text-center">
-            <div class="mb-3">
-                <img src="images/FIREPCmini.png" alt="FirePCGaming Logo" style="height: 50px;">
+    <footer class="text-white py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="mb-4">
+                        <img src="images/FIREPCmini.png" alt="FirePCGaming Logo" class="site-logo mb-3">
+                    </div>
+                    <div class="d-flex gap-3 mb-3">
+                        <a href="https://youtu.be/dQw4w9WgXcQ?si=8-KmiNCbu7ubt8Oy" target="_blank">
+                            <img src="images/youtube.png" alt="YouTube" class="social-icon-small">
+                        </a>
+                        <a href="https://youtu.be/dQw4w9WgXcQ?si=8-KmiNCbu7ubt8Oy" target="_blank">
+                            <img src="images/discord.png" alt="Discord" class="social-icon-small">
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div class="col-md-6">
+                    <h5 class="mb-3">Liên Kết Nhanh</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Chính sách bảo mật</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Điều khoản dịch vụ</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Chính sách bảo hành & Đổi trả</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">FAQ/Vận chuyển</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Discord Cộng đồng</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="d-flex justify-content-center mb-3">
-                <a href="https://youtu.be/dQw4w9WgXcQ?si=8-KmiNCbu7ubt8Oy" target="_blank" class="me-3">
-                    <img src="images/youtube.png" alt="YouTube" style="height: 30px;">
-                </a>
-                <a href="https://youtu.be/dQw4w9WgXcQ?si=8-KmiNCbu7ubt8Oy" target="_blank">
-                    <img src="images/discord.png" alt="Discord" style="height: 30px;">
-                </a>
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <p class="mb-0">© 2025 bởi FirePCGaming LLC</p>
+                </div>
             </div>
-            <p>© 2025 bởi FirePCGaming LLC / Chính sách bảo mật / Điều khoản dịch vụ / Chính sách bảo hành & Đổi trả</p>
         </div>
     </footer>
 <script src="js/script.js"></script>

@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Register | FirePCGaming</title>
+        <title>Đăng Ký | FirePCGaming</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="css/style.css">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -14,15 +14,15 @@
     <header class="text-white">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-dark">
-                <a class="navbar-brand" href="index.html">
-                    <img src="images/FIREPCmini.png" alt="Logo" class="img-fluid" style="height: 50px;">
+                <a class="navbar-brand" href="home.html">
+                    <img src="images/FIREPCmini.png" alt="Logo" class="img-fluid site-logo">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link" href="index.html">TRANG CHỦ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="home.html">TRANG CHỦ</a></li>
                         <li class="nav-item"><a class="nav-link" href="contact.html">LIÊN HỆ</a></li>
                         <li class="nav-item" id="login-register">
                             <a class="nav-link login-btn d-flex align-items-center gap-2" href="login.html">
@@ -45,7 +45,7 @@
                                 Đăng Ký
                             </a>
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="profile.html" style="display: none;" id="profile">Hồ Sơ</a></li>
+                        <li class="nav-item"><a class="nav-link hidden" href="profile.html" id="profile">Hồ Sơ</a></li>
                         <li class="nav-item">
                             <a class="nav-link" href="cart.html">
                                 <img src="images/Crate icon.png" alt="Cart Icon" class="cart-icon">
@@ -61,7 +61,7 @@
     <!-- Register Section -->
     <section class="register py-5">
         <div class="container">
-            <h2 class="text-center mb-4" style="margin-top: 80px;"><strong>Đăng Ký</strong></h2>
+            <h2 class="text-center mb-4 page-title"><strong>Đăng Ký</strong></h2>
             <div class="row justify-content-center">
                 <div class="col-md-6">
                     <form id="register-form">
@@ -93,14 +93,14 @@
     <footer class="text-white py-4">
         <div class="container text-center">
             <div class="mb-3">
-                <img src="images/FIREPCmini.png" alt="FirePCGaming Logo" style="height: 50px;">
+                <img src="images/FIREPCmini.png" alt="FirePCGaming Logo" class="site-logo">
             </div>
             <div class="d-flex justify-content-center mb-3">
                 <a href="https://youtu.be/dQw4w9WgXcQ?si=8-KmiNCbu7ubt8Oy" target="_blank" class="me-3">
-                    <img src="images/youtube.png" alt="YouTube" style="height: 30px;">
+                    <img src="images/youtube.png" alt="YouTube" class="social-icon-small">
                 </a>
                 <a href="https://youtu.be/dQw4w9WgXcQ?si=8-KmiNCbu7ubt8Oy" target="_blank">
-                    <img src="images/discord.png" alt="Discord" style="height: 30px;">
+                    <img src="images/discord.png" alt="Discord" class="social-icon-small">
                 </a>
             </div>
             <p>© 2025 bởi FirePCGaming LLC / Chính sách bảo mật / Điều khoản dịch vụ / Chính sách bảo hành & Đổi trả</p>
@@ -118,7 +118,7 @@ $(document).ready(function () {
         const confirmPassword = $('#confirm-password').val();
 
         if (password !== confirmPassword) {
-            alert('Passwords do not match!');
+            alert('Mật khẩu không khớp!');
             return;
         }
 
@@ -132,14 +132,14 @@ $(document).ready(function () {
             const data = await response.json();
 
             if (!response.ok) {
-                alert("❌ " + data.error);
+                alert("❌ Đăng ký thất bại: " + data.error);
                 return;
             }
 
-            alert("🎉 Registration success!");
+            alert("🎉 Đăng ký thành công!");
             window.location.href = "login.html";
         } catch (err) {
-            alert("❌ Could not connect to backend server!");
+            alert("❌ Không thể kết nối tới máy chủ backend!");
         }
     });
 });

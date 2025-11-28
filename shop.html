@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cửa Hàng | FirePCGaming</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </head>
+<body>
+    <!-- Header - Reused from home -->
+    <header class="text-white">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <a class="navbar-brand" href="home.html">
+                    <img src="images/FIREPCmini.png" alt="Logo" class="img-fluid site-logo">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="home.html">TRANG CHỦ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="shop.html">CỬA HÀNG</a></li>
+                        <li class="nav-item"><a class="nav-link" href="contact.html">LIÊN HỆ</a></li>
+                        <li class="nav-item" id="login-register">
+                            <a class="nav-link login-btn d-flex align-items-center gap-2" href="login.html">
+                                <span class="login-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" class="bi bi-person" viewBox="0 0 16 16">
+                                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                    </svg>
+                                </span>
+                                Đăng Nhập 
+                            </a>
+                        </li>
+                        <li class="nav-item" id="register-link">
+                            <a class="nav-link login-btn d-flex align-items-center gap-2" href="register.html">
+                                <span class="login-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" class="bi bi-person-plus" viewBox="0 0 16 16">
+                                        <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                                        <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+                                    </svg>
+                                </span>
+                                Đăng Ký
+                            </a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link hidden" href="profile.html" id="profile">Hồ Sơ</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link cart-toggle" href="#" role="button" id="cart-toggle">
+                                <img src="images/Crate icon.png" alt="Biểu Tượng Giỏ Hàng" class="cart-icon">
+                                <span id="cart-count" class="badge bg-primary">0</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+
+<!-- Hero Section (Image Slider) -->
+<section class="hero">
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="true" data-bs-interval="5000">
+        <!-- Indicators -->
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+        </div>
+
+        <!-- Carousel Items -->
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="images/banner 1.png" class="d-block w-100" alt="Biểu ngữ 1">
+            </div>
+            <div class="carousel-item">
+                <img src="images/banner 2.png" class="d-block w-100" alt="Biểu ngữ 2">
+            </div>
+            <div class="carousel-item">
+                <img src="images/Banner 3.png" class="d-block w-100" alt="Biểu ngữ 3">
+            </div>
+            <div class="carousel-item">
+                <img src="images/banner 4.png" class="d-block w-100" alt="Biểu ngữ 4">
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Trước</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Tiếp theo</span>
+        </button>
+    </div>
+</section>
+
+    <!-- Pre-Built PCs Section -->
+    <section class="pre-built-pcs py-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Máy Tính Chơi Game Lắp Sẵn</h2>
+            <p class="text-center note">Các máy tính chơi game này đang có NHU CẦU CAO.<br>
+                Khi một cấu hình đang "Hết Hàng". Chúng tôi đang lắp ráp nhanh nhất có thể.</p>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="images/Tranquility (Limited Edition).PNG" class="card-img-top" alt="Voidwalker">
+                        <div class="card-body text-center">
+                            <p>Ryzen 5 9600X + RX 7800 XT<br>Tranquility (Phiên Bản Giới Hạn)</p>
+                            <span>$1,799.00</span>
+                            <button class="btn btn-secondary w-100 mt-2" disabled>Hết Hàng</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="images/Frozen Orb (Limited Edition).PNG" class="card-img-top" alt="Frozen Orb">
+                        <div class="card-body text-center">
+                            <p>RYZEN 5 5600X + RX 6600<br>Frozen Orb (PHIÊN BẢN GIỚI HẠN)</p>
+                            <span>$1,049.00</span>
+                            <button class="btn btn-primary w-100 mt-2 add-to-cart">Thêm Vào Giỏ Hàng</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="images/Voidwalker (Limited Edition).PNG" class="card-img-top" alt="Voidwalker">
+                        <div class="card-body text-center">
+                            <p>RYZEN 5 5600 + RTX 4060<br>Voidwalker (PHIÊN BẢN GIỚI HẠN)</p>
+                            <span>$1,149.00</span>
+                            <button class="btn btn-primary w-100 mt-2 add-to-cart">Thêm Vào Giỏ Hàng</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- more cards... -->
+            </div>
+        </div>
+    </section>
+
+<!-- Notice Banner -->
+<div class="notice-banner">
+    <p>PHẦN LỚN CÁC MÁY TÍNH LẮP SẴN HIỆN NAY LÀ PHIÊN BẢN GIỚI HẠN VÀ LUÂN PHIÊN DỰA TRÊN NGUỒN CUNG.</p>
+</div>
+
+<!-- Footer -->
+    <footer class="text-white py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="mb-4">
+                        <img src="images/FIREPCmini.png" alt="FirePCGaming Logo" class="site-logo mb-3">
+                    </div>
+                    <div class="d-flex gap-3 mb-3">
+                        <a href="https://youtu.be/dQw4w9WgXcQ?si=8-KmiNCbu7ubt8Oy" target="_blank">
+                            <img src="images/youtube.png" alt="YouTube" class="social-icon-small">
+                        </a>
+                        <a href="https://youtu.be/dQw4w9WgXcQ?si=8-KmiNCbu7ubt8Oy" target="_blank">
+                            <img src="images/discord.png" alt="Discord" class="social-icon-small">
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div class="col-md-6">
+                    <h5 class="mb-3">Liên Kết Nhanh</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Chính sách bảo mật</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Điều khoản dịch vụ</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Chính sách bảo hành & Đổi trả</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">FAQ/Vận chuyển</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Discord Cộng đồng</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <p class="mb-0">© 2025 bởi FirePCGaming LLC</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Drawer -->
+    <div id="cart-drawer" class="cart-drawer drawer drawer--end" aria-hidden="true">
+        <div class="cart-overlay"></div>
+        <div class="cart-inner">
+            <div class="cart-header d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <h3 class="mb-0">Giỏ Hàng <span id="drawer-cart-count" class="badge bg-primary">0</span></h3>
+                    <div id="drawer-preview" class="drawer-preview"></div>
+                </div>
+                <button class="btn-close" id="cart-close">✕</button>
+            </div>
+            <div class="cart-body">
+                <ul id="drawer-items" class="list-unstyled"></ul>
+            </div>
+            <div class="cart-footer">
+                <div class="d-flex justify-content-between">
+                    <div>Tạm tính</div>
+                    <div id="drawer-subtotal">$0.00</div>
+                </div>
+                <button class="btn btn-primary w-100 mt-3" id="drawer-checkout">Thanh Toán</button>
+            </div>
+        </div>
+    </div>
+
+<script src="js/script.js"></script>
+</body>
+</html>
