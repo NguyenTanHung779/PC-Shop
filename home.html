@@ -79,7 +79,7 @@
                                 </svg>
                             </a>
                         </li>
-                        <li class="nav-item"><a class="nav-link hidden" href="profile.html" id="profile">Hồ Sơ</a></li>
+                        <li class="nav-item"><a class="nav-link hidden" href="account/profile.html" id="profile">Hồ Sơ</a></li>
                         <li class="nav-item cart-item">
                             <a class="nav-link cart-toggle" href="#" role="button" id="cart-toggle">
                                 <svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -104,17 +104,10 @@
             <div>
                 <h1 class="display-1 fw-bold mb-4">Voyager</h1>
                 <p class="lead mb-4">Sẵn sàng cất cánh.</p>
-                <a href="gaming-pc-prebuilts.html" class="btn btn-primary btn-lg">Xem PC Phiên Bản Giới Hạn Voyager</a>
+                <a href="shop.html" class="btn btn-light btn-lg">Xem PC Phiên Bản Giới Hạn Voyager</a>
             </div>
         </div>
-        <button class="video-control-btn" id="heroToggle" aria-label="Play/Pause Video">
-            <svg class="video-play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                <path d="M8 5v14l11-7z"/>
-            </svg>
-            <svg class="video-pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" style="display: none;">
-                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-            </svg>
-        </button>
+        <button id="heroToggle" class="video-toggle" type="button" aria-label="Tạm dừng video"></button>
     </section>
 
     <!-- Collection Categories -->
@@ -124,9 +117,9 @@
             </div>
             <div class="row g-4">
                 <div class="col-md-6 col-lg-4">
-                    <a href="gaming-pc-prebuilts.html" class="text-decoration-none">
+                    <a href="shop.html" class="text-decoration-none">
                         <div class="card h-100 border-0 shadow-sm hover-lift position-relative overflow-hidden">
-                            <img src="images\GamingPCPrebuilts.png" class="card-img-top" alt="Máy Tính Chơi Game">
+                            <img src="images\GamingPCPrebuilts.png" class="card-img-top" alt="Gaming PC">
                             <div class="card-body d-flex justify-content-between align-items-center">
                                 <div class="flex-grow-1">
                                     <h5 class="card-title fw-bold mb-1 card-title-lg">Máy Tính Chơi Game Lắp Sẵn</h5>
@@ -140,9 +133,9 @@
                     </a>
                 </div>
                 <div class="col-md-6 col-lg-4">
-                    <a href="gaming-pc-prebuilts.html" class="text-decoration-none">
+                    <a href="shop.html" class="text-decoration-none">
                         <div class="card h-100 border-0 shadow-sm hover-lift position-relative overflow-hidden">
-                            <img src="images\BusinessClass.png" class="card-img-top" alt="Dòng Doanh Nghiệp">
+                            <img src="images\BusinessClass.png" class="card-img-top" alt="Business PC">
                             <div class="card-body d-flex justify-content-between align-items-center">
                                 <div class="flex-grow-1">
                                     <h5 class="card-title fw-bold mb-1 card-title-lg">Dòng Doanh Nghiệp</h5>
@@ -156,9 +149,9 @@
                     </a>
                 </div>
                 <div class="col-md-6 col-lg-4">
-                    <a href="gaming-pc-prebuilts.html" class="text-decoration-none">
+                    <a href="shop.html" class="text-decoration-none">
                         <div class="card h-100 border-0 shadow-sm hover-lift position-relative overflow-hidden">
-                            <img src="images\MonthlyDrops.png" class="card-img-top" alt="Monthly Drops">
+                            <img src="images\MonthlyDrops.png" class="card-img-top" alt="Monthly">
                             <div class="card-body d-flex justify-content-between align-items-center">
                                 <div class="flex-grow-1">
                                     <h5 class="card-title fw-bold mb-1 card-title-lg">Monthly Drops</h5>
@@ -185,17 +178,10 @@
             <div>
                 <h2 class="display-2 fw-bold mb-4">Thẩm Mỹ Đáp Ứng Khả Năng Chi Trả</h2>
                 <p class="lead mb-4">Hiệu suất nghiêm túc. Phong cách giá cả phải chăng đáng kinh ngạc.</p>
-                <a href="gaming-pc-prebuilts.html" class="btn btn-primary btn-lg">Mua Frost Nova V6</a>
+                <a href="shop.html" class="btn btn-light btn-lg">Mua Frost Nova v5</a>
             </div>
         </div>
-        <button class="video-control-btn" id="aestheticsToggle" aria-label="Play/Pause Video">
-            <svg class="video-play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
-                <path d="M8 5v14l11-7z"/>
-            </svg>
-            <svg class="video-pause-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" style="display: none;">
-                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/>
-            </svg>
-        </button>
+        <button id="aestheticsToggle" class="video-toggle" type="button" aria-label="Tạm dừng video"></button>
     </section>
 
     <!-- Why Buy Section -->
@@ -254,7 +240,7 @@
                     <h2 class="display-4 fw-bold mb-4">Thích Tự Lắp Ráp Hơn?</h2>
                     <p class="lead mb-4">Tại FirePC Gaming, chúng tôi là những người xây dựng trước tiên, và đó chính xác là những gì chúng tôi khuyến khích làm.</p>
                     <p class="mb-4">Cho dù đó là bản build đầu tiên hay thứ mười của bạn, chúng tôi có hướng dẫn, video và công cụ để giúp bạn từng bước. Bởi vì đôi khi PC tốt nhất là PC bạn tự xây dựng.</p>
-                    <a href="#" class="btn btn-primary btn-lg">Truy Cập Trợ Giúp Xây Dựng</a>
+                    <a href="#" class="btn btn-dark btn-lg">Truy Cập Trợ Giúp Xây Dựng</a>
                 </div>
             </div>
         </div>
@@ -295,14 +281,15 @@
                     <ul class="list-unstyled">
                         <li class="mb-2"><a href="#" class="text-white text-decoration-none">Chính sách bảo hành & Đổi trả</a></li>
                         <li class="mb-2"><a href="#" class="text-white text-decoration-none">FAQ/Vận chuyển</a></li>
-                        <li class="mb-2"><a href="https://discord.com/channels/@me/924321474448359474" class="text-white text-decoration-none">FirePC Discord</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">FirePC Discord</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Careers</a></li>
                     </ul>
                 </div>
                 
                 <!-- Right Column - Social Icons -->
                 <div class="col-md-3 text-md-end">
                     <div class="d-flex gap-3 justify-content-md-end">
-                        <a href="https://discord.com/channels/@me/924321474448359474" target="_blank" class="text-white">
+                        <a href="https://discord.com" target="_blank" class="text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.249.594.05.05 0 0 0-.03.03.052.052 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019Zm-8.198 7.307c-.789 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612Zm5.316 0c-.788 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612Z"/>
                             </svg>
@@ -324,60 +311,35 @@
     </footer>
 
     <!-- Cart Drawer -->
-    <div class="cart-overlay" id="cart-overlay"></div>
-    <div id="cart-drawer" class="cart-drawer drawer drawer--end" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Cart">
-        <div class="drawer__inner">
-            <div class="drawer__header">
-                <div class="drawer__tabs">
-                    <button class="drawer__tab drawer__tab--active" type="button" aria-expanded="true">
-                        <span class="drawer__title">Cart</span>
-                        <span id="drawer-cart-count" class="cart-count-number" style="display: none;">0</span>
-                    </button>
+    <div id="cart-drawer" class="cart-drawer drawer drawer--end" aria-hidden="true">
+        <div class="cart-overlay"></div>
+        <div class="cart-inner">
+            <div class="cart-header d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <h3 class="mb-0">Giỏ Hàng <span id="drawer-cart-count" class="badge bg-dark">0</span></h3>
+                    <div id="drawer-preview" class="drawer-preview"></div>
                 </div>
-                <button class="drawer__close" type="button" id="cart-close" aria-label="Close">
-                    <svg class="icon-close" viewBox="0 0 20 20" stroke="currentColor" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15L15 5M5 5L15 15"></path>
+                <button class="btn-close" id="cart-close"></button>
+            </div>
+            <div class="cart-body">
+                <!-- Empty State -->
+                <div id="cart-empty-state" class="cart-empty text-center py-5" style="display: none;">
+                    <svg class="cart-empty-icon mb-3" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M1 1h.5v0c.226 0 .339 0 .44.007a3 3 0 0 1 2.62 1.976c.034.095.065.204.127.42l.17.597m0 0 1.817 6.358c.475 1.664.713 2.496 1.198 3.114a4 4 0 0 0 1.633 1.231c.727.297 1.592.297 3.322.297h2.285c1.75 0 2.626 0 3.359-.302a4 4 0 0 0 1.64-1.253c.484-.627.715-1.472 1.175-3.161l.06-.221c.563-2.061.844-3.092.605-3.906a3 3 0 0 0-1.308-1.713C19.92 4 18.853 4 16.716 4H4.857ZM12 20a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"></path>
                     </svg>
-                </button>
+                    <p class="mb-2 fw-bold">Giỏ hàng của bạn đang trống.</p>
+                    <p class="text-muted small mb-3">Không biết bắt đầu từ đâu?</p>
+                    <a href="gaming-pc-prebuilts.html" class="btn btn-dark">Xem các máy tính Gaming lắp sẵn của chúng tôi!</a>
+                </div>
+                <!-- Items List -->
+                <ul id="drawer-items" class="list-unstyled"></ul>
             </div>
-
-            <div class="drawer__content">
-                <div id="cart-empty-state" class="drawer__empty" style="display: none;">
-                    <h2 class="drawer__empty-text">Your cart is currently empty.</h2>
-                    <div class="drawer__empty-message">
-                        <p>Not sure where to start?<br/>Check out our prebuilt Gaming PCs!</p>
-                    </div>
-                    <div class="drawer__empty-collections">
-                        <a class="empty-collection-link" href="gaming-pc-prebuilts.html">
-                            <span>Gaming PC Prebuilts</span>
-                            <svg class="icon-arrow" viewBox="0 0 21 20" stroke="currentColor" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10H18M18 10L12.1667 4.16675M18 10L12.1667 15.8334"></path>
-                            </svg>
-                        </a>
-                    </div>
+            <div class="cart-footer" id="cart-footer-content" style="display: none;">
+                <div class="d-flex justify-content-between mb-3">
+                    <div>Tổng Tiền</div>
+                    <div id="drawer-subtotal">$0.00</div>
                 </div>
-
-                <div id="cart-items-container" class="drawer__scrollable" style="display: none;">
-                    <ul id="drawer-items" class="cart-items-list"></ul>
-                </div>
-            </div>
-
-            <div id="cart-footer" class="drawer__footer" style="display: none;">
-                <div class="drawer__footer-bottom">
-                    <div class="cart-totals">
-                        <div class="tax-note">Taxes and <a href="#">shipping</a> calculated at checkout</div>
-                        <div class="totals">
-                            <span class="totals__label">Subtotal</span>
-                            <div id="drawer-subtotal" class="totals__value">$0.00 USD</div>
-                        </div>
-                    </div>
-                    <button class="btn-checkout" type="button" id="drawer-checkout">
-                        <svg class="icon-lock" viewBox="0 0 20 20" stroke="currentColor" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" d="M5.83333 6.66675V5.83341C5.83333 4.74781 5.83333 4.205 5.97218 3.76463C6.26651 2.83114 6.99772 2.09993 7.93122 1.8056C8.37159 1.66675 8.91439 1.66675 10 1.66675V1.66675C11.0856 1.66675 11.6284 1.66675 12.0688 1.8056C13.0023 2.09993 13.7335 2.83114 14.0278 3.76463C14.1667 4.205 14.1667 4.74781 14.1667 5.83341V6.66675M10 11.6667V13.3334M8.33333 18.3334H11.6667C13.3741 18.3334 14.2278 18.3334 14.909 18.077C15.9871 17.6713 16.8379 16.8205 17.2436 15.7424C17.5 15.0612 17.5 14.2075 17.5 12.5001V12.5001C17.5 10.7926 17.5 9.93892 17.2436 9.25775C16.8379 8.17969 15.9871 7.32888 14.909 6.92312C14.2278 6.66675 13.3741 6.66675 11.6667 6.66675H8.33333C6.62589 6.66675 5.77218 6.66675 5.091 6.92312C4.01294 7.32888 3.16213 8.17969 2.75638 9.25775C2.5 9.93892 2.5 10.7926 2.5 12.5001V12.5001C2.5 14.2075 2.5 15.0612 2.75638 15.7424C3.16213 16.8205 4.01294 17.6713 5.091 18.077C5.77218 18.3334 6.62589 18.3334 8.33333 18.3334Z"></path>
-                        </svg>
-                        <span>Check out</span>
-                    </button>
-                </div>
+                <a href="gaming-pc-prebuilts.html" class="btn btn-dark w-100" id="drawer-checkout">Mua Ngay</a>
             </div>
         </div>
     </div>
@@ -494,35 +456,29 @@
     <script src="JS/script.js"></script>
     <script>
         (function(){
+            const pauseIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
+            const playIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>';
+
             function setupVideoToggle(videoId, btnId){
                 const video = document.getElementById(videoId);
                 const btn = document.getElementById(btnId);
                 if(!video || !btn) return;
-                
-                const playIcon = btn.querySelector('.video-play-icon');
-                const pauseIcon = btn.querySelector('.video-pause-icon');
-                
                 function update(){
                     if(video.paused){
-                        if(playIcon) playIcon.style.display = 'block';
-                        if(pauseIcon) pauseIcon.style.display = 'none';
+                        btn.innerHTML = playIcon;
                         btn.setAttribute('aria-label','Phát video');
                     } else {
-                        if(playIcon) playIcon.style.display = 'none';
-                        if(pauseIcon) pauseIcon.style.display = 'block';
+                        btn.innerHTML = pauseIcon;
                         btn.setAttribute('aria-label','Tạm dừng video');
                     }
                 }
-                
                 btn.addEventListener('click', function(){
                     if(video.paused){ video.play(); } else { video.pause(); }
                     update();
                 });
-                
                 // Update when video state changes (e.g., autoplay)
                 video.addEventListener('play', update);
                 video.addEventListener('pause', update);
-                video.addEventListener('ended', update);
                 update();
             }
 

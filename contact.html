@@ -156,63 +156,38 @@
     </footer>
 
     <!-- Cart Drawer -->
-    <div class="cart-overlay" id="cart-overlay"></div>
-    <div id="cart-drawer" class="cart-drawer drawer drawer--end" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Cart">
-        <div class="drawer__inner">
-            <div class="drawer__header">
-                <div class="drawer__tabs">
-                    <button class="drawer__tab drawer__tab--active" type="button" aria-expanded="true">
-                        <span class="drawer__title">Cart</span>
-                        <span id="drawer-cart-count" class="cart-count-number" style="display: none;">0</span>
-                    </button>
+    <div id="cart-drawer" class="cart-drawer drawer drawer--end" aria-hidden="true">
+        <div class="cart-overlay"></div>
+        <div class="cart-inner">
+            <div class="cart-header d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <h3 class="mb-0">Giỏ Hàng <span id="drawer-cart-count" class="badge bg-dark">0</span></h3>
+                    <div id="drawer-preview" class="drawer-preview"></div>
                 </div>
-                <button class="drawer__close" type="button" id="cart-close" aria-label="Close">
-                    <svg class="icon-close" viewBox="0 0 20 20" stroke="currentColor" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15L15 5M5 5L15 15"></path>
+                <button class="btn-close" id="cart-close"></button>
+            </div>
+            <div class="cart-body">
+                <!-- Empty State -->
+                <div id="cart-empty-state" class="cart-empty text-center py-5" style="display: none;">
+                    <svg class="cart-empty-icon mb-3" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M1 1h.5v0c.226 0 .339 0 .44.007a3 3 0 0 1 2.62 1.976c.034.095.065.204.127.42l.17.597m0 0 1.817 6.358c.475 1.664.713 2.496 1.198 3.114a4 4 0 0 0 1.633 1.231c.727.297 1.592.297 3.322.297h2.285c1.75 0 2.626 0 3.359-.302a4 4 0 0 0 1.64-1.253c.484-.627.715-1.472 1.175-3.161l.06-.221c.563-2.061.844-3.092.605-3.906a3 3 0 0 0-1.308-1.713C19.92 4 18.853 4 16.716 4H4.857ZM12 20a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"></path>
                     </svg>
-                </button>
+                    <p class="mb-2 fw-bold">Giỏ hàng của bạn đang trống.</p>
+                    <p class="text-muted small mb-3">Không biết bắt đầu từ đâu?</p>
+                    <a href="gaming-pc-prebuilts.html" class="btn btn-dark">Xem các máy tính Gaming lắp sẵn của chúng tôi!</a>
+                </div>
+                <!-- Items List -->
+                <ul id="drawer-items" class="list-unstyled"></ul>
             </div>
-
-            <div class="drawer__content">
-                <div id="cart-empty-state" class="drawer__empty" style="display: none;">
-                    <h2 class="drawer__empty-text">Your cart is currently empty.</h2>
-                    <div class="drawer__empty-message">
-                        <p>Not sure where to start?<br/>Check out our prebuilt Gaming PCs!</p>
-                    </div>
-                    <div class="drawer__empty-collections">
-                        <a class="empty-collection-link" href="gaming-pc-prebuilts.html">
-                            <span>Gaming PC Prebuilts</span>
-                            <svg class="icon-arrow" viewBox="0 0 21 20" stroke="currentColor" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10H18M18 10L12.1667 4.16675M18 10L12.1667 15.8334"></path>
-                            </svg>
-                        </a>
-                    </div>
+            <div class="cart-footer" id="cart-footer-content" style="display: none;">
+                <div class="d-flex justify-content-between mb-3">
+                    <div>Tổng Tiền</div>
+                    <div id="drawer-subtotal">$0.00</div>
                 </div>
-
-                <div id="cart-items-container" class="drawer__scrollable" style="display: none;">
-                    <ul id="drawer-items" class="cart-items-list"></ul>
-                </div>
-            </div>
-
-            <div id="cart-footer" class="drawer__footer" style="display: none;">
-                <div class="drawer__footer-bottom">
-                    <div class="cart-totals">
-                        <div class="tax-note">Taxes and <a href="#">shipping</a> calculated at checkout</div>
-                        <div class="totals">
-                            <span class="totals__label">Subtotal</span>
-                            <div id="drawer-subtotal" class="totals__value">$0.00 USD</div>
-                        </div>
-                    </div>
-                    <button class="btn-checkout" type="button" id="drawer-checkout">
-                        <svg class="icon-lock" viewBox="0 0 20 20" stroke="currentColor" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" d="M5.83333 6.66675V5.83341C5.83333 4.74781 5.83333 4.205 5.97218 3.76463C6.26651 2.83114 6.99772 2.09993 7.93122 1.8056C8.37159 1.66675 8.91439 1.66675 10 1.66675V1.66675C11.0856 1.66675 11.6284 1.66675 12.0688 1.8056C13.0023 2.09993 13.7335 2.83114 14.0278 3.76463C14.1667 4.205 14.1667 4.74781 14.1667 5.83341V6.66675M10 11.6667V13.3334M8.33333 18.3334H11.6667C13.3741 18.3334 14.2278 18.3334 14.909 18.077C15.9871 17.6713 16.8379 16.8205 17.2436 15.7424C17.5 15.0612 17.5 14.2075 17.5 12.5001V12.5001C17.5 10.7926 17.5 9.93892 17.2436 9.25775C16.8379 8.17969 15.9871 7.32888 14.909 6.92312C14.2278 6.66675 13.3741 6.66675 11.6667 6.66675H8.33333C6.62589 6.66675 5.77218 6.66675 5.091 6.92312C4.01294 7.32888 3.16213 8.17969 2.75638 9.25775C2.5 9.93892 2.5 10.7926 2.5 12.5001V12.5001C2.5 14.2075 2.5 15.0612 2.75638 15.7424C3.16213 16.8205 4.01294 17.6713 5.091 18.077C5.77218 18.3334 6.62589 18.3334 8.33333 18.3334Z"></path>
-                        </svg>
-                        <span>Check out</span>
-                    </button>
-                </div>
+                <a href="gaming-pc-prebuilts.html" class="btn btn-dark w-100" id="drawer-checkout">Mua Ngay</a>
             </div>
         </div>
     </div>
-<script src="js/script.js"></script>
+<script src="JS/script.js"></script>
 </body>
 </html>
