@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="vi" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height">
+    <title>Thanh Toán - PC Shop</title>
+    <link rel="icon" href="images/FIREPCmini.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="stylesheet" href="CSS/checkout.css">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+    <!-- Header -->
+    <div class="checkout-header">
+        <div class="checkout-container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="home.html" class="text-decoration-none text-reset">
+                    <h1>PC Shop</h1>
+                </a>
+                <a href="cart.html" class="text-decoration-none text-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                    </svg>
+                    Giỏ hàng
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="checkout-container">
+        <div class="checkout-main">
+            <!-- Left Column - Form -->
+            <div class="checkout-form">
+                <form id="checkoutForm">
+                    <!-- Contact Information -->
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-20">
+                            <h2 class="section-title no-border">Thông tin liên hệ</h2>
+                            <a href="login.html" class="text-decoration-none link-primary">Đăng nhập</a>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email <span class="required">*</span></label>
+                            <input type="email" class="form-control" id="email" name="email" required placeholder="Email">
+                            <span class="error-message" id="email-error">Vui lòng nhập email hợp lệ</span>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Address -->
+                    <div class="mb-4">
+                        <h2 class="section-title">Địa chỉ giao hàng</h2>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Họ <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" required placeholder="Họ">
+                                <span class="error-message" id="firstName-error">Vui lòng nhập họ</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tên <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" required placeholder="Tên">
+                                <span class="error-message" id="lastName-error">Vui lòng nhập tên</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Địa chỉ <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="address1" name="address1" required placeholder="Địa chỉ">
+                            <span class="error-message" id="address1-error">Vui lòng nhập địa chỉ</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Tỉnh/Thành phố <span class="required">*</span></label>
+                            <select class="form-select" id="province" name="province" required>
+                                <option value="" disabled selected>Chọn tỉnh/thành phố</option>
+                                <option value="An Giang">An Giang</option>
+                                <option value="Bà Rịa - Vũng Tàu">Bà Rịa - Vũng Tàu</option>
+                                <option value="Bắc Giang">Bắc Giang</option>
+                                <option value="Bắc Kạn">Bắc Kạn</option>
+                                <option value="Bạc Liêu">Bạc Liêu</option>
+                                <option value="Bắc Ninh">Bắc Ninh</option>
+                                <option value="Bến Tre">Bến Tre</option>
+                                <option value="Bình Định">Bình Định</option>
+                                <option value="Bình Dương">Bình Dương</option>
+                                <option value="Bình Phước">Bình Phước</option>
+                                <option value="Bình Thuận">Bình Thuận</option>
+                                <option value="Cà Mau">Cà Mau</option>
+                                <option value="Cần Thơ">Cần Thơ</option>
+                                <option value="Cao Bằng">Cao Bằng</option>
+                                <option value="Đà Nẵng">Đà Nẵng</option>
+                                <option value="Đắk Lắk">Đắk Lắk</option>
+                                <option value="Đắk Nông">Đắk Nông</option>
+                                <option value="Điện Biên">Điện Biên</option>
+                                <option value="Đồng Nai">Đồng Nai</option>
+                                <option value="Đồng Tháp">Đồng Tháp</option>
+                                <option value="Gia Lai">Gia Lai</option>
+                                <option value="Hà Giang">Hà Giang</option>
+                                <option value="Hà Nam">Hà Nam</option>
+                                <option value="Hà Nội">Hà Nội</option>
+                                <option value="Hà Tĩnh">Hà Tĩnh</option>
+                                <option value="Hải Dương">Hải Dương</option>
+                                <option value="Hải Phòng">Hải Phòng</option>
+                                <option value="Hậu Giang">Hậu Giang</option>
+                                <option value="Hòa Bình">Hòa Bình</option>
+                                <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+                                <option value="Hưng Yên">Hưng Yên</option>
+                                <option value="Khánh Hòa">Khánh Hòa</option>
+                                <option value="Kiên Giang">Kiên Giang</option>
+                                <option value="Kon Tum">Kon Tum</option>
+                                <option value="Lai Châu">Lai Châu</option>
+                                <option value="Lâm Đồng">Lâm Đồng</option>
+                                <option value="Lạng Sơn">Lạng Sơn</option>
+                                <option value="Lào Cai">Lào Cai</option>
+                                <option value="Long An">Long An</option>
+                                <option value="Nam Định">Nam Định</option>
+                                <option value="Nghệ An">Nghệ An</option>
+                                <option value="Ninh Bình">Ninh Bình</option>
+                                <option value="Ninh Thuận">Ninh Thuận</option>
+                                <option value="Phú Thọ">Phú Thọ</option>
+                                <option value="Phú Yên">Phú Yên</option>
+                                <option value="Quảng Bình">Quảng Bình</option>
+                                <option value="Quảng Nam">Quảng Nam</option>
+                                <option value="Quảng Ngãi">Quảng Ngãi</option>
+                                <option value="Quảng Ninh">Quảng Ninh</option>
+                                <option value="Quảng Trị">Quảng Trị</option>
+                                <option value="Sóc Trăng">Sóc Trăng</option>
+                                <option value="Sơn La">Sơn La</option>
+                                <option value="Tây Ninh">Tây Ninh</option>
+                                <option value="Thái Bình">Thái Bình</option>
+                                <option value="Thái Nguyên">Thái Nguyên</option>
+                                <option value="Thanh Hóa">Thanh Hóa</option>
+                                <option value="Thừa Thiên Huế">Thừa Thiên Huế</option>
+                                <option value="Tiền Giang">Tiền Giang</option>
+                                <option value="Trà Vinh">Trà Vinh</option>
+                                <option value="Tuyên Quang">Tuyên Quang</option>
+                                <option value="Vĩnh Long">Vĩnh Long</option>
+                                <option value="Vĩnh Phúc">Vĩnh Phúc</option>
+                                <option value="Yên Bái">Yên Bái</option>
+                            </select>
+                            <span class="error-message" id="province-error">Vui lòng chọn tỉnh/thành phố</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Số điện thoại <span class="required">*</span></label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required placeholder="Số điện thoại">
+                            <span class="error-message" id="phone-error">Vui lòng nhập số điện thoại hợp lệ</span>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div class="mb-4">
+                        <h2 class="section-title">Phương thức thanh toán</h2>
+                        
+                        <div class="payment-method active" onclick="selectPayment('momo')">
+                            <label class="d-flex align-items-center w-100 cursor-pointer">
+                                <input type="radio" name="payment" value="momo" checked>
+                                <img src="https://developers.momo.vn/v3/assets/images/square-8c08a00f550e40a2efafea4a005b1232.png" width="32" alt="MoMo" class="mx-2">
+                                <span class="flex-grow-1">Thanh toán MoMo QR</span>
+                            </label>
+                        </div>
+
+                        <div class="payment-method" onclick="selectPayment('cod')">
+                            <label class="d-flex align-items-center w-100 cursor-pointer">
+                                <input type="radio" name="payment" value="cod">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" class="mx-2">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="currentColor"/>
+                                </svg>
+                                <span class="flex-grow-1">Thanh toán khi nhận hàng (COD)</span>
+                            </label>
+                        </div>
+
+                        <div class="payment-method" onclick="selectPayment('bank')">
+                            <label class="d-flex align-items-center w-100 cursor-pointer">
+                                <input type="radio" name="payment" value="bank">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" class="mx-2">
+                                    <path d="M4 10h3v7H4zm6.5 0h3v7h-3zM2 19h20v3H2zm15-9h3v7h-3zm-5-9L2 6v2h20V6z" fill="currentColor"/>
+                                </svg>
+                                <span class="flex-grow-1">Chuyển khoản ngân hàng</span>
+                            </label>
+                        </div>
+
+                        <!-- MoMo QR Code Container -->
+                        <div class="momo-qr-container active" id="momoQRContainer">
+                            <h4 class="momo-qr-heading">Quét mã QR để thanh toán</h4>
+                            <div class="momo-qr-code" id="qrCodeContainer">
+                                <div class="qr-placeholder">
+                                    Mã QR sẽ được tạo sau khi bạn nhấn "Thanh toán ngay"
+                                </div>
+                            </div>
+                            <div class="momo-info">
+                                <p class="my-1"><strong>Số tiền:</strong> <span id="momoAmount">0 VNĐ</span></p>
+                                <p class="my-1"><strong>Nội dung:</strong> <span id="momoContent">Thanh toán đơn hàng PC Shop</span></p>
+                                <p class="momo-info-note">
+                                    <em>Sau khi thanh toán, đơn hàng sẽ được xác nhận tự động</em>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cloudflare Turnstile CAPTCHA -->
+                    <div class="form-group">
+                        <div class="cf-turnstile" 
+                             data-sitekey="0x4AAAAAAAxxxxxxxxxxxxxxxxxx" 
+                             data-callback="onTurnstileSuccess"
+                             data-theme="light"></div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-primary" id="submitBtn" disabled>
+                        Thanh toán ngay
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right Column - Order Summary -->
+            <div class="checkout-summary">
+                <h2 class="section-title">Tóm tắt đơn hàng</h2>
+                
+                <!-- Shopping Cart Items -->
+                <div id="cartItems">
+                    <!-- Cart items will be loaded here dynamically -->
+                </div>
+
+                <!-- Summary Calculations -->
+                <div class="mt-3">
+                    <div class="summary-row">
+                        <span>Tạm tính</span>
+                        <span id="subtotal">0 VNĐ</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Phí vận chuyển</span>
+                        <span id="shipping">Nhập địa chỉ</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Tổng cộng</span>
+                        <strong id="total" class="text-primary">0 VNĐ</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script>
+        // Global variables
+        let turnstileToken = null;
+        let cartData = [];
+
+        // Load cart data from localStorage
+        function loadCart() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cartData = cart;
+            displayCart();
+            calculateTotal();
+        }
+
+        // Display cart items
+        function displayCart() {
+            const cartItemsContainer = document.getElementById('cartItems');
+            
+            if (cartData.length === 0) {
+                cartItemsContainer.innerHTML = '<p class="empty-message">Giỏ hàng trống</p>';
+                return;
+            }
+
+            let html = '';
+            cartData.forEach(item => {
+                html += `
+                    <div class="product-item">
+                        <div class="position-relative">
+                            <img src="${item.image || 'images/placeholder.png'}" alt="${item.name}" class="product-image">
+                            <span class="quantity-badge">${item.quantity}</span>
+                        </div>
+                        <div class="product-details">
+                            <div class="product-name">${item.name}</div>
+                            <div class="product-variant">${item.variant || ''}</div>
+                        </div>
+                        <div class="product-price">${formatPrice(item.price * item.quantity)} VNĐ</div>
+                    </div>
+                `;
+            });
+
+            cartItemsContainer.innerHTML = html;
+        }
+
+        // Calculate total
+        function calculateTotal() {
+            const subtotal = cartData.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const shipping = 0; // Calculate based on address
+            const total = subtotal + shipping;
+
+            document.getElementById('subtotal').textContent = formatPrice(subtotal) + ' VNĐ';
+            document.getElementById('total').textContent = formatPrice(total) + ' VNĐ';
+            document.getElementById('momoAmount').textContent = formatPrice(total) + ' VNĐ';
+        }
+
+        // Format price
+        function formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // Select payment method
+        function selectPayment(method) {
+            // Remove active class from all payment methods
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Add active class to selected method
+            event.currentTarget.classList.add('active');
+
+            // Check the radio button
+            document.querySelector(`input[value="${method}"]`).checked = true;
+
+            // Show/hide MoMo QR container
+            const momoContainer = document.getElementById('momoQRContainer');
+            if (method === 'momo') {
+                momoContainer.classList.add('active');
+            } else {
+                momoContainer.classList.remove('active');
+            }
+        }
+
+        // Generate MoMo QR Code
+        async function generateMoMoQR(orderData) {
+            const qrContainer = document.getElementById('qrCodeContainer');
+            qrContainer.innerHTML = '';
+
+            // MoMo payment information
+            const momoInfo = {
+                phone: '0123456789', // Your MoMo phone number
+                amount: orderData.total,
+                content: `PCSHOP${Date.now()}`, // Order reference
+            };
+
+            // Generate QR code URL (MoMo deep link format)
+            const qrData = `2|99|${momoInfo.phone}|${momoInfo.content}|0|0|${momoInfo.amount}`;
+
+            try {
+                // Generate QR code using qrcode.js library
+                const canvas = document.createElement('canvas');
+                await QRCode.toCanvas(canvas, qrData, {
+                    width: 250,
+                    margin: 2,
+                    color: {
+                        dark: '#000000',
+                        light: '#FFFFFF'
+                    }
+                });
+                qrContainer.appendChild(canvas);
+
+                // Add instructions
+                const instructions = document.createElement('p');
+                instructions.style.marginTop = '15px';
+                instructions.style.fontSize = '14px';
+                instructions.style.color = '#666';
+                instructions.innerHTML = '<strong>Hướng dẫn:</strong><br>1. Mở ứng dụng MoMo<br>2. Chọn "Quét mã QR"<br>3. Quét mã này để thanh toán';
+                qrContainer.appendChild(instructions);
+
+            } catch (error) {
+                console.error('Error generating QR code:', error);
+                qrContainer.innerHTML = '<p class="text-danger">Không thể tạo mã QR. Vui lòng thử lại.</p>';
+            }
+        }
+
+        // Cloudflare Turnstile callback
+        function onTurnstileSuccess(token) {
+            turnstileToken = token;
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+            const form = document.getElementById('checkoutForm');
+            const requiredFields = form.querySelectorAll('[required]');
+
+            requiredFields.forEach(field => {
+                const errorElement = document.getElementById(`${field.id}-error`);
+                
+                if (!field.value.trim()) {
+                    field.classList.add('error');
+                    if (errorElement) errorElement.style.display = 'block';
+                    isValid = false;
+                } else {
+                    field.classList.remove('error');
+                    if (errorElement) errorElement.style.display = 'none';
+                }
+
+                // Email validation
+                if (field.type === 'email' && field.value.trim()) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(field.value)) {
+                        field.classList.add('error');
+                        if (errorElement) errorElement.style.display = 'block';
+                        isValid = false;
+                    }
+                }
+
+                // Phone validation
+                if (field.id === 'phone' && field.value.trim()) {
+                    const phoneRegex = /^[0-9]{10,11}$/;
+                    if (!phoneRegex.test(field.value.replace(/\s/g, ''))) {
+                        field.classList.add('error');
+                        if (errorElement) errorElement.style.display = 'block';
+                        isValid = false;
+                    }
+                }
+            });
+
+            return isValid;
+        }
+
+        // Handle form submission
+        document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Validate form
+            if (!validateForm()) {
+                alert('Vui lòng điền đầy đủ thông tin bắt buộc');
+                return;
+            }
+
+            // Check CAPTCHA
+            if (!turnstileToken) {
+                alert('Vui lòng hoàn thành xác minh CAPTCHA');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('loadingOverlay').classList.add('active');
+
+            // Get form data
+            const formData = new FormData(this);
+            const orderData = {
+                email: formData.get('email'),
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                address1: formData.get('address1'),
+                address2: formData.get('address2'),
+                city: formData.get('city'),
+                province: formData.get('province'),
+                postalCode: formData.get('postalCode'),
+                phone: formData.get('phone'),
+                country: formData.get('country'),
+                payment: formData.get('payment'),
+                items: cartData,
+                total: cartData.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                turnstileToken: turnstileToken
+            };
+
+            try {
+                // If MoMo payment, generate QR code
+                if (orderData.payment === 'momo') {
+                    await generateMoMoQR(orderData);
+                    document.getElementById('loadingOverlay').classList.remove('active');
+                    
+                    // Scroll to QR code
+                    document.getElementById('momoQRContainer').scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Show success message
+                    alert('Vui lòng quét mã QR để hoàn tất thanh toán');
+                    
+                    // In production, you would poll your backend to check payment status
+                    // For now, we'll just show a message
+                    setTimeout(() => {
+                        if (confirm('Đã thanh toán xong? Nhấn OK để xác nhận.')) {
+                            processOrder(orderData);
+                        }
+                    }, 5000);
+                    
+                } else {
+                    // Process other payment methods
+                    await processOrder(orderData);
+                }
+
+            } catch (error) {
+                console.error('Error processing order:', error);
+                alert('Có lỗi xảy ra. Vui lòng thử lại.');
+                document.getElementById('loadingOverlay').classList.remove('active');
+            }
+        });
+
+        // Process order
+        async function processOrder(orderData) {
+            // In production, send to your backend API
+            // For now, simulate API call
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Save order to localStorage
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const newOrder = {
+                ...orderData,
+                orderId: 'ORD' + Date.now(),
+                status: orderData.payment === 'cod' ? 'pending' : 'confirmed',
+                createdAt: new Date().toISOString()
+            };
+            orders.push(newOrder);
+            localStorage.setItem('orders', JSON.stringify(orders));
+
+            // Clear cart and checkout items
+            localStorage.removeItem('cart');
+            localStorage.removeItem('cartItems');
+            localStorage.removeItem('checkoutItems');
+
+            // Hide loading
+            document.getElementById('loadingOverlay').classList.remove('active');
+
+            // Redirect to order page
+            alert('Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
+            window.location.href = 'account/order.html';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sync cart from shop page
+            const checkoutItems = JSON.parse(localStorage.getItem('checkoutItems') || '[]');
+            if (checkoutItems.length > 0) {
+                localStorage.setItem('cart', JSON.stringify(checkoutItems));
+                localStorage.removeItem('checkoutItems');
+            }
+            
+            loadCart();
+
+            // Add input event listeners for real-time validation
+            const inputs = document.querySelectorAll('.form-control, .form-select');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.classList.contains('error')) {
+                        this.classList.remove('error');
+                        const errorElement = document.getElementById(`${this.id}-error`);
+                        if (errorElement) errorElement.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Note: Replace the Cloudflare Turnstile sitekey with your actual site key
+        // Get your site key from: https://dash.cloudflare.com/
+    </script>
+</body>
+</html>

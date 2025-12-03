@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="robots" content="noindex, nocache, noarchive, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height">
+    <meta name="csrf-param" content="authenticity_token">
+    <link rel="icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link rel="stylesheet" href="../CSS/account.css">
+    <title>Profile - FirePC Gaming</title>
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <div id="app">
+        <!-- Header -->
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <a href="../home.html" class="logo">FirePC Gaming</a>
+                    
+                    <nav aria-label="Main navigation">
+                        <ul>
+                            <li><a href="../home.html">Shop</a></li>
+                            <li><a href="../account.html">Orders</a></li>
+                        </ul>
+                    </nav>
+
+                    <div class="account-dropdown">
+                        <button type="button" aria-pressed="false" aria-label="Show Account menu" class="account-btn" id="account-toggle">
+                            <span class="account-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14">
+                                    <circle cx="7" cy="7" r="5.5"></circle>
+                                    <circle cx="7" cy="5.5" r="1.75"></circle>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m10.5 11-.088-.11A4.37 4.37 0 0 0 7 9.25a4.37 4.37 0 0 0-3.412 1.64L3.5 11"></path>
+                                </svg>
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" class="chevron-icon">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.75 7.354 9.396a.5.5 0 0 1-.708 0L2 4.75"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Account Dropdown Menu -->
+                        <div class="account-menu" id="account-menu">
+                            <div class="account-menu-header">
+                                <span class="account-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14">
+                                        <circle cx="7" cy="7" r="5.5"></circle>
+                                        <circle cx="7" cy="5.5" r="1.75"></circle>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m10.5 11-.088-.11A4.37 4.37 0 0 0 7 9.25a4.37 4.37 0 0 0-3.412 1.64L3.5 11"></path>
+                                    </svg>
+                                </span>
+                                <div class="account-menu-email" id="menu-email">customer@example.com</div>
+                            </div>
+                            <ul class="account-menu-list">
+                                <li class="account-menu-item">
+                                    <a href="order.html" class="account-menu-link">Orders</a>
+                                </li>
+                                <li class="account-menu-item">
+                                    <button class="account-menu-button" onclick="handleSignOut()">Sign out</button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main id="main-content">
+            <div class="container">
+                <h1 class="page-title" tabindex="-1">Profile</h1>
+
+                <div id="notification" class="notification"></div>
+
+                <!-- Profile Details Card -->
+                <div class="profile-card">
+                    <div class="profile-header-row">
+                        <h2 class="section-title" style="margin: 0;">Profile Details</h2>
+                        <button class="edit-btn" id="edit-btn" onclick="toggleEditMode()" aria-label="Edit profile">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14">
+                                <path stroke-linejoin="round" d="M9.19 2.31a1.5 1.5 0 0 1 2.12 0l.354.354a1.5 1.5 0 0 1 0 2.121l-6.477 6.477a1.5 1.5 0 0 1-.846.424l-1.737.252a.5.5 0 0 1-.567-.567l.252-1.737a1.5 1.5 0 0 1 .424-.846z"></path>
+                                <path d="m8 3.5 1.237 1.237 1.238 1.238"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- View Mode -->
+                    <div class="view-mode" id="view-mode">
+                        <div class="profile-info-grid">
+                            <div class="profile-info-item">
+                                <span class="info-label">Full Name</span>
+                                <span class="info-value" id="display-fullname">No name added</span>
+                            </div>
+                            <div class="profile-info-item">
+                                <span class="info-label">Email Address</span>
+                                <span class="info-value" id="display-email">customer@example.com</span>
+                            </div>
+                            <div class="profile-info-item">
+                                <span class="info-label">Password</span>
+                                <button class="btn-link" onclick="openPasswordModal()">Change Password</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Edit Mode -->
+                    <div class="edit-mode" id="edit-mode">
+                        <form id="profile-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="first-name">First Name</label>
+                                    <input type="text" id="first-name" name="firstName" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="last-name">Last Name</label>
+                                    <input type="text" id="last-name" name="lastName" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" disabled>
+                                <p class="help-text">Email can't be edited</p>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <button type="button" class="btn" onclick="cancelEdit()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Addresses Section -->
+                <div class="section-header">
+                    <h2 class="section-title">Addresses</h2>
+                    <button class="btn" type="button" aria-haspopup="dialog" onclick="alert('Add address functionality coming soon')">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14">
+                            <path stroke-linecap="round" d="M2 7h10M7 2v10"></path>
+                        </svg>
+                        <strong>Add</strong>
+                    </button>
+                </div>
+
+                <div class="status-card">
+                    <div class="status-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14">
+                            <circle cx="7" cy="7" r="5.5"></circle>
+                            <path stroke-linejoin="round" d="M6.99 4.49h.02v.02h-.02z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 9.75v-3"></path>
+                        </svg>
+                    </div>
+                    <div class="status-text">No addresses added</div>
+                </div>
+
+                <!-- Account Actions -->
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
+                    <a href="../account.html" class="btn">View Orders</a>
+                    <button class="btn" onclick="handleLogout()">Sign Out</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Password Change Modal -->
+        <div class="modal-overlay" id="password-modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Change Password</h2>
+                    <button class="modal-close" onclick="closePasswordModal()" aria-label="Close">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" width="14" height="14">
+                            <path stroke-linecap="round" d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        </svg>
+                    </button>
+                </div>
+                <form id="password-form">
+                    <div class="form-group">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" name="currentPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" name="newPassword" required minlength="8">
+                        <p class="help-text">Password must be at least 8 characters</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm New Password</label>
+                        <input type="password" id="confirm-password" name="confirmPassword" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Update Password</button>
+                        <button type="button" class="btn" onclick="closePasswordModal()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="container">
+                <nav class="footer-nav">
+                    <button type="button" aria-haspopup="dialog">Refund policy</button>
+                    <button type="button" aria-haspopup="dialog">Shipping</button>
+                    <button type="button" aria-haspopup="dialog">Privacy policy</button>
+                    <button type="button" aria-haspopup="dialog">Terms of service</button>
+                    <a href="../contact.html">Contact information</a>
+                </nav>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Load profile data
+        function loadProfileData() {
+            const firstName = localStorage.getItem('firstName') || '';
+            const lastName = localStorage.getItem('lastName') || '';
+            const email = localStorage.getItem('userEmail') || 'customer@example.com';
+
+            // Display full name or "No name added"
+            const fullName = firstName && lastName ? `${firstName} ${lastName}` : 'No name added';
+            document.getElementById('display-fullname').textContent = fullName;
+            document.getElementById('display-email').textContent = email;
+
+            // Edit mode
+            document.getElementById('first-name').value = firstName;
+            document.getElementById('last-name').value = lastName;
+            document.getElementById('email').value = email;
+        }
+
+        // Toggle edit mode
+        function toggleEditMode() {
+            const viewMode = document.getElementById('view-mode');
+            const editMode = document.getElementById('edit-mode');
+            const editBtn = document.getElementById('edit-btn');
+
+            viewMode.classList.add('hidden');
+            editMode.classList.add('active');
+            editBtn.style.display = 'none';
+        }
+
+        // Cancel edit
+        function cancelEdit() {
+            const viewMode = document.getElementById('view-mode');
+            const editMode = document.getElementById('edit-mode');
+            const editBtn = document.getElementById('edit-btn');
+
+            viewMode.classList.remove('hidden');
+            editMode.classList.remove('active');
+            editBtn.style.display = 'flex';
+
+            // Reset form to original values
+            loadProfileData();
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Handle form submission
+        document.getElementById('profile-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const firstName = document.getElementById('first-name').value;
+            const lastName = document.getElementById('last-name').value;
+
+            // Validation
+            if (firstName.length > 255 || lastName.length > 255) {
+                alert('Name is too long (maximum is 255 characters)');
+                return;
+            }
+
+            // Save to localStorage (in a real app, this would be sent to a server)
+            localStorage.setItem('firstName', firstName);
+            localStorage.setItem('lastName', lastName);
+
+            // Update display
+            loadProfileData();
+
+            // Exit edit mode
+            cancelEdit();
+
+            // Show success message
+            showNotification('Profile updated successfully!');
+        });
+
+        // Handle logout
+        function handleLogout() {
+            if (confirm('Are you sure you want to sign out?')) {
+                localStorage.removeItem('isLoggedIn');
+                alert('You have been signed out.');
+                window.location.href = '../login.html';
+            }
+        }
+
+        // Handle sign out from dropdown
+        function handleSignOut() {
+            if (confirm('Are you sure you want to sign out?')) {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('isAdmin');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('firstName');
+                localStorage.removeItem('lastName');
+                localStorage.removeItem('userData');
+                window.location.href = '../login.html';
+            }
+        }
+
+        // Check if user is logged in
+        function checkLogin() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (!isLoggedIn) {
+                alert('Please log in to view your profile.');
+                window.location.href = '../login.html';
+            }
+        }
+
+        // Account dropdown toggle
+        const accountToggle = document.getElementById('account-toggle');
+        const accountMenu = document.getElementById('account-menu');
+        
+        if (accountToggle && accountMenu) {
+            accountToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                accountMenu.classList.toggle('show');
+                accountToggle.setAttribute('aria-pressed', accountMenu.classList.contains('show'));
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!accountToggle.contains(e.target) && !accountMenu.contains(e.target)) {
+                    accountMenu.classList.remove('show');
+                    accountToggle.setAttribute('aria-pressed', 'false');
+                }
+            });
+        }
+
+        // Load user email in menu
+        function loadUserEmail() {
+            const email = localStorage.getItem('userEmail') || 'customer@example.com';
+            const menuEmail = document.getElementById('menu-email');
+            if (menuEmail) {
+                menuEmail.textContent = email;
+            }
+        }
+
+        // Open password modal
+        function openPasswordModal() {
+            document.getElementById('password-modal').style.display = 'flex';
+            document.getElementById('password-form').reset();
+        }
+
+        // Close password modal
+        function closePasswordModal() {
+            document.getElementById('password-modal').style.display = 'none';
+            document.getElementById('password-form').reset();
+        }
+
+        // Handle password form submission
+        document.getElementById('password-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            // Validate new password matches confirmation
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match');
+                return;
+            }
+
+            // Validate password length
+            if (newPassword.length < 8) {
+                alert('Password must be at least 8 characters');
+                return;
+            }
+
+            // In a real application, you would verify the current password with the server
+            // For this demo, we'll just save the new password to localStorage
+            const storedPassword = localStorage.getItem('userPassword');
+            
+            if (storedPassword && storedPassword !== currentPassword) {
+                alert('Current password is incorrect');
+                return;
+            }
+
+            // Save new password
+            localStorage.setItem('userPassword', newPassword);
+
+            // Close modal and show success
+            closePasswordModal();
+            showNotification('Password updated successfully!');
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('password-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePasswordModal();
+            }
+        });
+
+        // Initialize page
+        checkLogin();
+        loadProfileData();
+        loadUserEmail();
+    </script>
+</body>
+</html>

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ | FirePCGaming</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="stylesheet" href="CSS/cart.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="text-white">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <a class="navbar-brand" href="home.html">
+                    <img src="images/FIREPCmini.png" alt="Logo" class="img-fluid site-logo">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto main-nav">
+                        <li class="nav-item"><a class="nav-link" href="home.html">TRANG CHỦ</a></li>
+                        <li class="nav-item mega-menu-wrapper">
+                            <a class="nav-link" href="gaming-pc-prebuilts.html">CỬA HÀNG</a>
+                            <div class="mega-menu">
+                                <div class="mega-menu__container">
+                                    <ul class="mega-menu__list">
+                                        <li class="mega-menu__item">
+                                            <a href="gaming-pc-prebuilts.html" class="mega-menu__card">
+                                                <div class="mega-menu__media">
+                                                    <img src="images/GamingPCPrebuilts.png" alt="Máy Tính Chơi Game Lắp Sẵn">
+                                                </div>
+                                                <div class="mega-menu__content">
+                                                    <h3 class="mega-menu__title">Máy Tính Chơi Game Lắp Sẵn</h3>
+                                                    <p class="mega-menu__desc">Hiệu suất đáp ứng thẩm mỹ</p>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li class="mega-menu__item">
+                                            <a href="gaming-pc-prebuilts.html" class="mega-menu__card">
+                                                <div class="mega-menu__media">
+                                                    <img src="images/BusinessClass.png" alt="Dòng Doanh Nghiệp">
+                                                </div>
+                                                <div class="mega-menu__content">
+                                                    <h3 class="mega-menu__title">Dòng Doanh Nghiệp</h3>
+                                                    <p class="mega-menu__desc">Không bloatware. Sẵn sàng làm việc</p>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li class="mega-menu__item">
+                                            <a href="gaming-pc-prebuilts.html" class="mega-menu__card">
+                                                <div class="mega-menu__media">
+                                                    <img src="images/MonthlyDrops.png" alt="Monthly Drops">
+                                                </div>
+                                                <div class="mega-menu__content">
+                                                    <h3 class="mega-menu__title">Monthly Drops</h3>
+                                                    <p class="mega-menu__desc">Build giảm giá bán hết nhanh</p>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="contact.html">LIÊN HỆ</a></li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto user-nav">
+                        <li class="nav-item" id="login-register">
+                            <a class="nav-link login-icon-btn" href="login.html" title="Login">
+                                <span class="sr-only">Login</span>
+                                <svg class="icon icon-account icon-lg" viewBox="0 0 24 24" stroke="currentColor" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="10.5" height="10.5" x="6.75" y="1.75" rx="5.25"></rect>
+                                    <path stroke-linecap="round" d="M12 15.5c1.5 0 4 .333 4.5.5.5.167 3.7.8 4.5 2 1 1.5 1 2 1 4m-10-6.5c-1.5 0-4 .333-4.5.5-.5.167-3.7.8-4.5 2-1 1.5-1 2-1 4"></path>
+                                </svg>
+                            </a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link hidden" href="account/profile.html" id="profile">Hồ Sơ</a></li>
+                        <li class="nav-item cart-item">
+                            <a class="nav-link cart-toggle" href="#" role="button" id="cart-toggle">
+                                <svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M1 1h.5v0c.226 0 .339 0 .44.007a3 3 0 0 1 2.62 1.976c.034.095.065.204.127.42l.17.597m0 0 1.817 6.358c.475 1.664.713 2.496 1.198 3.114a4 4 0 0 0 1.633 1.231c.727.297 1.592.297 3.322.297h2.285c1.75 0 2.626 0 3.359-.302a4 4 0 0 0 1.64-1.253c.484-.627.715-1.472 1.175-3.161l.06-.221c.563-2.061.844-3.092.605-3.906a3 3 0 0 0-1.308-1.713C19.92 4 18.853 4 16.716 4H4.857ZM12 20a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"></path>
+                                </svg>
+                                <span id="cart-count" class="cart-count-badge" style="display: none;">0</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section (Video Background) -->
+    <section class="hero position-relative overflow-hidden">
+        <video id="heroVideo" autoplay muted loop playsinline class="w-100 h-100 position-absolute top-0 start-0 video-cover">
+            <source src="video\Voyager.mp4" type="video/mp4">
+        </video>
+        <div class="position-absolute top-0 start-0 w-100 h-100 overlay-dark"></div>
+        <div class="container position-relative h-100 d-flex align-items-center justify-content-center text-center text-white hero-inner">
+            <div>
+                <h1 class="display-1 fw-bold mb-4">Voyager</h1>
+                <p class="lead mb-4">Sẵn sàng cất cánh.</p>
+                <a href="shop.html" class="btn btn-light btn-lg">Xem PC Phiên Bản Giới Hạn Voyager</a>
+            </div>
+        </div>
+        <button id="heroToggle" class="video-toggle" type="button" aria-label="Tạm dừng video"></button>
+    </section>
+
+    <!-- Collection Categories -->
+    <section class="py-5 collection-section">
+        <div class="container">
+            <div class="text-center mb-4">
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <a href="shop.html" class="text-decoration-none">
+                        <div class="card h-100 border-0 shadow-sm hover-lift position-relative overflow-hidden">
+                            <img src="images\GamingPCPrebuilts.png" class="card-img-top" alt="Gaming PC">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title fw-bold mb-1 card-title-lg">Máy Tính Chơi Game Lắp Sẵn</h5>
+                                    <p class="card-text text-muted small mb-0">Hiệu suất đáp ứng thẩm mỹ.</p>
+                                </div>
+                                <svg class="flex-shrink-0 ms-3" width="20" height="20" viewBox="0 0 21 20" stroke="currentColor" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10H18M18 10L12.1667 4.16675M18 10L12.1667 15.8334"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a href="shop.html" class="text-decoration-none">
+                        <div class="card h-100 border-0 shadow-sm hover-lift position-relative overflow-hidden">
+                            <img src="images\BusinessClass.png" class="card-img-top" alt="Business PC">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title fw-bold mb-1 card-title-lg">Dòng Doanh Nghiệp</h5>
+                                    <p class="card-text text-muted small mb-0">Không bloatware. Sẵn sàng làm việc.</p>
+                                </div>
+                                <svg class="flex-shrink-0 ms-3" width="20" height="20" viewBox="0 0 21 20" stroke="currentColor" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10H18M18 10L12.1667 4.16675M18 10L12.1667 15.8334"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <a href="shop.html" class="text-decoration-none">
+                        <div class="card h-100 border-0 shadow-sm hover-lift position-relative overflow-hidden">
+                            <img src="images\MonthlyDrops.png" class="card-img-top" alt="Monthly">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div class="flex-grow-1">
+                                    <h5 class="card-title fw-bold mb-1 card-title-lg">Monthly Drops</h5>
+                                    <p class="card-text text-muted small mb-0">Build giảm giá bán hết nhanh.</p>
+                                </div>
+                                <svg class="flex-shrink-0 ms-3" width="20" height="20" viewBox="0 0 21 20" stroke="currentColor" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10H18M18 10L12.1667 4.16675M18 10L12.1667 15.8334"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Video Section -->
+    <section class="py-5 bg-light position-relative overflow-hidden min-h-600">
+        <video id="aestheticsVideo" autoplay muted loop playsinline class="w-100 h-100 position-absolute top-0 start-0 video-cover">
+            <source src="video\Frost.mp4" type="video/mp4">
+        </video>
+        <div class="position-absolute top-0 start-0 w-100 h-100 overlay-dark"></div>
+        <div class="container position-relative h-100 d-flex align-items-center justify-content-center text-center text-white hero-inner">
+            <div>
+                <h2 class="display-2 fw-bold mb-4">Thẩm Mỹ Đáp Ứng Khả Năng Chi Trả</h2>
+                <p class="lead mb-4">Hiệu suất nghiêm túc. Phong cách giá cả phải chăng đáng kinh ngạc.</p>
+                <a href="shop.html" class="btn btn-light btn-lg">Mua Frost Nova v5</a>
+            </div>
+        </div>
+        <button id="aestheticsToggle" class="video-toggle" type="button" aria-label="Tạm dừng video"></button>
+    </section>
+
+    <!-- Why Buy Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="display-4 fw-bold mb-3">Tại Sao Mua PC Lắp Sẵn Của Chúng Tôi?</h2>
+                <p class="lead text-muted">Máy tính của chúng tôi được thiết kế từ đầu để mang lại sự cân bằng tốt nhất<br>giữa hiệu suất và thẩm mỹ, mà không làm hỏng ngân hàng.</p>
+            </div>
+            <div class="row g-4" id="why-buy-row">
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <div class="mb-3">
+                            <svg width="36" height="36" fill="currentColor" class="text-dark">
+                                <use href="#icon-convenience"/>
+                            </svg>
+                        </div>
+                        <h4 class="mb-3">Tiện Lợi</h4>
+                        <p class="text-muted">Lắp ráp PC chơi game là một sở thích riêng. Nếu bạn muốn nhảy vào hành động chơi game chất lượng cao ngay lập tức, PC lắp sẵn là con đường tuyệt vời.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <div class="mb-3">
+                            <svg width="36" height="36" fill="currentColor" class="text-dark">
+                                <use href="#icon-precision"/>
+                            </svg>
+                        </div>
+                        <h4 class="mb-3">Chính Xác</h4>
+                        <p class="text-muted">Mua PC lắp sẵn từ FirePC Gaming đảm bảo các linh kiện của bạn được chọn để kéo dài tiền của bạn để có được hiệu suất tốt nhất có thể.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <div class="mb-3">
+                            <svg width="36" height="36" fill="currentColor" class="text-dark">
+                                <use href="#icon-aesthetics"/>
+                            </svg>
+                        </div>
+                        <h4 class="mb-3">Thẩm Mỹ</h4>
+                        <p class="text-muted">Hãy nói rõ. Thẩm mỹ là ưu tiên hàng đầu cho mọi thứ liên quan đến ZTT. Nếu bạn muốn một cuộc trò chuyện đẹp trong thiết lập chơi game của bạn, đây là những thứ cần mua.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Build Help Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0">
+                    <img src="images\PC_Building.png" alt="Build Help" class="img-fluid rounded shadow">
+                </div>
+                <div class="col-lg-6 order-lg-1">
+                    <h2 class="display-4 fw-bold mb-4">Thích Tự Lắp Ráp Hơn?</h2>
+                    <p class="lead mb-4">Tại FirePC Gaming, chúng tôi là những người xây dựng trước tiên, và đó chính xác là những gì chúng tôi khuyến khích làm.</p>
+                    <p class="mb-4">Cho dù đó là bản build đầu tiên hay thứ mười của bạn, chúng tôi có hướng dẫn, video và công cụ để giúp bạn từng bước. Bởi vì đôi khi PC tốt nhất là PC bạn tự xây dựng.</p>
+                    <a href="#" class="btn btn-dark btn-lg">Truy Cập Trợ Giúp Xây Dựng</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scrolling Text Banner -->
+    <section class="py-3 bg-dark text-white overflow-hidden position-relative">
+        <div class="position-relative z-index-1">
+            <div class="scrolling-text scrolling-text--left d-flex align-items-center" data-speed="20" data-direction="left" data-parallax="1.5">
+                <div class="marquee-new d-flex align-items-center flex-shrink-0">
+                    <div class="scrolling-text__item d-flex align-items-center flex-shrink-0 scrolling-text__item--large">
+                        Chúng tôi ở đây để giúp đỡ cho dù bạn muốn mua hay xây dựng PC chơi game tiếp theo của mình.
+                        <span class="mx-4">•</span>
+                    </div>
+                    <div class="scrolling-text__item d-flex align-items-center flex-shrink-0 scrolling-text__item--large">
+                        Chúng tôi ở đây để giúp đỡ cho dù bạn muốn mua hay xây dựng PC chơi game tiếp theo của mình.
+                        <span class="mx-4">•</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-white py-5 site-footer">
+        <div class="container">
+            <div class="row align-items-start">
+                <!-- Left Column - Logo -->
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <div>
+                        <img src="images/FIREPCmini.png" alt="FirePCGaming Logo" class="site-logo">
+                    </div>
+                </div>
+                
+                <!-- Middle Column - Quick Links -->
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h5 class="mb-3 fw-bold">Quick links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Chính sách bảo hành & Đổi trả</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">FAQ/Vận chuyển</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">FirePC Discord</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Careers</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Right Column - Social Icons -->
+                <div class="col-md-3 text-md-end">
+                    <div class="d-flex gap-3 justify-content-md-end">
+                        <a href="https://discord.com" target="_blank" class="text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.249.594.05.05 0 0 0-.03.03.052.052 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019Zm-8.198 7.307c-.789 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612Zm5.316 0c-.788 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612Z"/>
+                            </svg>
+                        </a>
+                        <a href="https://youtu.be/dQw4w9WgXcQ?si=anJRhwjNBw9R27Qg" target="_blank" class="text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.007 2.007 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.007 2.007 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31.4 31.4 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.007 2.007 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A99.788 99.788 0 0 1 7.858 2h.193zM6.4 5.209v4.818l4.157-2.408L6.4 5.209z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4 pt-3 footer-border">
+                <div class="col-12 text-center">
+                    <p class="mb-0 small text-muted">© 2025 bởi FirePCGaming LLC</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Drawer -->
+    <div id="cart-drawer" class="cart-drawer drawer drawer--end" aria-hidden="true">
+        <div class="cart-overlay"></div>
+        <div class="cart-inner">
+            <div class="cart-header d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <h3 class="mb-0">Giỏ Hàng <span id="drawer-cart-count" class="badge bg-dark">0</span></h3>
+                    <div id="drawer-preview" class="drawer-preview"></div>
+                </div>
+                <button class="btn-close" id="cart-close"></button>
+            </div>
+            <div class="cart-body">
+                <!-- Empty State -->
+                <div id="cart-empty-state" class="cart-empty text-center py-5" style="display: none;">
+                    <svg class="cart-empty-icon mb-3" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M1 1h.5v0c.226 0 .339 0 .44.007a3 3 0 0 1 2.62 1.976c.034.095.065.204.127.42l.17.597m0 0 1.817 6.358c.475 1.664.713 2.496 1.198 3.114a4 4 0 0 0 1.633 1.231c.727.297 1.592.297 3.322.297h2.285c1.75 0 2.626 0 3.359-.302a4 4 0 0 0 1.64-1.253c.484-.627.715-1.472 1.175-3.161l.06-.221c.563-2.061.844-3.092.605-3.906a3 3 0 0 0-1.308-1.713C19.92 4 18.853 4 16.716 4H4.857ZM12 20a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"></path>
+                    </svg>
+                    <p class="mb-2 fw-bold">Giỏ hàng của bạn đang trống.</p>
+                    <p class="text-muted small mb-3">Không biết bắt đầu từ đâu?</p>
+                    <a href="gaming-pc-prebuilts.html" class="btn btn-dark">Xem các máy tính Gaming lắp sẵn của chúng tôi!</a>
+                </div>
+                <!-- Items List -->
+                <ul id="drawer-items" class="list-unstyled"></ul>
+            </div>
+            <div class="cart-footer" id="cart-footer-content" style="display: none;">
+                <div class="d-flex justify-content-between mb-3">
+                    <div>Tổng Tiền</div>
+                    <div id="drawer-subtotal">$0.00</div>
+                </div>
+                <a href="gaming-pc-prebuilts.html" class="btn btn-dark w-100" id="drawer-checkout">Mua Ngay</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SVG Icons (Hidden) -->
+    <svg class="hidden">
+        <!-- Convenience Icon (from provided 300x300 SVG) -->
+        <symbol id="icon-convenience" viewBox="0 0 300 300" fill="currentColor">
+            <g transform="translate(0.000000,300.000000) scale(0.100000,-0.100000)">
+                <path d="M739 2987 c-147 -42 -251 -167 -267 -324 l-8 -68 -158 -189 c-87
+                -104 -168 -209 -179 -235 -29 -63 -29 -168 0 -233 37 -81 94 -128 216 -177
+                l107 -43 0 -843 c0 -803 1 -843 18 -858 15 -14 42 -17 159 -17 123 0 142 2
+                156 18 15 16 17 52 17 295 l0 277 270 0 270 0 0 -278 c0 -258 1 -280 18 -295
+                15 -14 42 -17 159 -17 122 0 142 2 156 18 15 16 17 60 19 367 l3 349 289 -329
+                c158 -182 304 -342 324 -358 67 -51 169 -60 246 -20 47 24 253 217 272 256 11
+                21 15 47 12 84 -4 44 -11 60 -38 89 -60 61 -151 67 -275 18 -33 -13 -62 -20
+                -66 -16 -15 16 -242 348 -246 359 -4 10 46 13 246 13 266 0 289 3 348 50 15
+                11 37 36 49 54 40 58 46 107 37 282 -8 154 -10 163 -36 197 -38 50 -104 74
+                -157 58 -22 -7 -55 -25 -74 -41 -36 -32 -90 -127 -101 -177 -5 -27 -10 -32
+                -28 -28 -107 23 -149 26 -173 10 -29 -19 -32 -65 -6 -87 9 -8 53 -21 97 -28
+                47 -7 85 -19 93 -28 7 -9 12 -44 12 -84 l0 -68 -342 1 c-189 1 -480 4 -648 8
+                -282 6 -308 8 -352 28 -69 31 -137 99 -169 168 -50 103 -77 95 304 95 182 0
+                373 -5 422 -11 50 -5 99 -8 111 -5 40 10 49 79 12 102 -7 5 -51 13 -98 19
+                l-85 10 -61 245 c-34 135 -67 260 -74 278 -12 31 -10 36 51 130 35 53 87 132
+                116 176 62 92 88 168 80 238 -12 99 -73 191 -156 232 -25 13 -145 61 -266 107
+                -200 75 -225 87 -272 131 -72 67 -148 100 -237 105 -39 1 -92 -3 -117 -10z
+                m210 -133 c68 -34 102 -82 140 -197 51 -151 39 -229 -45 -314 -56 -56 -97 -73
+                -180 -73 -73 0 -149 41 -191 103 -40 59 -83 198 -83 266 0 65 21 115 68 165
+                77 80 190 100 291 50z m449 -231 c192 -73 241 -105 263 -170 23 -72 9 -112
+                -98 -274 l-100 -150 -61 74 -61 74 69 99 c39 53 70 105 70 113 -1 31 -28 50
+                -132 97 l-107 46 -7 42 c-3 22 -13 58 -20 78 -8 23 -9 38 -3 38 5 0 89 -30
+                187 -67z m-913 -413 c-42 -57 -75 -111 -75 -124 0 -30 22 -48 103 -87 59 -27
+                76 -31 123 -26 76 8 136 45 182 114 37 57 37 57 107 69 39 6 87 20 108 30 l38
+                18 62 -31 c119 -58 246 -204 297 -340 19 -51 120 -450 120 -474 0 -5 -123 -9
+                -295 -9 l-294 0 -10 38 c-5 20 -23 91 -40 156 -16 65 -35 124 -43 131 -7 7
+                -132 58 -278 115 -146 56 -280 114 -299 129 -68 53 -90 140 -53 212 10 19 74
+                101 142 181 l124 147 28 -74 29 -74 -76 -101z m794 177 l52 -23 -40 -53 c-22
+                -29 -42 -56 -45 -58 -7 -7 -78 38 -73 46 2 3 14 30 27 59 13 28 25 52 26 52 1
+                0 25 -10 53 -23z m-551 -217 c2 -6 -12 -26 -31 -45 -28 -28 -43 -35 -73 -35
+                -69 0 -72 11 -23 78 l44 60 40 -24 c22 -13 41 -28 43 -34z m-93 -524 l55 -25
+                0 -335 0 -336 -60 0 -60 0 0 360 c0 198 2 360 5 360 2 0 29 -11 60 -24z m198
+                -273 c9 -43 23 -113 31 -155 16 -87 51 -162 103 -225 l34 -43 -100 0 -101 0 0
+                256 c0 140 4 253 8 250 5 -3 16 -40 25 -83z m1927 -28 c8 -10 14 -67 17 -162
+                5 -144 4 -149 -19 -183 -23 -34 -100 -71 -115 -56 -4 4 -9 57 -11 120 -5 133
+                11 206 59 261 34 38 50 43 69 20z m-1182 -577 l3 -58 -506 0 -505 0 0 60 0 60
+                503 -2 502 -3 3 -57z m634 -160 c84 -122 155 -226 157 -231 4 -11 -89 -107
+                -105 -107 -12 0 -51 43 -294 325 -89 105 -172 200 -183 213 l-20 22 146 0 146
+                0 153 -222z m-1522 -253 l0 -235 -60 0 -60 0 0 235 0 235 60 0 60 0 0 -235z
+                m890 0 l0 -235 -65 0 -65 0 0 235 0 235 65 0 65 0 0 -235z m1140 15 c6 -11 8
+                -25 4 -31 -10 -17 -172 -170 -206 -196 -36 -26 -86 -30 -127 -9 -59 31 -57 37
+                37 123 111 102 163 130 244 132 28 1 40 -4 48 -19z"></path>
+                <path d="M2043 1264 c-15 -24 -15 -29 -2 -53 20 -36 71 -41 93 -9 21 29 20 51
+                -2 71 -28 26 -69 21 -89 -9z"></path>
+            </g>
+        </symbol>
+        <!-- Precision Icon (from provided 24x24 SVG) -->
+        <symbol id="icon-precision" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11 5.07089C7.93431 5.5094 5.5094 7.93431 5.07089 11H7V13H5.07089C5.5094 16.0657 7.93431 18.4906 11 18.9291V17H13V18.9291C16.0657 18.4906 18.4906 16.0657 18.9291 13H17V11H18.9291C18.4906 7.93431 16.0657 5.5094 13 5.07089V7H11V5.07089ZM3.05493 11C3.51608 6.82838 6.82838 3.51608 11 3.05493V1H13V3.05493C17.1716 3.51608 20.4839 6.82838 20.9451 11H23V13H20.9451C20.4839 17.1716 17.1716 20.4839 13 20.9451V23H11V20.9451C6.82838 20.4839 3.51608 17.1716 3.05493 13H1V11H3.05493ZM14 12C14 13.1046 13.1046 14 12 14C10.8954 14 10 13.1046 10 12C10 10.8954 10.8954 10 12 10C13.1046 10 14 10.8954 14 12Z"></path>
+        </symbol>
+        <!-- Aesthetics Icon (from provided 508x508 SVG) -->
+        <symbol id="icon-aesthetics" viewBox="0 0 508 508" fill="currentColor">
+            <g>
+                <g>
+                    <path d="M439.6,24.4c-42-6.3-99.6-9.3-159.1-8.1c-49.7,1-94.7,5.1-125.8,11.2C139.1,5.1,120,0,106,0C90.8,0,74.4,5.5,56,16.8
+                        c-10.3,3.8-24.9,0.9-31.9-6.2C20.1,6.5,14,5.3,8.7,7.5C3.5,9.6,0,14.8,0,20.5c0,53,44.7,99.5,95.6,99.5c10.2,0,42,0,59.7-28.7
+                        c31.1,6.1,75.9,10.2,125.2,11.1c78.5,1.3,104.7,1,159.1-8.1c48.4-8.2,68.4-17.5,68.4-35S488.2,31.7,439.6,24.4z M134,72
+                        c-10.4,19.1-31.5,19.7-38.4,19.7c-27.1,0-52.3-20.1-62.6-46.3c24.7,4,36.2-3.5,36.9-4c14-8.8,26.2-13.2,36.1-13.2
+                        c7.3,0,17.9,2.1,28,19.1V72z M281.1,74.2c-47-1-89.5-4.6-118.9-10.2v-9.4h0c29.4-5.6,71.8-9.3,118.9-10.2
+                        c8.4-0.2,130.6-8.1,188.8,14.9C413.9,81.9,289.5,74.3,281.1,74.2z"></path>
+                </g>
+            </g>
+            <g>
+                <g>
+                    <path d="M457.1,169.7c-17-19.4-42.2-30.6-69.1-30.6c-36.2,0-67.9,19.8-80.7,50.5c-14.2,33.9-48,51.7-88.4,45.9
+                        c-23.2-3.3-41.7-13.1-53.5-28.2C148.4,185.5,122,173,93,173c-78.9,0-88.6,74.4-90.3,84.1C-6,307,6.7,358.4,38.3,402
+                        C78,456.7,144.6,508,261.1,508c123.6,0,226.3-74.7,244.2-177.6C515.1,273.6,498,216.6,457.1,169.7z M477.5,325.5
+                        C462,414.9,371,479.8,261.1,479.8c-100.4,0-164.8-45.8-200-94.4c-27.1-37.3-38-81.2-30.6-123.5c1.4-8.2,8.3-60.7,62.5-60.7
+                        c20.2,0,38.5,8.6,50.2,23.5c16.4,21,41.2,34.4,71.7,38.8c53.4,7.7,99.1-16.9,118.4-62.9c8.5-20.2,29.9-33.2,54.7-33.2
+                        c18.8,0,36.3,7.6,47.9,20.9C471.1,228.6,485.8,277.4,477.5,325.5z"></path>
+                </g>
+            </g>
+            <g>
+                <g>
+                    <path d="M399.1,210.6c-23.9,0-43.4,19.5-43.4,43.4c0,23.9,19.5,43.4,43.4,43.4c23.9,0,43.4-19.5,43.4-43.4
+                        C442.5,230.1,423,210.6,399.1,210.6z M399.1,269.2c-8.4,0-15.2-6.8-15.2-15.2s6.8-15.2,15.2-15.2s15.2,6.8,15.2,15.2
+                        C414.3,262.4,407.5,269.2,399.1,269.2z"></path>
+                </g>
+            </g>
+            <g>
+                <g>
+                    <path d="M340.6,328c-23.9,0-43.4,19.5-43.4,43.4c0,23.9,19.5,43.4,43.4,43.4c23.9,0,43.4-19.5,43.4-43.4
+                        C383.9,347.4,364.5,328,340.6,328z M340.6,386.5c-8.4,0-15.2-6.8-15.2-15.2s6.8-15.2,15.2-15.2s15.2,6.8,15.2,15.2
+                        C355.7,379.7,348.9,386.5,340.6,386.5z"></path>
+                </g>
+            </g>
+            <g>
+                <g>
+                    <path d="M204.1,341.9c-23.9,0-43.4,19.5-43.4,43.4c0,23.9,19.5,43.4,43.4,43.4c23.9,0,43.4-19.5,43.4-43.4
+                        C247.4,361.3,228,341.9,204.1,341.9z M204.1,400.4c-8.4,0-15.2-6.8-15.2-15.2c0-8.4,6.8-15.2,15.2-15.2c8.4,0,15.2,6.8,15.2,15.2
+                        C219.2,393.6,212.4,400.4,204.1,400.4z"></path>
+                </g>
+            </g>
+            <g>
+                <g>
+                    <path d="M95.8,263.9c-23.9,0-43.4,19.5-43.4,43.4c0,23.9,19.5,43.4,43.4,43.4c23.9,0,43.4-19.5,43.4-43.4
+                        C139.2,283.4,119.8,263.9,95.8,263.9z M95.8,322.5c-8.4,0-15.2-6.8-15.2-15.2s6.8-15.2,15.2-15.2c8.4,0,15.2,6.8,15.2,15.2
+                        S104.2,322.5,95.8,322.5z"></path>
+                </g>
+            </g>
+        </symbol>
+    </svg>
+
+    <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
+    <script src="JS/script.js"></script>
+    <script>
+        (function(){
+            const pauseIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
+            const playIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>';
+
+            function setupVideoToggle(videoId, btnId){
+                const video = document.getElementById(videoId);
+                const btn = document.getElementById(btnId);
+                if(!video || !btn) return;
+                function update(){
+                    if(video.paused){
+                        btn.innerHTML = playIcon;
+                        btn.setAttribute('aria-label','Phát video');
+                    } else {
+                        btn.innerHTML = pauseIcon;
+                        btn.setAttribute('aria-label','Tạm dừng video');
+                    }
+                }
+                btn.addEventListener('click', function(){
+                    if(video.paused){ video.play(); } else { video.pause(); }
+                    update();
+                });
+                // Update when video state changes (e.g., autoplay)
+                video.addEventListener('play', update);
+                video.addEventListener('pause', update);
+                update();
+            }
+
+            document.addEventListener('DOMContentLoaded', function(){
+                setupVideoToggle('heroVideo','heroToggle');
+                setupVideoToggle('aestheticsVideo','aestheticsToggle');
+            });
+        })();
+    </script>
+</body>
+</html>
