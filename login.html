@@ -108,6 +108,19 @@
                             <label for="password" class="form-label">Mật khẩu</label>
                             <input type="password" class="form-control" id="password" required>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Captcha</label>
+
+                            <div class="d-flex align-items-center mb-2" style="gap: 10px;">
+                                <canvas id="captchaCanvas" width="120" height="40"
+                                        style="border: 1px solid #ccc; border-radius: 5px;"></canvas>
+
+                                <button type="button" class="btn btn-secondary btn-sm" id="refreshCaptcha">↻</button>
+                            </div>
+                            <input type="text" class="form-control" id="captchaInput"
+                                placeholder="Nhập captcha" required>
+                        </div>
+
                         <button type="submit" class="btn btn-primary w-100">Đăng Nhập</button>
                         <p class="text-center mt-3">Chưa có tài khoản? <a href="register.html">Đăng ký tại đây</a></p>
                     </form>
@@ -162,103 +175,131 @@
     </footer>
 
     <script>
-        $(document).ready(function () {
-            // Initialize test accounts in localStorage if not exists
-            const existingUsers = JSON.parse(localStorage.getItem('users')) || [];
-            
-            // Add a test user if no users exist
-            if (existingUsers.length === 0) {
-                const testUser = {
-                    username: 'testuser',
-                    email: 'test@firepc.com',
-                    password: 'test123',
-                    firstName: 'Test',
-                    lastName: 'User',
-                    phone: '0123456789'
-                };
-                existingUsers.push(testUser);
-                localStorage.setItem('users', JSON.stringify(existingUsers));
-                console.log('Test user created: test@firepc.com / test123');
+    // --- SIMPLE LOCAL CAPTCHA ---
+    let captchaText = "";
+
+    function generateCaptcha() {
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no confusing chars
+        captchaText = "";
+        for (let i = 0; i < 5; i++) {
+            captchaText += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+
+        // Draw CAPTCHA
+        const canvas = document.getElementById("captchaCanvas");
+        const ctx = canvas.getContext("2d");
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Background
+        ctx.fillStyle = "#f0f0f0";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Random text styling
+        ctx.font = "24px Arial";
+        ctx.fillStyle = "#000";
+
+        // Slight rotation for anti-bot
+        const angle = (Math.random() - 0.5) * 0.4;
+        ctx.save();
+        ctx.translate(60, 20);
+        ctx.rotate(angle);
+        ctx.fillText(captchaText, -40, 10);
+        ctx.restore();
+
+        // Add a bit of noise
+        for (let i = 0; i < 12; i++) {
+            ctx.beginPath();
+            ctx.moveTo(Math.random() * 120, Math.random() * 40);
+            ctx.lineTo(Math.random() * 120, Math.random() * 40);
+            ctx.strokeStyle = "#888";
+            ctx.stroke();
+        }
+    }
+
+    $("#refreshCaptcha").click(generateCaptcha);
+    generateCaptcha();
+
+    $(document).ready(function () {
+        // --- AUTH UI HANDLING ---
+        const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        const loginLink = document.getElementById('login-register');
+        const profile = document.getElementById('profile');
+
+        if (isLoggedIn) {
+            loginLink.style.display = 'none';
+            profile.style.display = 'block';
+        } else {
+            loginLink.style.display = 'block';
+            profile.style.display = 'none';
+        }
+
+        // --- CART COUNT ---
+        const cartCount = localStorage.getItem('cartCount') || 0;
+        $('#cart-count').text(cartCount);
+
+        // --- LOGIN HANDLER ---
+        $('#login-form').submit(async function (e) {
+            e.preventDefault(); // Stop page reload
+
+            const loginId = $('#login-id').val().trim();
+            const password = $('#password').val().trim();
+
+            if (!loginId || !password) {
+                alert("❌ Hông được bỏ trống nha bé ơi!");
+                return;
             }
 
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            const loginLink = document.getElementById('login-register');
-            const registerLink = document.getElementById('register-link');
-            const profile = document.getElementById('profile');
+            try {
+                const response = await fetch('http://localhost:5000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ loginId, password })
+                });
 
-            if (isLoggedIn) {
-                if (loginLink) loginLink.style.display = 'none';
-                if (registerLink) registerLink.style.display = 'none';
-                if (profile) profile.style.display = 'block';
-            } else {
-                if (loginLink) loginLink.style.display = 'block';
-                if (registerLink) registerLink.style.display = 'block';
-                if (profile) profile.style.display = 'none';
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Check role
+                    const isAdmin = data?.user?.role === 'admin';
+
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('isAdmin', isAdmin.toString());
+
+                    try {
+                        localStorage.setItem('userData', JSON.stringify(data.user));
+                    } catch (err) {
+                        console.warn('Failed to save user data:', err);
+                    }
+
+                    alert('✅ Đăng nhập thành công!');
+                    window.location.href = 'account/profile.html';
+                } else {
+                    alert(`❌ ${data?.error || data?.message || 'Sai thông tin đăng nhập!'}`);
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                alert('❌ Không kết nối được server. Kiểm tra backend đang chạy chưa.');
             }
-
-            const cartCount = localStorage.getItem('cartCount') || 0;
-            $('#cart-count').text(cartCount);
-
-            $('#login-form').submit(function (e) {
-                e.preventDefault();
-                const loginId = $('#login-id').val().trim();
-                const password = $('#password').val();
-                const users = JSON.parse(localStorage.getItem('users')) || [];
-
-                console.log('Login attempt:', loginId);
-                console.log('Available users:', users);
-
-                // Check admin login
-                if (loginId === 'admin@firepcgaming.com' && password === 'admin123') {
-                    console.log('Admin login successful');
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('isAdmin', 'true');
-                    localStorage.setItem('userEmail', 'admin@firepcgaming.com');
-                    localStorage.setItem('firstName', 'Admin');
-                    localStorage.setItem('lastName', 'User');
-                    localStorage.setItem('userData', JSON.stringify({
-                        username: 'admin',
-                        email: 'admin@firepcgaming.com',
-                        password: 'admin123',
-                        firstName: 'Admin',
-                        lastName: 'User',
-                        phone: ''
-                    }));
-                    alert('✅ Admin login successful!');
-                    window.location.href = 'account/order.html';
-                    return;
-                }
-
-                // Check registered users
-                const user = users.find(u => (u.username === loginId || u.email === loginId) && u.password === password);
-                if (user) {
-                    console.log('User login successful:', user.username);
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('isAdmin', 'false');
-                    localStorage.setItem('userEmail', user.email);
-                    localStorage.setItem('firstName', user.firstName || '');
-                    localStorage.setItem('lastName', user.lastName || '');
-                    localStorage.setItem('userData', JSON.stringify(user));
-                    alert('✅ Login successful!');
-                    window.location.href = 'account/order.html';
-                } else {
-                    console.log('Login failed - invalid credentials');
-                    alert('❌ Invalid username/email or password!\n\nTest accounts:\n• Admin: admin@firepcgaming.com / admin123\n• User: test@firepc.com / test123');
-                }
-            });
-
-            let lastScrollTop = 0;
-            const navbar = $('header');
-            $(window).scroll(function () {
-                const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
-                if (currentScroll > lastScrollTop) {
-                    navbar.css('top', '-100px');
-                } else {
-                    navbar.css('top', '0');
-                }
-                lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
-            });
         });
+
+        // --- NAVBAR SCROLL BEHAVIOR ---
+        let lastScrollTop = 0;
+        const navbar = $('header');
+
+        $(window).scroll(function () {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (currentScroll > lastScrollTop) {
+                navbar.css('top', '-100px');
+            } else {
+                navbar.css('top', '0');
+            }
+
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        });
+    });
     </script>
+
 </body>
 </html>
