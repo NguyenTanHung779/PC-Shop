@@ -108,9 +108,9 @@
                             <label for="password" class="form-label">Mật khẩu</label>
                             <input type="password" class="form-control" id="password" required>
                         </div>
+                    <!-- Sinclair: "Captcha, literally the oldest trick in the book cuz whatever the #### is this?" -->
                         <div class="mb-3">
                             <label class="form-label">Captcha</label>
-
                             <div class="d-flex align-items-center mb-2" style="gap: 10px;">
                                 <canvas id="captchaCanvas" width="120" height="40"
                                         style="border: 1px solid #ccc; border-radius: 5px;"></canvas>
@@ -273,7 +273,12 @@
                     }
 
                     alert('✅ Đăng nhập thành công!');
-                    window.location.href = 'account/profile.html';
+                    // Redirect based on role
+                    if (isAdmin) {
+                        window.location.href = 'admin/dashboard.html';
+                    } else {
+                        window.location.href = 'account/profile.html';
+                    }
                 } else {
                     alert(`❌ ${data?.error || data?.message || 'Sai thông tin đăng nhập!'}`);
                 }
