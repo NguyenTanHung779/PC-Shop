@@ -195,16 +195,33 @@
                                     <em>Sau khi thanh toán, đơn hàng sẽ được xác nhận tự động</em>
                                 </p>
                             </div>
+                            
                         </div>
                     </div>
 
                     <!-- Cloudflare Turnstile CAPTCHA -->
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <div class="cf-turnstile" 
                              data-sitekey="0x4AAAAAAAxxxxxxxxxxxxxxxxxx" 
                              data-callback="onTurnstileSuccess"
                              data-theme="light"></div>
+                    </div> -->
+                    <!-- Sinclair: "TEST CAPTCHA, I didn't plan to put it there" -->
+                    <div class="mb-3">
+                        <label class="form-label">Captcha (Will replace with Cloudflare later)</label>
+
+                        <div class="d-flex align-items-center mb-2" style="gap: 10px;">
+                            <canvas id="captchaCanvas" width="120" height="40"
+                                    style="border: 1px solid #ccc; border-radius: 5px;"></canvas>
+
+                            <button type="button" class="btn btn-secondary btn-sm" id="refreshCaptcha">↻</button>
+                        </div>
+
+                        <input type="text" class="form-control" id="captchaInput"
+                            placeholder="Nhập captcha" required>
                     </div>
+
+                    
 
                     <!-- Submit Button -->
                     <button type="submit" class="btn-primary" id="submitBtn" disabled>
@@ -250,6 +267,49 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script>
+        // CAPTCHA generation
+        let captchaText = "";
+
+        function generateCaptcha() {
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            captchaText = "";
+
+            for (let i = 0; i < 5; i++) {
+                captchaText += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+
+            const canvas = document.getElementById("captchaCanvas");
+            const ctx = canvas.getContext("2d");
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = "#f0f0f0";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.font = "24px Arial";
+            ctx.fillStyle = "#000";
+
+            const angle = (Math.random() - 0.5) * 0.4;
+            ctx.save();
+            ctx.translate(60, 20);
+            ctx.rotate(angle);
+            ctx.fillText(captchaText, -40, 10);
+            ctx.restore();
+
+            for (let i = 0; i < 12; i++) {
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * 120, Math.random() * 40);
+                ctx.lineTo(Math.random() * 120, Math.random() * 40);
+                ctx.strokeStyle = "#888";
+                ctx.stroke();
+            }
+        }
+
+        $("#refreshCaptcha").click(generateCaptcha);
+        generateCaptcha();
+
+
+
         // Global variables
         let turnstileToken = null;
         let cartData = [];

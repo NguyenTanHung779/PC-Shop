@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - FirePC Gaming</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../CSS/admin.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar Navigation -->
+        <nav class="admin-sidebar">
+            <div class="sidebar-header">
+                <h3 class="sidebar-title">
+                    <i class="bi bi-speedometer2"></i> Admin Panel
+                </h3>
+            </div>
+
+            <ul class="sidebar-nav">
+                <li class="nav-item active">
+                    <a href="#dashboard" class="nav-link" data-section="dashboard">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#users" class="nav-link" data-section="users">
+                        <i class="bi bi-people"></i> Users Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#orders" class="nav-link" data-section="orders">
+                        <i class="bi bi-box"></i> Orders Management
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#products" class="nav-link" data-section="products">
+                        <i class="bi bi-laptop"></i> Products
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#categories" class="nav-link" data-section="categories">
+                        <i class="bi bi-tag"></i> Categories
+                    </a>
+                </li>
+                <li class="nav-item border-top mt-3 pt-3">
+                    <a href="#" class="nav-link text-danger" onclick="handleLogout()">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Header -->
+            <header class="admin-header">
+                <div class="header-left">
+                    <h1>Admin Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <span class="admin-name" id="admin-name">Admin</span>
+                    <button class="btn btn-sm btn-outline-danger" onclick="handleLogout()">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content Sections -->
+            <div class="admin-content">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="content-section active">
+                    <div class="section-header">
+                        <h2>Dashboard Overview</h2>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-icon total-users">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="total-users">0</h3>
+                                    <p>Total Users</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-icon total-orders">
+                                    <i class="bi bi-box"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="total-orders">0</h3>
+                                    <p>Total Orders</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-icon total-revenue">
+                                    <i class="bi bi-currency-dollar"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="total-revenue">$0</h3>
+                                    <p>Total Revenue</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-icon pending-orders">
+                                    <i class="bi bi-hourglass"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <h3 id="pending-orders">0</h3>
+                                    <p>Pending Orders</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Recent Orders</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="recent-orders-list">
+                                        <p class="text-muted">No orders yet</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Order Status</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="order-status-chart" style="text-align: center;">
+                                        <p class="text-muted">Pending | Processing | Shipped | Delivered</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Users Management Section -->
+                <section id="users-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Users Management</h2>
+                        <button class="btn btn-primary btn-sm" onclick="openAddUserModal()">
+                            <i class="bi bi-plus-lg"></i> Add User
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>User ID</th>
+                                            <th>Username</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Created Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="users-table-body">
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted">No users found. Connect to backend API.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Orders Management Section -->
+                <section id="orders-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Orders Management</h2>
+                        <div class="filter-group">
+                            <select class="form-select form-select-sm" id="order-status-filter" style="max-width: 200px;">
+                                <option value="">All Statuses</option>
+                                <option value="pending">Pending</option>
+                                <option value="processing">Processing</option>
+                                <option value="shipped">Shipped</option>
+                                <option value="delivered">Delivered</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>User</th>
+                                            <th>Email</th>
+                                            <th>Items</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Order Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="orders-table-body">
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted">No orders found. Connect to backend API.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Products Section -->
+                <section id="products-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Products Management</h2>
+                        <button class="btn btn-primary btn-sm" onclick="openAddProductModal()">
+                            <i class="bi bi-plus-lg"></i> Add Product
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Product ID</th>
+                                            <th>Name</th>
+                                            <th>Category</th>
+                                            <th>Price</th>
+                                            <th>Stock</th>
+                                            <th>Created Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="products-table-body">
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted">No products found. Connect to backend API.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Categories Section -->
+                <section id="categories-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Categories Management</h2>
+                        <button class="btn btn-primary btn-sm" onclick="openAddCategoryModal()">
+                            <i class="bi bi-plus-lg"></i> Add Category
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Category ID</th>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                            <th>Created Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="categories-table-body">
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted">No categories found. Connect to backend API.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalTitle">Add User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="userForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="user-username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="user-username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="user-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="user-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="user-password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="user-password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="user-role" class="form-label">Role</label>
+                            <select class="form-select" id="user-role" required>
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productModalTitle">Add Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="productForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="product-name" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="product-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="product-category" class="form-label">Category</label>
+                            <select class="form-select" id="product-category" required>
+                                <option value="">Select a category</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="product-price" class="form-label">Price</label>
+                            <input type="number" class="form-control" id="product-price" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="product-stock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="product-stock" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="product-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="product-description" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Category Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="categoryModalTitle">Add Category</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="categoryForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="category-name" class="form-label">Category Name</label>
+                            <input type="text" class="form-control" id="category-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="category-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="category-description" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Category</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is admin
+        function checkAdminAccess() {
+            const isAdmin = localStorage.getItem('isAdmin') === 'true';
+            const userData = localStorage.getItem('userData');
+
+            if (!isAdmin || !userData) {
+                alert('Access denied. Admin privileges required.');
+                window.location.href = '../login.html';
+                return;
+            }
+
+            // Load admin name
+            try {
+                const user = JSON.parse(userData);
+                document.getElementById('admin-name').textContent = user.username || user.email || 'Admin';
+            } catch (err) {
+                console.warn('Could not parse user data:', err);
+            }
+        }
+
+        // Section Navigation
+        document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const section = this.getAttribute('data-section');
+                showSection(section);
+
+                // Update active state
+                document.querySelectorAll('.sidebar-nav .nav-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        function showSection(section) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            
+            let sectionElement;
+            switch(section) {
+                case 'dashboard':
+                    sectionElement = document.getElementById('dashboard-section');
+                    loadDashboardData();
+                    break;
+                case 'users':
+                    sectionElement = document.getElementById('users-section');
+                    loadUsersData();
+                    break;
+                case 'orders':
+                    sectionElement = document.getElementById('orders-section');
+                    loadOrdersData();
+                    break;
+                case 'products':
+                    sectionElement = document.getElementById('products-section');
+                    loadProductsData();
+                    break;
+                case 'categories':
+                    sectionElement = document.getElementById('categories-section');
+                    loadCategoriesData();
+                    break;
+            }
+            
+            if (sectionElement) {
+                sectionElement.classList.add('active');
+            }
+        }
+
+        // Load Dashboard Data
+        async function loadDashboardData() {
+            try {
+                // TODO: Connect to backend - Implement these endpoints
+                // GET /api/orders - Fetch all orders to calculate dashboard stats
+                // GET /api/items - Fetch all items for product count
+                
+                /* EXPECTED RESPONSE FORMAT:
+                    Orders: [{ order_id, user_id, total_amount, status, order_date }, ...]
+                    Items: [{ item_id, name, price, stock, category_id }, ...]
+                */
+
+                const response = await fetch('http://localhost:5000/api/orders', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                
+                if (response.ok) {
+                    const orders = await response.json();
+                    // Calculate stats from orders data
+                    document.getElementById('total-orders').textContent = orders.length || 0;
+                    const totalRevenue = orders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
+                    document.getElementById('total-revenue').textContent = `$${totalRevenue.toFixed(2)}`;
+                    const pendingOrders = orders.filter(o => o.status === 'pending').length;
+                    document.getElementById('pending-orders').textContent = pendingOrders;
+                }
+            } catch (err) {
+                console.log('Dashboard stats: Using mock data. Connect backend when ready.');
+            }
+        }
+
+        // Load Users Data
+        async function loadUsersData() {
+            try {
+                // TODO: Connect to backend - Implement this endpoint
+                // GET /api/auth/users or GET /api/users - Fetch all registered users
+                
+                /* EXPECTED RESPONSE FORMAT:
+                    [{ 
+                        user_id, username, email, password_hash (never expose!), role, 
+                        created_at, updated_at 
+                    }, ...]
+                */
+
+                const response = await fetch('http://localhost:5000/api/users', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const users = await response.json();
+
+                if (response.ok && users.length > 0) {
+                    renderUsersTable(users);
+                }
+            } catch (err) {
+                console.log('Backend API not connected. Users will show mock data when ready.');
+            }
+        }
+
+        function renderUsersTable(users) {
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${user.user_id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td><span class="badge ${user.role === 'admin' ? 'bg-danger' : 'bg-info'}">${user.role}</span></td>
+                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                    <td><span class="badge bg-success">Active</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="editUser(${user.user_id})"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.user_id})"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Load Orders Data
+        async function loadOrdersData() {
+            try {
+                // TODO: Connect to backend - Implement this endpoint
+                // GET /api/orders - Fetch all orders with user and item details
+                
+                /* EXPECTED RESPONSE FORMAT:
+                    [{ 
+                        order_id, user_id, total_amount, status, order_date, created_at,
+                        username (from users table), email (from users table), 
+                        item_count (count of items in order)
+                    }, ...]
+                */
+
+                const response = await fetch('http://localhost:5000/api/orders', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const orders = await response.json();
+
+                if (response.ok && orders.length > 0) {
+                    renderOrdersTable(orders);
+                }
+            } catch (err) {
+                console.log('Backend API not connected. Orders will show mock data when ready.');
+            }
+        }
+
+        function renderOrdersTable(orders) {
+            const tbody = document.getElementById('orders-table-body');
+            tbody.innerHTML = orders.map(order => `
+                <tr>
+                    <td>#${order.order_id}</td>
+                    <td>${order.username || 'N/A'}</td>
+                    <td>${order.email}</td>
+                    <td>${order.item_count || 0}</td>
+                    <td>$${order.total_amount.toFixed(2)}</td>
+                    <td><span class="badge bg-${getStatusColor(order.status)}">${order.status}</span></td>
+                    <td>${new Date(order.order_date).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="viewOrder(${order.order_id})"><i class="bi bi-eye"></i></button>
+                        <button class="btn btn-sm btn-warning" onclick="updateOrderStatus(${order.order_id})"><i class="bi bi-pencil"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                'pending': 'warning',
+                'processing': 'info',
+                'shipped': 'primary',
+                'delivered': 'success',
+                'cancelled': 'danger'
+            };
+            return colors[status] || 'secondary';
+        }
+
+        // Load Products Data
+        async function loadProductsData() {
+            try {
+                // TODO: Connect to backend - Implement this endpoint
+                // GET /api/items - Fetch all products/items
+                
+                /* EXPECTED RESPONSE FORMAT:
+                    [{ 
+                        item_id, name, description, price, stock, category_id, 
+                        image_url, created_at, updated_at,
+                        category_name (from categories table - optional join)
+                    }, ...]
+                */
+
+                const response = await fetch('http://localhost:5000/api/items', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const products = await response.json();
+
+                if (response.ok && products.length > 0) {
+                    renderProductsTable(products);
+                }
+            } catch (err) {
+                console.log('Backend API not connected. Products will show mock data when ready.');
+            }
+        }
+
+        function renderProductsTable(products) {
+            const tbody = document.getElementById('products-table-body');
+            tbody.innerHTML = products.map(product => `
+                <tr>
+                    <td>${product.item_id}</td>
+                    <td>${product.name}</td>
+                    <td>${product.category_name || 'N/A'}</td>
+                    <td>$${product.price.toFixed(2)}</td>
+                    <td><span class="badge ${product.stock > 0 ? 'bg-success' : 'bg-danger'}">${product.stock}</span></td>
+                    <td>${new Date(product.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="editProduct(${product.item_id})"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.item_id})"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Load Categories Data
+        async function loadCategoriesData() {
+            try {
+                // TODO: Connect to backend - Implement this endpoint
+                // GET /api/categories - Fetch all product categories
+                
+                /* EXPECTED RESPONSE FORMAT:
+                    [{ 
+                        category_id, name, description, created_at, updated_at 
+                    }, ...]
+                */
+
+                const response = await fetch('http://localhost:5000/api/categories', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const categories = await response.json();
+
+                if (response.ok && categories.length > 0) {
+                    renderCategoriesTable(categories);
+                }
+            } catch (err) {
+                console.log('Backend API not connected. Categories will show mock data when ready.');
+            }
+        }
+
+        function renderCategoriesTable(categories) {
+            const tbody = document.getElementById('categories-table-body');
+            tbody.innerHTML = categories.map(category => `
+                <tr>
+                    <td>${category.category_id}</td>
+                    <td>${category.name}</td>
+                    <td>${category.description || 'N/A'}</td>
+                    <td>${new Date(category.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" onclick="editCategory(${category.category_id})"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteCategory(${category.category_id})"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Modal Functions
+        function openAddUserModal() {
+            document.getElementById('userForm').reset();
+            document.getElementById('userModalTitle').textContent = 'Add User';
+            new bootstrap.Modal(document.getElementById('userModal')).show();
+        }
+
+        function openAddProductModal() {
+            document.getElementById('productForm').reset();
+            document.getElementById('productModalTitle').textContent = 'Add Product';
+            new bootstrap.Modal(document.getElementById('productModal')).show();
+        }
+
+        function openAddCategoryModal() {
+            document.getElementById('categoryForm').reset();
+            document.getElementById('categoryModalTitle').textContent = 'Add Category';
+            new bootstrap.Modal(document.getElementById('categoryModal')).show();
+        }
+
+        // CRUD Operations (placeholder - connect to backend)
+        function editUser(userId) {
+            alert('Edit user ' + userId + ' (Backend integration required)');
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                alert('User deleted (Backend integration required)');
+            }
+        }
+
+        function editProduct(productId) {
+            alert('Edit product ' + productId + ' (Backend integration required)');
+        }
+
+        function deleteProduct(productId) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                alert('Product deleted (Backend integration required)');
+            }
+        }
+
+        function editCategory(categoryId) {
+            alert('Edit category ' + categoryId + ' (Backend integration required)');
+        }
+
+        function deleteCategory(categoryId) {
+            if (confirm('Are you sure you want to delete this category?')) {
+                alert('Category deleted (Backend integration required)');
+            }
+        }
+
+        function viewOrder(orderId) {
+            alert('View order ' + orderId + ' (Backend integration required)');
+        }
+
+        function updateOrderStatus(orderId) {
+            alert('Update order ' + orderId + ' status (Backend integration required)');
+        }
+
+        // Logout
+        function handleLogout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('isAdmin');
+                localStorage.removeItem('userData');
+                window.location.href = '../login.html';
+            }
+        }
+
+        // Initialize
+        checkAdminAccess();
+        loadDashboardData();
+    </script>
+</body>
+</html>
