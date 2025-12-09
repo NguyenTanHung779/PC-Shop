@@ -199,7 +199,19 @@ $(document).ready(function () {
             const productName = button.getAttribute('data-product');
             const productPrice = button.getAttribute('data-price');
             const card = button.closest('.product-card');
-            const productImage = card ? card.querySelector('.product-image-primary').src : '';
+            
+            // Get product image - either from product card or product detail page
+            let productImage = '';
+            if (card) {
+                // From product listing page
+                productImage = card.querySelector('.product-image-primary').src;
+            } else {
+                // From product detail page - get main image
+                const mainImage = document.getElementById('mainImage');
+                if (mainImage) {
+                    productImage = mainImage.src;
+                }
+            }
 
             // Store raw price number for calculations
             const rawPrice = parseFloat(productPrice);
