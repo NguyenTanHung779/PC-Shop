@@ -267,10 +267,11 @@ $(document).ready(function () {
         if (overlay) overlay.addEventListener('click', closeCartDrawer);
     }
     const checkoutBtn = document.getElementById('drawer-checkout');
-    if (checkoutBtn) checkoutBtn.addEventListener('click', ()=>{ 
+    if (checkoutBtn) checkoutBtn.addEventListener('click', (e)=>{ 
+        e.preventDefault();
         // Sync cart to checkout page
         localStorage.setItem('checkoutItems', JSON.stringify(cartItems));
-        window.location.href = 'checkout.html'; 
+        window.location.href = checkoutBtn.href; 
     });
 });
 
