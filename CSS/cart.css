@@ -16,20 +16,24 @@
     transform: translateY(-2px);
 }
 
-/* Login button hover effect */
-.login-icon-btn {
+/* Login/Account button hover effect */
+.login-icon-btn,
+.account-icon-btn {
     transition: all 0.3s ease;
 }
 
-.login-icon-btn:hover {
+.login-icon-btn:hover,
+.account-icon-btn:hover {
     transform: translateY(-3px);
 }
 
-.login-icon-btn svg {
+.login-icon-btn svg,
+.account-icon-btn svg {
     transition: all 0.3s ease;
 }
 
-.login-icon-btn:hover svg {
+.login-icon-btn:hover svg,
+.account-icon-btn:hover svg {
     transform: scale(1.1);
 }
 
@@ -87,4 +91,73 @@ footer svg {
 
 footer a:hover svg {
     transform: scale(1.2) rotate(5deg);
+}
+
+/* Shopify-style Cart Enhancements */
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.no-headings thead th {
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+details > summary {
+    list-style: none;
+    transition: all 0.3s ease;
+}
+
+details > summary::-webkit-details-marker {
+    display: none;
+}
+
+details[open] > summary svg.icon-chevron-down {
+    transform: rotate(180deg);
+}
+
+details svg.icon-chevron-down {
+    transition: transform 0.3s ease;
+}
+
+details > summary:hover {
+    background-color: #f8f9fa;
+}
+
+.icon {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icon-sm {
+    width: 20px;
+    height: 20px;
+}
+
+.text-sm {
+    font-size: 0.875rem;
+}
+
+.sr-only, .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+@media (min-width: 1200px) {
+    .cart__sidebar {
+        position: sticky;
+        top: 20px;
+    }
+}
+
+/* Hidden state override */
+.hidden {
+    display: none !important;
 }

@@ -234,7 +234,7 @@
                     </div>
                     <div class="summary-row total">
                         <span>Tổng cộng</span>
-                        <strong id="total" class="text-primary">0 VNĐ</strong>
+                        <strong id="total">0 VNĐ</strong>
                     </div>
                 </div>
             </div>
@@ -497,23 +497,26 @@
 
             // Save order to localStorage
             const orders = JSON.parse(localStorage.getItem('orders')) || [];
-            orders.push({
+            const newOrder = {
                 ...orderData,
                 orderId: 'ORD' + Date.now(),
-                status: 'pending',
+                status: orderData.payment === 'cod' ? 'pending' : 'confirmed',
                 createdAt: new Date().toISOString()
-            });
+            };
+            orders.push(newOrder);
             localStorage.setItem('orders', JSON.stringify(orders));
 
-            // Clear cart
+            // Clear cart and checkout items
             localStorage.removeItem('cart');
+            localStorage.removeItem('cartItems');
+            localStorage.removeItem('checkoutItems');
 
             // Hide loading
             document.getElementById('loadingOverlay').classList.remove('active');
 
-            // Redirect to success page
+            // Redirect to order page
             alert('Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
-            window.location.href = 'home.html';
+            window.location.href = 'account/order.html';
         }
 
         // Initialize

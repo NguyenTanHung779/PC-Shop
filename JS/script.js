@@ -1,19 +1,52 @@
 $(document).ready(function () {
-    // Login status (unchanged)
+    // Login status and account icon management
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
     const loginRegister = document.getElementById('login-register');
     const profile = document.getElementById('profile');
+    const loginIconBtn = document.querySelector('.login-icon-btn, .account-icon-btn');
 
+    // Update login icon to account icon based on login state
+    function updateLoginIcon() {
+        if (loginIconBtn) {
+            if (isLoggedIn) {
+                loginIconBtn.href = 'account/order.html';
+                loginIconBtn.title = 'Account';
+                loginIconBtn.classList.remove('login-icon-btn');
+                loginIconBtn.classList.add('account-icon-btn');
+                loginIconBtn.querySelector('.sr-only').textContent = 'Account';
+            } else {
+                loginIconBtn.href = 'login.html';
+                loginIconBtn.title = 'Login';
+                loginIconBtn.classList.remove('account-icon-btn');
+                loginIconBtn.classList.add('login-icon-btn');
+                loginIconBtn.querySelector('.sr-only').textContent = 'Login';
+            }
+        }
+    }
+
+    // Hide the "Hồ Sơ" text link when logged in (we use the icon instead)
     if (isLoggedIn) {
-        if (loginRegister) loginRegister.classList.add('hidden');
-        if (profile) profile.classList.remove('hidden');
+        if (profile) profile.classList.add('hidden');
     } else {
-        if (loginRegister) loginRegister.classList.remove('hidden');
         if (profile) profile.classList.add('hidden');
     }
+    
+    // Initialize login icon state
+    updateLoginIcon();
 
     // Cart: read from localStorage and render
     let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+    
+    // Migrate old cart items with formatted prices to raw numbers
+    cartItems = cartItems.map(item => {
+        if (typeof item.price === 'string' && item.price.includes('₫')) {
+            // Convert formatted price back to number
+            item.price = parseFloat(item.price.replace(/[^0-9]/g, ''));
+        }
+        return item;
+    });
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    
     const cartCountElement = document.getElementById('cart-count');
     const drawerCountElement = document.getElementById('drawer-cart-count');
     const drawerItemsList = document.getElementById('drawer-items');
@@ -23,27 +56,22 @@ $(document).ready(function () {
         const count = cartItems.reduce((acc, i) => acc + (i.quantity || 1), 0);
         if (cartCountElement) {
             cartCountElement.textContent = count;
-            // Show/hide count badge - only show when count > 0
+            // Show/hide badge based on count
             if (count > 0) {
-                cartCountElement.style.display = 'inline';
+                cartCountElement.style.display = 'inline-block';
             } else {
                 cartCountElement.style.display = 'none';
             }
         }
-        if (drawerCountElement) {
-            drawerCountElement.textContent = count;
-            // Show/hide drawer count - only show when count > 0
-            if (count > 0) {
-                drawerCountElement.style.display = 'inline';
-            } else {
-                drawerCountElement.style.display = 'none';
-            }
-        }
+        if (drawerCountElement) drawerCountElement.textContent = count;
         localStorage.setItem('cartItems', JSON.stringify(cartItems));
     }
 
     function formatMoney(amount) {
-        return '$' + parseFloat(amount).toFixed(2);
+        // Handle both number and string inputs
+        const num = typeof amount === 'number' ? amount : parseFloat(amount);
+        if (isNaN(num)) return '0₫';
+        return num.toLocaleString('vi-VN', { maximumFractionDigits: 0 }) + '₫';
     }
 
     function renderDrawerItems() {
@@ -51,138 +79,64 @@ $(document).ready(function () {
         drawerItemsList.innerHTML = '';
         let subtotal = 0;
         
-        // Show/hide empty state and cart content
+        // Empty state and footer visibility
         const emptyState = document.getElementById('cart-empty-state');
-        const cartItemsContainer = document.getElementById('cart-items-container');
-        const cartFooter = document.getElementById('cart-footer');
+        const footerContent = document.getElementById('cart-footer-content');
         
         if (cartItems.length === 0) {
-            if (emptyState) emptyState.style.display = 'flex';
-            if (cartItemsContainer) cartItemsContainer.style.display = 'none';
-            if (cartFooter) cartFooter.style.display = 'none';
-            return;
+            if (emptyState) emptyState.style.display = 'block';
+            if (footerContent) footerContent.style.display = 'none';
         } else {
             if (emptyState) emptyState.style.display = 'none';
-            if (cartItemsContainer) cartItemsContainer.style.display = 'flex';
-            if (cartFooter) cartFooter.style.display = 'block';
+            if (footerContent) footerContent.style.display = 'block';
         }
+        
+        // the header preview thumbnails
+        const preview = document.getElementById('drawer-preview');
+        if (preview) preview.innerHTML = '';
         
         cartItems.forEach((item, idx) => {
             const li = document.createElement('li');
-            li.className = 'horizontal-product';
+            li.className = 'drawer-item d-flex align-items-center gap-3 mb-3';
+            const img = `<div class="drawer-item-media"><img src="${item.image}" alt="${item.name}" class="drawer-thumb"></div>`;
             
-            // Media
-            const mediaDiv = document.createElement('a');
-            mediaDiv.className = 'horizontal-product__media';
-            mediaDiv.href = '#';
-            const img = document.createElement('img');
-            img.src = item.image;
-            img.alt = item.name;
-            mediaDiv.appendChild(img);
+            // Format price for display
+            const displayPrice = typeof item.price === 'number' ? formatMoney(item.price) : item.price;
+            const info = `<div class="drawer-item-info flex-grow-1"><div class="name">${item.name}</div><div class="price text-muted">${displayPrice}</div></div>`;
             
-            // Details container
-            const detailsDiv = document.createElement('div');
-            detailsDiv.className = 'horizontal-product__details';
-            
-            // Title and info
-            const infoDiv = document.createElement('div');
-            infoDiv.className = 'horizontal-product__info';
-            const titleDiv = document.createElement('div');
-            const titleLink = document.createElement('a');
-            titleLink.href = '#';
-            titleLink.className = 'horizontal-product__title';
-            titleLink.textContent = item.name;
-            titleDiv.appendChild(titleLink);
-            infoDiv.appendChild(titleDiv);
-            
-            const priceDiv = document.createElement('div');
-            priceDiv.className = 'horizontal-product__price';
-            priceDiv.textContent = item.price;
-            infoDiv.appendChild(priceDiv);
-            
-            detailsDiv.appendChild(infoDiv);
-            
-            // Quantity container
-            const quantityDiv = document.createElement('div');
-            quantityDiv.className = 'horizontal-product__quantity';
-            
-            const quantityInfo = document.createElement('div');
-            quantityInfo.className = 'cart-quantity__info';
-            
-            const quantityInput = document.createElement('div');
-            quantityInput.className = 'cart-quantity';
-            
-            const input = document.createElement('input');
-            input.className = 'quantity__input';
-            input.type = 'number';
-            input.min = '1';
-            input.value = item.quantity || 1;
-            input.dataset.index = idx;
-            
-            const buttonsDiv = document.createElement('div');
-            buttonsDiv.className = 'quantity__buttons';
-            
-            const plusBtn = document.createElement('button');
-            plusBtn.type = 'button';
-            plusBtn.className = 'quantity__button';
-            plusBtn.dataset.index = idx;
-            plusBtn.innerHTML = '<svg class="icon icon-increase" viewBox="0 0 8 6" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 4.75L4 1.25L7.5 4.75"></path></svg>';
-            
-            const minusBtn = document.createElement('button');
-            minusBtn.type = 'button';
-            minusBtn.className = 'quantity__button';
-            minusBtn.dataset.index = idx;
-            minusBtn.innerHTML = '<svg class="icon icon-decrease" viewBox="0 0 8 6" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M0.5 1.25L4 4.75L7.5 1.25"></path></svg>';
-            
-            buttonsDiv.appendChild(plusBtn);
-            buttonsDiv.appendChild(minusBtn);
-            
-            quantityInput.appendChild(input);
-            quantityInput.appendChild(buttonsDiv);
-            quantityInfo.appendChild(quantityInput);
-            
-            const removeDiv = document.createElement('div');
-            removeDiv.className = 'cart-remove';
-            const removeLink = document.createElement('a');
-            removeLink.href = '#';
-            removeLink.className = 'link';
-            removeLink.textContent = 'Remove';
-            removeLink.dataset.index = idx;
-            removeDiv.appendChild(removeLink);
-            
-            quantityInfo.appendChild(removeDiv);
-            quantityDiv.appendChild(quantityInfo);
-            
-            detailsDiv.appendChild(quantityDiv);
-            
-            li.appendChild(mediaDiv);
-            li.appendChild(detailsDiv);
+            const qty = `<div class="drawer-item-qty d-flex align-items-center gap-2"><button class="btn btn-light qty-minus" data-index="${idx}">-</button><input class="qty-input text-center" data-index="${idx}" type="number" min="1" value="${item.quantity||1}" /><button class="btn btn-light qty-plus" data-index="${idx}">+</button></div>`;
+            const remove = `<div class="drawer-item-remove"><a href="#" class="remove-link text-danger" data-index="${idx}">Xóa</a></div>`;
+            li.innerHTML = img + info + qty + remove;
             drawerItemsList.appendChild(li);
 
-            // subtotal (strip $)
-            const priceNumber = parseFloat((item.price || '0').replace(/[^0-9.-]+/g, ''));
+            // Calculate subtotal using raw price number
+            const priceNumber = typeof item.price === 'number' ? item.price : parseFloat((item.price || '0').replace(/[^0-9.-]+/g, ''));
             subtotal += priceNumber * (item.quantity || 1);
         });
-        
-        if (drawerSubtotal) drawerSubtotal.textContent = formatMoney(subtotal) + ' USD';
-        
-        // Add event listeners
-        document.querySelectorAll('.quantity__button').forEach(btn => {
+        // Clear preview thumbnails (removed feature)
+        if (preview) {
+            preview.innerHTML = '';
+        }
+        if (drawerSubtotal) drawerSubtotal.textContent = formatMoney(subtotal);
+        // add listeners
+        document.querySelectorAll('.qty-plus').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 const i = parseInt(btn.dataset.index);
-                const svg = btn.querySelector('svg');
-                if (svg && svg.classList.contains('icon-increase')) {
-                    cartItems[i].quantity = (cartItems[i].quantity || 1) + 1;
-                } else if (svg && svg.classList.contains('icon-decrease')) {
-                    cartItems[i].quantity = Math.max(1, (cartItems[i].quantity || 1) - 1);
-                }
+                cartItems[i].quantity = (cartItems[i].quantity || 1) + 1;
                 localStorage.setItem('cartItems', JSON.stringify(cartItems));
                 updateCartCount(); renderDrawerItems();
             });
         });
-        
-        document.querySelectorAll('.cart-remove .link').forEach(link => {
+        document.querySelectorAll('.qty-minus').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const i = parseInt(btn.dataset.index);
+                cartItems[i].quantity = Math.max(1, (cartItems[i].quantity || 1) - 1);
+                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                updateCartCount(); renderDrawerItems();
+            });
+        });
+        document.querySelectorAll('.remove-link').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const i = parseInt(link.dataset.index);
@@ -191,8 +145,7 @@ $(document).ready(function () {
                 updateCartCount(); renderDrawerItems();
             });
         });
-        
-        document.querySelectorAll('.quantity__input').forEach(input => {
+        document.querySelectorAll('.qty-input').forEach(input => {
             input.addEventListener('change', (e) => {
                 const i = parseInt(input.dataset.index);
                 const v = Math.max(1, parseInt(input.value) || 1);
@@ -235,6 +188,58 @@ $(document).ready(function () {
         });
     });
 
+    // Add-to-cart handlers for product cards (gaming-pc-prebuilts.html)
+    const addToCartBtns = document.querySelectorAll('.add-to-cart-btn');
+    addToCartBtns.forEach((button) => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Get product details from button data attributes and card
+            const productName = button.getAttribute('data-product');
+            const productPrice = button.getAttribute('data-price');
+            const card = button.closest('.product-card');
+            const productImage = card ? card.querySelector('.product-image-primary').src : '';
+
+            // Store raw price number for calculations
+            const rawPrice = parseFloat(productPrice);
+
+            // Check if item already exists in cart
+            const existingItem = cartItems.find(i => i.name === productName);
+            if (existingItem) {
+                existingItem.quantity = (existingItem.quantity || 1) + 1;
+            } else {
+                cartItems.push({ 
+                    name: productName, 
+                    price: rawPrice, 
+                    image: productImage, 
+                    quantity: 1 
+                });
+            }
+
+            // Save to localStorage
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            updateCartCount(); 
+            renderDrawerItems();
+
+            // Visual feedback
+            const originalText = button.innerHTML;
+            button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2 me-2" viewBox="0 0 16 16" style="vertical-align: middle;"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>Đã thêm!';
+            button.disabled = true;
+            button.classList.add('btn-success');
+
+            // Open cart drawer
+            openCartDrawer();
+
+            // Reset button after 2 seconds
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                button.classList.remove('btn-success');
+            }, 2000);
+        });
+    });
+
     // Cart drawer toggle
     const cartToggle = document.querySelectorAll('.cart-toggle');
     const cartDrawer = document.getElementById('cart-drawer');
@@ -257,8 +262,10 @@ $(document).ready(function () {
     }
     cartToggle.forEach(t => t.addEventListener('click', (e)=>{ e.preventDefault(); openCartDrawer(); }));
     if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeCartDrawer);
-    const overlay = document.getElementById('cart-overlay');
-    if (overlay) overlay.addEventListener('click', closeCartDrawer);
+    if (cartDrawer) {
+        const overlay = cartDrawer.querySelector('.cart-overlay');
+        if (overlay) overlay.addEventListener('click', closeCartDrawer);
+    }
     const checkoutBtn = document.getElementById('drawer-checkout');
     if (checkoutBtn) checkoutBtn.addEventListener('click', ()=>{ 
         // Sync cart to checkout page
@@ -304,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function setupWhyBuyFlickity() {
     const container = document.getElementById('why-buy-row');
     if (!container) return;
-    const cells = Array.from(container.querySelectorAll('.col-md-4'));
+    const cells = Array.from(container.querySelectorAll('.col-md-4, .carousel-cell'));
     const breakpoint = 768;
     if (window.innerWidth <= breakpoint) {
         // initialize flickity if not already initialized
@@ -328,26 +335,102 @@ function setupWhyBuyFlickity() {
             container._flkty = flkty;
         }
     } else {
-        // destroy flickity if exists and restore layout
+        // destroy flickity if exists and restore layout immediately
         if (container._flkty) {
             container._flkty.destroy();
             delete container._flkty;
+            container.classList.remove('why-buy-carousel');
+            // Immediately restore grid layout
+            cells.forEach(cell => {
+                cell.classList.remove('carousel-cell', 'col-12');
+                if (!cell.classList.contains('col-md-4')) {
+                    cell.classList.add('col-md-4');
+                }
+            });
+            // Force reflow to apply changes immediately
+            container.style.display = 'none';
+            container.offsetHeight; // trigger reflow
+            container.style.display = '';
         }
-        cells.forEach(cell => {
-            cell.classList.remove('carousel-cell', 'col-12');
-            if (!cell.classList.contains('col-md-4')) cell.classList.add('col-md-4');
-        });
-        container.classList.remove('why-buy-carousel');
     }
 }
 
-// initialize and listen for resize events (debounce)
+// Initialize benefits Flickity carousel
+function setupBenefitsFlickity() {
+    const container = document.getElementById('benefits-row');
+    if (!container) return;
+    const cells = Array.from(container.querySelectorAll('.col-md-4, .carousel-cell'));
+    const breakpoint = 768;
+    if (window.innerWidth <= breakpoint) {
+        // initialize flickity if not already initialized
+        if (!container._flkty) {
+            // convert column classes: set these as Flickity cells
+            cells.forEach(cell => {
+                cell.classList.add('carousel-cell');
+                cell.classList.add('col-12');
+                cell.classList.remove('col-md-4');
+            });
+            container.classList.add('benefits-carousel');
+            const flkty = new Flickity(container, {
+                cellSelector: '.carousel-cell',
+                contain: true,
+                pageDots: true,
+                prevNextButtons: false,
+                draggable: true,
+                wrapAround: false,
+                groupCells: 1
+            });
+            container._flkty = flkty;
+        }
+    } else {
+        // destroy flickity if exists and restore layout immediately
+        if (container._flkty) {
+            container._flkty.destroy();
+            delete container._flkty;
+            container.classList.remove('benefits-carousel');
+            // Immediately restore grid layout
+            cells.forEach(cell => {
+                cell.classList.remove('carousel-cell', 'col-12');
+                if (!cell.classList.contains('col-md-4')) {
+                    cell.classList.add('col-md-4');
+                }
+            });
+            // Force reflow to apply changes immediately
+            container.style.display = 'none';
+            container.offsetHeight; // trigger reflow
+            container.style.display = '';
+        }
+    }
+}
+
+// initialize and listen for resize events with faster response
 let _resizeTimer;
+let _lastWidth = window.innerWidth;
 window.addEventListener('resize', () => {
-    clearTimeout(_resizeTimer);
-    _resizeTimer = setTimeout(() => { setupWhyBuyFlickity(); }, 150);
+    const currentWidth = window.innerWidth;
+    const crossedBreakpoint = (_lastWidth <= 768 && currentWidth > 768) || (_lastWidth > 768 && currentWidth <= 768);
+    
+    if (crossedBreakpoint) {
+        // Immediate execution when crossing breakpoint
+        clearTimeout(_resizeTimer);
+        setupWhyBuyFlickity();
+        setupBenefitsFlickity();
+        _lastWidth = currentWidth;
+    } else {
+        // Debounce for other resize events
+        clearTimeout(_resizeTimer);
+        _resizeTimer = setTimeout(() => {
+            setupWhyBuyFlickity();
+            setupBenefitsFlickity();
+            _lastWidth = currentWidth;
+        }, 100);
+    }
 });
-document.addEventListener('DOMContentLoaded', setupWhyBuyFlickity);
+document.addEventListener('DOMContentLoaded', () => {
+    setupWhyBuyFlickity();
+    setupBenefitsFlickity();
+    _lastWidth = window.innerWidth;
+});
 let currentSlide = 0;
 const slides = document.querySelectorAll('.slide');
 const totalSlides = slides.length;
@@ -397,32 +480,83 @@ window.addEventListener('scroll', () => {
     lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; 
 });
 
-// Video Banner Controls
-const videoControl = document.getElementById('video-control');
-const featuredVideo = document.getElementById('featured-video');
-const playIcon = document.querySelector('.video-play-icon');
-const pauseIcon = document.querySelector('.video-pause-icon');
-
-if (videoControl && featuredVideo) {
-    // Initially video is playing (autoplay), so show pause icon
-    if (playIcon) playIcon.style.display = 'none';
-    if (pauseIcon) pauseIcon.style.display = 'block';
+// Featured Product Gallery Slider
+document.addEventListener('DOMContentLoaded', function() {
+    const galleryTrack = document.querySelector('.featured-gallery-track');
+    const prevBtn = document.querySelector('.featured-gallery-prev');
+    const nextBtn = document.querySelector('.featured-gallery-next');
+    const thumbnails = document.querySelectorAll('.thumbnail-btn');
+    const quantityInput = document.querySelector('.quantity-selector input[type="number"]');
+    const decreaseBtn = document.querySelector('.quantity-decrease');
+    const increaseBtn = document.querySelector('.quantity-increase');
     
-    videoControl.addEventListener('click', () => {
-        if (featuredVideo.paused) {
-            featuredVideo.play();
-            if (playIcon) playIcon.style.display = 'none';
-            if (pauseIcon) pauseIcon.style.display = 'block';
-        } else {
-            featuredVideo.pause();
-            if (playIcon) playIcon.style.display = 'block';
-            if (pauseIcon) pauseIcon.style.display = 'none';
+    if (!galleryTrack) return;
+    
+    let currentGallerySlide = 0;
+    const totalGallerySlides = document.querySelectorAll('.featured-gallery-slide').length;
+    
+    function updateGallerySlide(index) {
+        if (index < 0 || index >= totalGallerySlides) return;
+        
+        currentGallerySlide = index;
+        galleryTrack.style.transform = `translateX(-${currentGallerySlide * 100}%)`;
+        
+        // Update thumbnail active state
+        thumbnails.forEach((thumb, i) => {
+            thumb.classList.toggle('active', i === currentGallerySlide);
+        });
+        
+        // Update navigation buttons
+        if (prevBtn) prevBtn.classList.toggle('d-none', currentGallerySlide === 0);
+        if (nextBtn) nextBtn.classList.toggle('d-none', currentGallerySlide === totalGallerySlides - 1);
+    }
+    
+    // Navigation buttons
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            updateGallerySlide(currentGallerySlide - 1);
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            updateGallerySlide(currentGallerySlide + 1);
+        });
+    }
+    
+    // Thumbnail navigation
+    thumbnails.forEach((thumb, index) => {
+        thumb.addEventListener('click', () => {
+            updateGallerySlide(index);
+        });
+    });
+    
+    // Quantity selector
+    if (quantityInput && decreaseBtn && increaseBtn) {
+        function updateQuantityButtons() {
+            const value = parseInt(quantityInput.value) || 1;
+            decreaseBtn.disabled = value <= 1;
         }
-    });
+        
+        decreaseBtn.addEventListener('click', () => {
+            const currentValue = parseInt(quantityInput.value) || 1;
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+                updateQuantityButtons();
+            }
+        });
+        
+        increaseBtn.addEventListener('click', () => {
+            const currentValue = parseInt(quantityInput.value) || 1;
+            quantityInput.value = currentValue + 1;
+            updateQuantityButtons();
+        });
+        
+        quantityInput.addEventListener('input', updateQuantityButtons);
+        updateQuantityButtons();
+    }
     
-    // Handle video end
-    featuredVideo.addEventListener('ended', () => {
-        if (playIcon) playIcon.style.display = 'block';
-        if (pauseIcon) pauseIcon.style.display = 'none';
-    });
-}
+    // Initialize
+    updateGallerySlide(0);
+});
+
