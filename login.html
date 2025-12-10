@@ -122,6 +122,9 @@
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100">Đăng Nhập</button>
+                        <div class="my-3">
+                            <button type="button" id="googleSignInBtn" class="btn btn-outline-danger w-100">Sign in with Google</button>
+                        </div>
                         <p class="text-center mt-3">Chưa có tài khoản? <a href="register.html">Đăng ký tại đây</a></p>
                     </form>
                 </div>
@@ -266,6 +269,8 @@
                     localStorage.setItem('isLoggedIn', 'true');
                     localStorage.setItem('isAdmin', isAdmin.toString());
 
+                    localStorage.setItem("token", data.token);
+
                     try {
                         localStorage.setItem('userData', JSON.stringify(data.user));
                     } catch (err) {
@@ -287,6 +292,39 @@
                 alert('❌ Không kết nối được server. Kiểm tra backend đang chạy chưa.');
             }
         });
+
+        // --- GOOGLE OAUTH (popup) ---
+        $('#googleSignInBtn').click(function () {
+            const popupUrl = 'http://localhost:5000/auth/google?popup=true';
+            const w = 600;
+            const h = 700;
+            const left = Math.round((screen.width - w) / 2);
+            const top = Math.round((screen.height - h) / 2);
+            window.open(popupUrl, 'google_oauth', `width=${w},height=${h},top=${top},left=${left}`);
+        });
+
+        // Listen for messages (from OAuth popup)
+        window.addEventListener('message', function (e) {
+            try {
+                const data = e.data;
+                if (!data || !data.token) return;
+
+                // Save token and user info (follow your existing pattern)
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('isAdmin', (data.role === 'admin').toString());
+                try { localStorage.setItem('userData', JSON.stringify(data.user || {})); } catch (err) { }
+
+                // Redirect based on role
+                if (data.role === 'admin') {
+                    window.location.href = 'admin/dashboard.html';
+                } else {
+                    window.location.href = 'account/profile.html';
+                }
+            } catch (err) {
+                console.error('OAuth message handler error', err);
+            }
+        }, false);
 
         // --- NAVBAR SCROLL BEHAVIOR ---
         let lastScrollTop = 0;

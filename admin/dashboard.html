@@ -476,33 +476,72 @@
             }
         }
 
-        // Load Dashboard Data
+        // Load Dashboard Data (fetch users, orders and items concurrently)
         async function loadDashboardData() {
             try {
                 // TODO: Connect to backend - Implement these endpoints
-                // GET /api/orders - Fetch all orders to calculate dashboard stats
-                // GET /api/items - Fetch all items for product count
-                
-                /* EXPECTED RESPONSE FORMAT:
-                    Orders: [{ order_id, user_id, total_amount, status, order_date }, ...]
-                    Items: [{ item_id, name, price, stock, category_id }, ...]
-                */
+                // GET /api/users, GET /api/orders, GET /api/items
 
-                const response = await fetch('http://localhost:5000/api/orders', {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-                });
-                
-                if (response.ok) {
-                    const orders = await response.json();
-                    // Calculate stats from orders data
-                    document.getElementById('total-orders').textContent = orders.length || 0;
-                    const totalRevenue = orders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
-                    document.getElementById('total-revenue').textContent = `$${totalRevenue.toFixed(2)}`;
-                    const pendingOrders = orders.filter(o => o.status === 'pending').length;
-                    document.getElementById('pending-orders').textContent = pendingOrders;
+                const token = localStorage.getItem('token') || '';
+                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+                const [usersRes, ordersRes, itemsRes] = await Promise.allSettled([
+                    fetch('http://localhost:5000/api/users', { headers }),
+                    fetch('http://localhost:5000/api/orders', { headers }),
+                    fetch('http://localhost:5000/api/items', { headers })
+                ]);
+
+                // Users
+                let users = [];
+                if (usersRes.status === 'fulfilled' && usersRes.value.ok) {
+                    try { users = await usersRes.value.json(); } catch(e) { users = []; }
                 }
+                document.getElementById('total-users').textContent = Array.isArray(users) ? users.length : 0;
+
+                // Orders
+                let orders = [];
+                if (ordersRes.status === 'fulfilled' && ordersRes.value.ok) {
+                    try { orders = await ordersRes.value.json(); } catch(e) { orders = []; }
+                }
+                const totalOrders = Array.isArray(orders) ? orders.length : 0;
+                document.getElementById('total-orders').textContent = totalOrders;
+                const totalRevenue = Array.isArray(orders) ? orders.reduce((sum, o) => sum + (o.total_amount || 0), 0) : 0;
+                document.getElementById('total-revenue').textContent = `$${totalRevenue.toFixed(2)}`;
+                const pendingOrders = Array.isArray(orders) ? orders.filter(o => o.status === 'pending').length : 0;
+                document.getElementById('pending-orders').textContent = pendingOrders;
+
+                // Recent orders list (top 5)
+                const recentList = document.getElementById('recent-orders-list');
+                recentList.innerHTML = '';
+                if (Array.isArray(orders) && orders.length > 0) {
+                    const recent = orders.slice(0,5);
+                    const ul = document.createElement('div');
+                    ul.className = 'list-group';
+                    recent.forEach(o => {
+                        const item = document.createElement('div');
+                        item.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        const left = document.createElement('div');
+                        left.innerHTML = `<strong>#${o.order_id}</strong> — ${o.username || o.email || 'Customer'} <div class="small text-muted">${new Date(o.order_date || o.created_at || Date.now()).toLocaleString()}</div>`;
+                        const right = document.createElement('div');
+                        right.innerHTML = `<span class="badge bg-${getStatusColor(o.status)} me-2">${o.status}</span> <strong>$${(o.total_amount||0).toFixed(2)}</strong>`;
+                        item.appendChild(left);
+                        item.appendChild(right);
+                        ul.appendChild(item);
+                    });
+                    recentList.appendChild(ul);
+                } else {
+                    recentList.innerHTML = '<p class="text-muted">No orders yet</p>';
+                }
+
+                // Items
+                let items = [];
+                if (itemsRes.status === 'fulfilled' && itemsRes.value.ok) {
+                    try { items = await itemsRes.value.json(); } catch(e) { items = []; }
+                }
+                // Optionally show product count somewhere (not present currently)
+
             } catch (err) {
-                console.log('Dashboard stats: Using mock data. Connect backend when ready.');
+                console.log('Dashboard stats: Using mock data. Connect backend when ready.', err);
             }
         }
 
@@ -534,13 +573,18 @@
 
         function renderUsersTable(users) {
             const tbody = document.getElementById('users-table-body');
+            if (!Array.isArray(users) || users.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No users found.</td></tr>`;
+                return;
+            }
+
             tbody.innerHTML = users.map(user => `
                 <tr>
                     <td>${user.user_id}</td>
                     <td>${user.username}</td>
                     <td>${user.email}</td>
                     <td><span class="badge ${user.role === 'admin' ? 'bg-danger' : 'bg-info'}">${user.role}</span></td>
-                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                    <td>${user.created_at ? new Date(user.created_at).toLocaleDateString() : '-'}</td>
                     <td><span class="badge bg-success">Active</span></td>
                     <td>
                         <button class="btn btn-sm btn-warning" onclick="editUser(${user.user_id})"><i class="bi bi-pencil"></i></button>
@@ -579,15 +623,20 @@
 
         function renderOrdersTable(orders) {
             const tbody = document.getElementById('orders-table-body');
+            if (!Array.isArray(orders) || orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No orders found.</td></tr>`;
+                return;
+            }
+
             tbody.innerHTML = orders.map(order => `
                 <tr>
                     <td>#${order.order_id}</td>
                     <td>${order.username || 'N/A'}</td>
-                    <td>${order.email}</td>
+                    <td>${order.email || '-'}</td>
                     <td>${order.item_count || 0}</td>
-                    <td>$${order.total_amount.toFixed(2)}</td>
+                    <td>$${(order.total_amount||0).toFixed(2)}</td>
                     <td><span class="badge bg-${getStatusColor(order.status)}">${order.status}</span></td>
-                    <td>${new Date(order.order_date).toLocaleDateString()}</td>
+                    <td>${order.order_date ? new Date(order.order_date).toLocaleDateString() : '-'}</td>
                     <td>
                         <button class="btn btn-sm btn-primary" onclick="viewOrder(${order.order_id})"><i class="bi bi-eye"></i></button>
                         <button class="btn btn-sm btn-warning" onclick="updateOrderStatus(${order.order_id})"><i class="bi bi-pencil"></i></button>
@@ -636,14 +685,19 @@
 
         function renderProductsTable(products) {
             const tbody = document.getElementById('products-table-body');
+            if (!Array.isArray(products) || products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No products found.</td></tr>`;
+                return;
+            }
+
             tbody.innerHTML = products.map(product => `
                 <tr>
                     <td>${product.item_id}</td>
                     <td>${product.name}</td>
                     <td>${product.category_name || 'N/A'}</td>
-                    <td>$${product.price.toFixed(2)}</td>
+                    <td>$${(product.price||0).toFixed(2)}</td>
                     <td><span class="badge ${product.stock > 0 ? 'bg-success' : 'bg-danger'}">${product.stock}</span></td>
-                    <td>${new Date(product.created_at).toLocaleDateString()}</td>
+                    <td>${product.created_at ? new Date(product.created_at).toLocaleDateString() : '-'}</td>
                     <td>
                         <button class="btn btn-sm btn-warning" onclick="editProduct(${product.item_id})"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.item_id})"><i class="bi bi-trash"></i></button>
@@ -679,12 +733,17 @@
 
         function renderCategoriesTable(categories) {
             const tbody = document.getElementById('categories-table-body');
+            if (!Array.isArray(categories) || categories.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No categories found.</td></tr>`;
+                return;
+            }
+
             tbody.innerHTML = categories.map(category => `
                 <tr>
                     <td>${category.category_id}</td>
                     <td>${category.name}</td>
                     <td>${category.description || 'N/A'}</td>
-                    <td>${new Date(category.created_at).toLocaleDateString()}</td>
+                    <td>${category.created_at ? new Date(category.created_at).toLocaleDateString() : '-'}</td>
                     <td>
                         <button class="btn btn-sm btn-warning" onclick="editCategory(${category.category_id})"><i class="bi bi-pencil"></i></button>
                         <button class="btn btn-sm btn-danger" onclick="deleteCategory(${category.category_id})"><i class="bi bi-trash"></i></button>
