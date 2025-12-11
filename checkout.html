@@ -155,7 +155,7 @@
                         <div class="payment-method active" onclick="selectPayment('zalopay')">
                             <label class="d-flex align-items-center w-100 cursor-pointer">
                                 <input type="radio" name="payment" value="zalopay" checked>
-                                <img src="https://static-s.z.zalopay.vn/images/logo/zalopay_square.png" width="32" alt="ZaloPay" class="mx-2">
+                                <img src="images/icons/Logo-ZaloPay-Square.webp" width="32" alt="ZaloPay" class="mx-2">
                                 <span class="flex-grow-1">Thanh toán ZaloPay QR</span>
                             </label>
                         </div>
@@ -223,8 +223,11 @@
                     
 
                     <!-- Submit Button -->
-                    <button type="submit" class="btn-primary" id="submitBtn" disabled>
+                    <button type="submit" class="btn-primary" id="submitBtn">
                         Thanh toán ngay
+                    </button>
+                    <button type="button" class="btn btn-warning" id="debugBtn" style="margin-left: 10px;">
+                        🐛 DEBUG: Force Success
                     </button>
                 </form>
             </div>
@@ -508,8 +511,11 @@
             }
 
             // Check CAPTCHA
-            if (!turnstileToken) {
-                alert('Vui lòng hoàn thành xác minh CAPTCHA');
+            const captchaInput = document.getElementById('captchaInput').value.trim();
+            if (captchaInput !== captchaText) {
+                alert('❌ Vui lòng hoàn thành xác minh CAPTCHA!');
+                generateCaptcha();
+                document.getElementById('captchaInput').value = '';
                 return;
             }
 
@@ -518,20 +524,34 @@
 
             // Get form data
             const formData = new FormData(this);
+            const subtotalValue = cartData.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const orderData = {
                 email: formData.get('email'),
                 firstName: formData.get('firstName'),
                 lastName: formData.get('lastName'),
+                // Keep original fields for backward compatibility
                 address1: formData.get('address1'),
                 address2: formData.get('address2'),
                 city: formData.get('city'),
                 province: formData.get('province'),
                 postalCode: formData.get('postalCode'),
                 phone: formData.get('phone'),
-                country: formData.get('country'),
                 payment: formData.get('payment'),
+                // Shipping fields (duplicates the above in a normalized form)
+                shipping_name: `${formData.get('firstName') || ''} ${formData.get('lastName') || ''}`.trim(),
+                shipping_address: [formData.get('address1'), formData.get('address2')].filter(Boolean).join(' '),
+                shipping_city: formData.get('city'),
+                shipping_province: formData.get('province'),
+                shipping_postal: formData.get('postalCode'),
+                shipping_phone: formData.get('phone'),
+                country: formData.get('country'),
+                payment_method: formData.get('payment'),
+                // Items + totals
                 items: cartData,
-                total: cartData.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                // numeric total (what frontend displays), and raw total for debugging
+                total: Number((subtotalValue).toFixed(2)),
+                total_raw: subtotalValue,
+                currency: 'VND',
                 turnstileToken: turnstileToken
             };
 
@@ -569,32 +589,51 @@
 
         // Process order
         async function processOrder(orderData) {
-            // In production, send to your backend API
-            // For now, simulate API call
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Send order to backend API
+            try {
+                const resp = await fetch('http://localhost:5000/api/orders/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
 
-            // Save order to localStorage
-            const orders = JSON.parse(localStorage.getItem('orders')) || [];
-            const newOrder = {
-                ...orderData,
-                orderId: 'ORD' + Date.now(),
-                status: orderData.payment === 'cod' ? 'pending' : 'confirmed',
-                createdAt: new Date().toISOString()
-            };
-            orders.push(newOrder);
-            localStorage.setItem('orders', JSON.stringify(orders));
+                const result = await resp.json();
+                
+                if (!resp.ok) {
+                    console.error('Order creation error:', result);
+                    alert('❌ Lỗi khi tạo đơn hàng: ' + (result.error || 'Unknown error'));
+                    document.getElementById('loadingOverlay').classList.remove('active');
+                    return;
+                }
 
-            // Clear cart and checkout items
-            localStorage.removeItem('cart');
-            localStorage.removeItem('cartItems');
-            localStorage.removeItem('checkoutItems');
+                // Save to localStorage as backup
+                const orders = JSON.parse(localStorage.getItem('orders')) || [];
+                const newOrder = {
+                    ...orderData,
+                    orderId: 'ORD' + result.order_id,
+                    status: result.status,
+                    createdAt: new Date().toISOString()
+                };
+                orders.push(newOrder);
+                localStorage.setItem('orders', JSON.stringify(orders));
 
-            // Hide loading
-            document.getElementById('loadingOverlay').classList.remove('active');
+                // Clear cart and checkout items
+                localStorage.removeItem('cart');
+                localStorage.removeItem('cartItems');
+                localStorage.removeItem('checkoutItems');
 
-            // Redirect to order page
-            alert('Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
-            window.location.href = 'account/order.html';
+                // Hide loading
+                document.getElementById('loadingOverlay').classList.remove('active');
+
+                // Redirect to order page
+                alert('✅ Đặt hàng thành công! Cảm ơn bạn đã mua hàng.');
+                window.location.href = 'account/order.html';
+
+            } catch (error) {
+                console.error('Error processing order:', error);
+                alert('❌ Có lỗi xảy ra. Vui lòng thử lại.');
+                document.getElementById('loadingOverlay').classList.remove('active');
+            }
         }
 
         // Initialize
@@ -618,6 +657,42 @@
                         if (errorElement) errorElement.style.display = 'none';
                     }
                 });
+            });
+
+            // Debug button - force successful purchase
+            document.getElementById('debugBtn').addEventListener('click', async function() {
+                const formData = new FormData(document.getElementById('checkoutForm'));
+                const debugSubtotal = cartData.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const orderData = {
+                    email: formData.get('email') || 'debug@test.com',
+                    firstName: formData.get('firstName') || 'Debug',
+                    lastName: formData.get('lastName') || 'User',
+                    // Keep original fields
+                    address1: formData.get('address1') || '123 Debug St',
+                    address2: formData.get('address2') || '',
+                    city: formData.get('city') || 'Debug City',
+                    province: formData.get('province') || 'Debug Province',
+                    postalCode: formData.get('postalCode') || '00000',
+                    phone: formData.get('phone') || '0123456789',
+                    payment: formData.get('payment') || 'cod',
+                    // Shipping duplicates
+                    shipping_name: `${formData.get('firstName') || 'Debug'} ${formData.get('lastName') || 'User'}`,
+                    shipping_address: formData.get('address1') || '123 Debug St',
+                    shipping_city: formData.get('city') || 'Debug City',
+                    shipping_province: formData.get('province') || 'Debug Province',
+                    shipping_postal: formData.get('postalCode') || '00000',
+                    shipping_phone: formData.get('phone') || '0123456789',
+                    country: formData.get('country') || 'Vietnam',
+                    payment_method: formData.get('payment') || 'cod',
+                    items: cartData,
+                    total: Number((debugSubtotal).toFixed(2)),
+                    total_raw: debugSubtotal,
+                    currency: 'VND',
+                    turnstileToken: 'debug'
+                };
+
+                alert('🐛 DEBUG: Forcing successful purchase...');
+                await processOrder(orderData);
             });
         });
 

@@ -597,27 +597,32 @@
         // Load Orders Data
         async function loadOrdersData() {
             try {
-                // TODO: Connect to backend - Implement this endpoint
-                // GET /api/orders - Fetch all orders with user and item details
-                
-                /* EXPECTED RESPONSE FORMAT:
-                    [{ 
-                        order_id, user_id, total_amount, status, order_date, created_at,
-                        username (from users table), email (from users table), 
-                        item_count (count of items in order)
-                    }, ...]
-                */
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.warn('No auth token. Redirecting to login.');
+                    window.location.href = '../login.html';
+                    return;
+                }
 
                 const response = await fetch('http://localhost:5000/api/orders', {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const orders = await response.json();
 
-                if (response.ok && orders.length > 0) {
-                    renderOrdersTable(orders);
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        console.warn('Unauthorized. Redirecting to login.');
+                        window.location.href = '../login.html';
+                        return;
+                    }
+                    throw new Error(`API error: ${response.status}`);
                 }
+
+                const orders = await response.json();
+                renderOrdersTable(orders);
             } catch (err) {
-                console.log('Backend API not connected. Orders will show mock data when ready.');
+                console.error('Error loading orders:', err);
+                const tbody = document.getElementById('orders-table-body');
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Error loading orders: ${err.message}</td></tr>`;
             }
         }
 
@@ -630,19 +635,23 @@
 
             tbody.innerHTML = orders.map(order => `
                 <tr>
-                    <td>#${order.order_id}</td>
-                    <td>${order.username || 'N/A'}</td>
+                    <td><strong>#${order.order_id}</strong></td>
+                    <td>${order.username || 'Guest'}</td>
                     <td>${order.email || '-'}</td>
-                    <td>${order.item_count || 0}</td>
-                    <td>$${(order.total_amount||0).toFixed(2)}</td>
+                    <td><span class="badge bg-secondary">${order.item_count || 0} item${order.item_count !== 1 ? 's' : ''}</span></td>
+                    <td>${formatVND(order.total_amount || 0)}</td>
                     <td><span class="badge bg-${getStatusColor(order.status)}">${order.status}</span></td>
-                    <td>${order.order_date ? new Date(order.order_date).toLocaleDateString() : '-'}</td>
+                    <td>${order.order_date ? new Date(order.order_date).toLocaleDateString('vi-VN') : '-'}</td>
                     <td>
-                        <button class="btn btn-sm btn-primary" onclick="viewOrder(${order.order_id})"><i class="bi bi-eye"></i></button>
-                        <button class="btn btn-sm btn-warning" onclick="updateOrderStatus(${order.order_id})"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-info" onclick="viewOrder(${order.order_id})" title="View details"><i class="bi bi-eye"></i></button>
+                        <button class="btn btn-sm btn-warning" onclick="updateOrderStatus(${order.order_id})" title="Update status"><i class="bi bi-pencil"></i></button>
                     </td>
                 </tr>
             `).join('');
+        }
+
+        function formatVND(amount) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
         }
 
         function getStatusColor(status) {
@@ -803,11 +812,130 @@
         }
 
         function viewOrder(orderId) {
-            alert('View order ' + orderId + ' (Backend integration required)');
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            fetch(`http://localhost:5000/api/orders/${orderId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Failed to fetch order');
+                return res.json();
+            })
+            .then(order => {
+                let itemsHtml = (order.items || []).map(item => `
+                    <tr>
+                        <td>${item.item_name}</td>
+                        <td>${item.quantity}</td>
+                        <td>${formatVND(item.price_each)}</td>
+                        <td>${formatVND(item.quantity * item.price_each)}</td>
+                    </tr>
+                `).join('');
+
+                const modal = `
+                    <div class="modal fade" id="orderDetailsModal" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Order #${order.order_id}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <p><strong>Customer:</strong> ${order.username}</p>
+                                            <p><strong>Email:</strong> ${order.email}</p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p><strong>Status:</strong> <span class="badge bg-${getStatusColor(order.status)}">${order.status}</span></p>
+                                            <p><strong>Order Date:</strong> ${new Date(order.order_date).toLocaleDateString('vi-VN')}</p>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <h6 class="mb-3">Shipping Address</h6>
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <p class="mb-1"><small><strong>Name:</strong> ${order.shipping_name || '-'}</small></p>
+                                            <p class="mb-1"><small><strong>Address:</strong> ${order.shipping_address || '-'}</small></p>
+                                            <p class="mb-1"><small><strong>City:</strong> ${order.shipping_city || '-'}</small></p>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p class="mb-1"><small><strong>Province:</strong> ${order.shipping_province || '-'}</small></p>
+                                            <p class="mb-1"><small><strong>Postal Code:</strong> ${order.shipping_postal || '-'}</small></p>
+                                            <p class="mb-1"><small><strong>Phone:</strong> ${order.shipping_phone || '-'}</small></p>
+                                        </div>
+                                    </div>
+                                    <p class="mb-3"><small><strong>Payment Method:</strong> ${order.payment_method || '-'}</small></p>
+                                    <hr>
+                                    <h6>Items:</h6>
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Item</th>
+                                                <th>Qty</th>
+                                                <th>Price</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${itemsHtml}
+                                        </tbody>
+                                    </table>
+                                    <div class="text-end">
+                                        <h5>Total: ${formatVND(order.total_amount)}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Remove old modal if exists
+                const oldModal = document.getElementById('orderDetailsModal');
+                if (oldModal) oldModal.remove();
+                
+                document.body.insertAdjacentHTML('beforeend', modal);
+                new bootstrap.Modal(document.getElementById('orderDetailsModal')).show();
+            })
+            .catch(err => {
+                console.error('Error viewing order:', err);
+                alert('Error loading order details: ' + err.message);
+            });
         }
 
         function updateOrderStatus(orderId) {
-            alert('Update order ' + orderId + ' status (Backend integration required)');
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            const newStatus = prompt('Enter new status (pending, processing, shipped, delivered, cancelled):', 'pending');
+            if (!newStatus) return;
+
+            fetch(`http://localhost:5000/api/orders/${orderId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: newStatus })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error('Failed to update order');
+                return res.json();
+            })
+            .then(() => {
+                alert('Order status updated successfully');
+                loadOrdersData();
+            })
+            .catch(err => {
+                console.error('Error updating order:', err);
+                alert('Error: ' + err.message);
+            });
         }
 
         // Logout

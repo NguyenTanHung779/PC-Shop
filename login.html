@@ -247,9 +247,17 @@
 
             const loginId = $('#login-id').val().trim();
             const password = $('#password').val().trim();
+            const captchaInput = $('#captchaInput').val().trim();
 
             if (!loginId || !password) {
-                alert("❌ Hông được bỏ trống nha bé ơi!");
+                alert("❌ Hông được bỏ trống nha!");
+                return;
+            }
+
+            if (captchaInput !== captchaText) {
+                alert("❌ Captcha sai rồi! Thử lại nha!");
+                generateCaptcha();
+                $('#captchaInput').val('');
                 return;
             }
 
