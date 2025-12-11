@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="../CSS/Products.css">
+    <link rel="stylesheet" href="../CSS/cart.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <!-- Header (same as other pages) -->
+    <header class="text-white">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+                <a class="navbar-brand" href="../home.html">
+                    <img src="../images/FIREPCmini.png" alt="Logo" class="img-fluid site-logo">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto main-nav">
+                        <li class="nav-item"><a class="nav-link" href="../home.html">TRANG CHỦ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../gaming-pc-prebuilts.html">CỬA HÀNG</a></li>
+                        <li class="nav-item"><a class="nav-link" href="../contact.html">LIÊN HỆ</a></li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto user-nav">
+                        <li class="nav-item" id="login-register">
+                            <a class="nav-link login-icon-btn" href="../login.html" title="Login">Login</a>
+                        </li>
+                        <li class="nav-item cart-item">
+                            <a class="nav-link cart-toggle" href="#" role="button" id="cart-toggle">Cart</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="product-container">
+        <div class="product-main">
+            <div class="product-gallery">
+                <div class="main-image">
+                    <button class="gallery-arrow arrow-left" id="prevImage">&lt;</button>
+                    <img src="../images/placeholder.png" alt="Product" id="mainImage">
+                    <button class="gallery-arrow arrow-right" id="nextImage">&gt;</button>
+                </div>
+                <div class="thumbnail-list">
+                    <!-- thumbnails will be injected -->
+                </div>
+            </div>
+
+            <div class="product-info">
+                <h1 class="product-title">Loading...</h1>
+                <div class="product-price">&nbsp;</div>
+                <div class="product-description" id="productDescription">
+                    <!-- description injected -->
+                </div>
+
+                <div id="dynamic-specs" class="specs-list"></div>
+
+                <div class="stock-status" id="stockStatus">
+                    <span class="stock-dot"></span>
+                    <span id="stockText">Checking stock...</span>
+                </div>
+
+                <div class="buy-section">
+                    <div class="quantity-selector d-flex align-items-center border rounded">
+                        <button type="button" class="btn btn-sm border-0 quantity-btn quantity-decrease d-flex align-items-center justify-content-center" id="decreaseQty" style="width: 40px; height: 44px;">-</button>
+                        <input type="number" class="form-control border-0 text-center quantity-input" value="1" min="1" id="quantity" style="width: 40px; height: 44px; padding: 0; font-size: 16px;">
+                        <button type="button" class="btn btn-sm border-0 quantity-btn quantity-increase d-flex align-items-center justify-content-center" id="increaseQty" style="width: 40px; height: 44px;">+</button>
+                    </div>
+                    <button class="add-to-cart-btn btn btn-dark" id="addToCartBtn" data-product="" data-price="0" disabled>
+                        <span id="buyLabel">Thêm vào giỏ</span>
+                        <span>- <span id="totalPrice">0₫</span></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="specifications-section">
+            <h2 class="section-title">Bao Gồm Trong Hộp</h2>
+            <div class="specifications-wrapper">
+                <div class="accordion-list">
+                    <!-- keep a few helpful static accordion notes -->
+                    <div class="accordion">
+                        <div class="accordion-header"><span>PC Đã Cập Nhật & Cấu Hình</span><span class="accordion-icon">+</span></div>
+                        <div class="accordion-content"><div class="accordion-body"><p>Tất cả PC đều sẵn sàng sử dụng với các điều kiện sau.</p></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../JS/script.js"></script>
+    <script>
+    (async function(){
+        function qsel(s){return document.querySelector(s)}
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        if (!id) {
+            qsel('.product-title').textContent = 'Missing product id';
+            qsel('#productDescription').innerHTML = '<p>Product id is required in the URL: ?id=123</p>';
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/view/items');
+            if (!res.ok) throw new Error('Failed to fetch items');
+            const json = await res.json();
+            const items = json.data || [];
+            const item = items.find(it => String(it.item_id) === String(id) || String(it.item_id) === id);
+            if (!item) {
+                qsel('.product-title').textContent = 'Product not found';
+                qsel('#productDescription').innerHTML = '<p>Không tìm thấy sản phẩm.</p>';
+                return;
+            }
+
+            // populate basic fields
+            qsel('.product-title').textContent = item.name || 'Unnamed';
+            const priceNum = Number(item.price) || 0;
+            qsel('.product-price').textContent = new Intl.NumberFormat('vi-VN', { style:'currency', currency:'VND' }).format(priceNum);
+            qsel('#productDescription').innerHTML = item.description || '';
+
+            // images
+            const mainImage = qsel('#mainImage');
+            mainImage.src = item.image_url || '../images/placeholder.png';
+            const thumbs = qsel('.thumbnail-list');
+            thumbs.innerHTML = '';
+            const thumbHtml = `<div class="thumbnail active" data-image="${item.image_url || ''}"><img src="${item.image_url || ''}" alt=""></div>`;
+            thumbs.innerHTML = thumbHtml;
+
+            // stock
+            const stockText = qsel('#stockText');
+            if (item.stock && Number(item.stock) > 0) {
+                stockText.textContent = 'Còn hàng';
+                qsel('#addToCartBtn').disabled = false;
+            } else {
+                stockText.textContent = 'Hết Hàng';
+                qsel('#addToCartBtn').disabled = true;
+            }
+
+            // setup price for quantity
+            window.__productPrice = priceNum;
+            function updateTotalPriceDynamic(){
+                const price = window.__productPrice || 0;
+                const qty = Number(qsel('#quantity').value || 1);
+                const total = price * qty;
+                qsel('#totalPrice').textContent = new Intl.NumberFormat('vi-VN', { style:'currency', currency:'VND' }).format(total);
+            }
+            // wire quantity buttons
+            qsel('#increaseQty').addEventListener('click', ()=>{ qsel('#quantity').value = Number(qsel('#quantity').value || 1) + 1; updateTotalPriceDynamic(); });
+            qsel('#decreaseQty').addEventListener('click', ()=>{ if (Number(qsel('#quantity').value) > 1) qsel('#quantity').value = Number(qsel('#quantity').value) - 1; updateTotalPriceDynamic(); });
+            qsel('#quantity').addEventListener('change', updateTotalPriceDynamic);
+            updateTotalPriceDynamic();
+
+            // add to cart button (simple localStorage implementation)
+            qsel('#addToCartBtn').addEventListener('click', ()=>{
+                if (qsel('#addToCartBtn').disabled) return;
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                const qty = Number(qsel('#quantity').value || 1);
+                cart.push({ item_id: item.item_id, name: item.name, price: priceNum, quantity: qty, image: item.image_url });
+                localStorage.setItem('cart', JSON.stringify(cart));
+                alert('Added to cart');
+            });
+
+        } catch (err) {
+            console.error(err);
+            qsel('.product-title').textContent = 'Error loading product';
+            qsel('#productDescription').innerHTML = '<p>Error loading product data</p>';
+        }
+    })();
+    </script>
+
+    <footer class="text-white py-5 site-footer">
+        <div class="container text-center">
+            <p class="mb-0 small text-muted">© 2025 bởi FirePCGaming LLC</p>
+        </div>
+    </footer>
+</body>
+</html>
