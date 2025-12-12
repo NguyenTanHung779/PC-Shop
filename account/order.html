@@ -148,21 +148,64 @@
     </div>
 
     <script>
-        // Load orders from localStorage
-        function loadOrders() {
+        // Load orders: try server first, fall back to localStorage
+        async function loadOrders() {
+            // require logged in user data
+            const userDataRaw = localStorage.getItem('userData');
             const userEmail = localStorage.getItem('userEmail');
-            if (!userEmail) {
+            let user = null;
+            try {
+                if (userDataRaw) user = JSON.parse(userDataRaw);
+            } catch (e) {
+                console.warn('Invalid userData in localStorage', e);
+            }
+
+            if (!user && !userEmail) {
                 document.getElementById('empty-state').style.display = 'block';
                 return;
             }
 
-            // Get all orders from localStorage
-            const allOrders = JSON.parse(localStorage.getItem('orders')) || [];
-            
-            // Filter orders for current user
-            const userOrders = allOrders.filter(order => order.email === userEmail);
+            // Attempt to fetch orders from server viewer endpoint.
+            // Treat server response as authoritative (even if empty).
+            let allOrders = [];
+            let fetchedFromServer = false;
+            try {
+                const res = await fetch('/api/view/orders');
+                if (res.ok) {
+                    const data = await res.json();
+                    // server viewer returns rows directly
+                    allOrders = Array.isArray(data) ? data : (data.data || []);
+                    fetchedFromServer = true;
+                } else {
+                    console.info('Server orders endpoint returned non-OK status', res.status);
+                }
+            } catch (err) {
+                // ignore and fall back to localStorage
+                console.info('Server orders not available, will fall back to local cache', err);
+            }
 
-            if (userOrders.length === 0) {
+            // If we couldn't fetch from server (network error / non-OK), use localStorage cache
+            if (!fetchedFromServer) {
+                allOrders = JSON.parse(localStorage.getItem('orders')) || [];
+            }
+
+            // Normalize and filter by user id (preferred) or email
+            const userId = user && (user.user_id || user.id || user.userId);
+            const userIdentifierEmail = (user && user.email) || userEmail;
+
+            const userOrders = allOrders.filter(order => {
+                // support different possible field names
+                if (userId && (order.user_id || order.userId || order.userId)) {
+                    return Number(order.user_id || order.userId) === Number(userId);
+                }
+                if (userIdentifierEmail) {
+                    // some stored orders use `email` or `customerEmail`
+                    return (order.email && order.email === userIdentifierEmail) || (order.customerEmail && order.customerEmail === userIdentifierEmail);
+                }
+                return false;
+            });
+
+            if (!userOrders || userOrders.length === 0) {
                 document.getElementById('empty-state').style.display = 'block';
                 document.getElementById('orders-container').style.display = 'none';
                 return;
@@ -171,11 +214,12 @@
             // Hide empty state and show orders
             document.getElementById('empty-state').style.display = 'none';
             document.getElementById('orders-container').style.display = 'block';
-            
+
             // Display each order
             const ordersContainer = document.getElementById('orders-container');
             ordersContainer.innerHTML = '';
-            
+
+            // show newest first
             userOrders.reverse().forEach(order => {
                 const orderCard = createOrderCard(order);
                 ordersContainer.appendChild(orderCard);
@@ -309,8 +353,31 @@
             document.getElementById('menu-email').textContent = email;
         }
 
+        // If this load is a full page reload, clear cached orders so we fetch fresh data.
+        function clearOrderCacheOnReload() {
+            try {
+                let isReload = false;
+                const navEntries = performance.getEntriesByType && performance.getEntriesByType('navigation');
+                if (navEntries && navEntries.length > 0) {
+                    isReload = navEntries[0].type === 'reload';
+                } else if (performance.navigation) {
+                    // fallback for older browsers
+                    isReload = performance.navigation.type === 1;
+                }
+
+                if (isReload) {
+                    // clear only orders cache to avoid logging out the user
+                    localStorage.removeItem('orders');
+                    console.info('Cleared local orders cache due to page reload');
+                }
+            } catch (e) {
+                console.warn('Could not determine navigation type', e);
+            }
+        }
+
         // Initialize page
         checkLogin();
+        clearOrderCacheOnReload();
         loadOrders();
         loadUserEmail();
     </script>
