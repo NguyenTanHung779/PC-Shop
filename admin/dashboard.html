@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../CSS/admin.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <div class="admin-container">
@@ -44,6 +45,11 @@
                 <li class="nav-item">
                     <a href="#categories" class="nav-link" data-section="categories">
                         <i class="bi bi-tag"></i> Categories
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#pcparts" class="nav-link" data-section="pcparts">
+                        <i class="bi bi-cpu"></i> PC Parts
                     </a>
                 </li>
                 <li class="nav-item border-top mt-3 pt-3">
@@ -124,6 +130,23 @@
                         </div>
                     </div>
 
+                    <div class="row g-4 mb-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Revenue Overview</h5>
+                                    <select class="form-select form-select-sm" id="revenue-period" style="max-width: 150px;">
+                                        <option value="monthly" selected>Monthly</option>
+                                        <option value="yearly">Yearly</option>
+                                    </select>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="revenueChart" style="max-height: 300px;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row g-4">
                         <div class="col-lg-8">
                             <div class="card">
@@ -143,8 +166,11 @@
                                     <h5 class="mb-0">Order Status</h5>
                                 </div>
                                 <div class="card-body">
-                                    <div id="order-status-chart" style="text-align: center;">
-                                        <p class="text-muted">Pending | Processing | Shipped | Delivered</p>
+                                    <div id="order-status-chart">
+                                        <div class="text-center">
+                                            <p class="text-muted mb-2">Orders by Status</p>
+                                            <div id="status-breakdown"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -195,7 +221,6 @@
                             <select class="form-select form-select-sm" id="order-status-filter" style="max-width: 200px;">
                                 <option value="">All Statuses</option>
                                 <option value="pending">Pending</option>
-                                <option value="processing">Processing</option>
                                 <option value="shipped">Shipped</option>
                                 <option value="delivered">Delivered</option>
                                 <option value="cancelled">Cancelled</option>
@@ -257,6 +282,58 @@
                                     <tbody id="products-table-body">
                                         <tr>
                                             <td colspan="7" class="text-center text-muted">No products found. Connect to backend API.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PC Parts Section -->
+                <section id="pcparts-section" class="content-section">
+                    <div class="section-header">
+                        <h2>PC Parts (Specifications)</h2>
+                        <div class="d-flex gap-2 align-items-center">
+                            <select class="form-select form-select-sm" id="pcparts-section-filter" style="max-width: 200px;">
+                                <option value="">All Sections</option>
+                                <option value="CPU">CPU</option>
+                                <option value="GPU">GPU</option>
+                                <option value="RAM">RAM</option>
+                                <option value="Storage">Storage</option>
+                                <option value="Motherboard">Motherboard</option>
+                                <option value="PSU">PSU</option>
+                                <option value="Cooling">Cooling</option>
+                                <option value="Case">Case</option>
+                                <option value="General">General</option>
+                            </select>
+                            <button class="btn btn-danger btn-sm" id="deleteSelectedPCPartsBtn" onclick="deleteSelectedPCParts()" style="display:none;">
+                                <i class="bi bi-trash"></i> Delete Selected (<span id="selectedPCPartsCount">0</span>)
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="openAddPCPartModal()">
+                                <i class="bi bi-plus-lg"></i> Add PC Part
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><input type="checkbox" id="selectAllPCParts" onchange="toggleSelectAllPCParts(this)"></th>
+                                            <th>Spec ID</th>
+                                            <th>Section</th>
+                                            <th>Key</th>
+                                            <th>Value</th>
+                                            <th>Display Order</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pcparts-table-body">
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted">No PC parts found.</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -342,42 +419,168 @@
 
     <!-- Add/Edit Product Modal -->
     <div class="modal fade" id="productModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="productModalTitle">Add Product</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="productForm">
+                    <input type="hidden" id="product-id">
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="product-name" class="form-label">Product Name</label>
-                            <input type="text" class="form-control" id="product-name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="product-category" class="form-label">Category</label>
-                            <select class="form-select" id="product-category" required>
-                                <option value="">Select a category</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="product-price" class="form-label">Price</label>
-                            <input type="number" class="form-control" id="product-price" step="0.01" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="product-stock" class="form-label">Stock</label>
-                            <input type="number" class="form-control" id="product-stock" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="product-description" class="form-label">Description</label>
-                            <textarea class="form-control" id="product-description" rows="3"></textarea>
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basic-info" type="button" role="tab">
+                                    <i class="bi bi-info-circle"></i> Basic Info
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs-info" type="button" role="tab">
+                                    <i class="bi bi-gear"></i> Specifications
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="images-tab" data-bs-toggle="tab" data-bs-target="#images-info" type="button" role="tab">
+                                    <i class="bi bi-images"></i> Images
+                                </button>
+                            </li>
+                        </ul>
+
+                        <!-- Tab content -->
+                        <div class="tab-content mt-3">
+                            <!-- Basic Info Tab -->
+                            <div class="tab-pane fade show active" id="basic-info" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="product-name" class="form-label">Product Name <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="product-name" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="product-category" class="form-label">Category <span class="text-danger">*</span></label>
+                                            <select class="form-select" id="product-category" required>
+                                                <option value="">Select a category</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="product-price" class="form-label">Price (₫) <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control" id="product-price" step="1" min="0" required placeholder="e.g., 32990000">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="product-stock" class="form-label">Stock <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control" id="product-stock" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="product-image-url" class="form-label">Main Image URL</label>
+                                    <input type="url" class="form-control" id="product-image-url" placeholder="https://example.com/image.jpg">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="product-description" class="form-label">Description</label>
+                                    <textarea class="form-control" id="product-description" rows="3"></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Specifications Tab -->
+                            <div class="tab-pane fade" id="specs-info" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6>PC Specifications</h6>
+                                    <div>
+                                        <button type="button" class="btn btn-sm btn-success me-2" onclick="openSelectExistingSpecsModal()">
+                                            <i class="bi bi-list-check"></i> Select Existing
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-primary" onclick="addSpecRow()">
+                                            <i class="bi bi-plus-lg"></i> Add New
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="specs-container">
+                                    <p class="text-muted">No specifications added yet. Click "Add New" to create specs or "Select Existing" to choose from PC Parts library.</p>
+                                </div>
+                            </div>
+
+                            <!-- Images Tab -->
+                            <div class="tab-pane fade" id="images-info" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6>Product Images</h6>
+                                    <div>
+                                        <button type="button" class="btn btn-sm btn-success me-2" onclick="openSelectExistingImagesModal()">
+                                            <i class="bi bi-images"></i> Select Existing
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-primary" onclick="addImageRow()">
+                                            <i class="bi bi-plus-lg"></i> Add New
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="images-container">
+                                    <p class="text-muted">No additional images added yet. Click "Add New" to add URLs or "Select Existing" to choose from image library.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Product</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save Product
+                        </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Select Existing Specs Modal -->
+    <div class="modal fade" id="selectSpecsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select Existing PC Specifications</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="spec-search" placeholder="Search specs by section, key, or value...">
+                    </div>
+                    <div id="existing-specs-list" style="max-height: 400px; overflow-y: auto;">
+                        <p class="text-center text-muted">Loading specifications...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Select Existing Images Modal -->
+    <div class="modal fade" id="selectImagesModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select Existing Images</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="image-search" placeholder="Search images by URL or alt text...">
+                    </div>
+                    <div id="existing-images-list" style="max-height: 500px; overflow-y: auto;">
+                        <p class="text-center text-muted">Loading images...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -390,15 +593,16 @@
                     <h5 class="modal-title" id="categoryModalTitle">Add Category</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form id="categoryForm">
+                <form id="categoryForm" onsubmit="handleCategorySubmit(event)">
+                    <input type="hidden" id="category-id">
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="category-name" class="form-label">Category Name</label>
+                            <label for="category-name" class="form-label">Category Name <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="category-name" required>
                         </div>
                         <div class="mb-3">
                             <label for="category-description" class="form-label">Description</label>
-                            <textarea class="form-control" id="category-description" rows="3"></textarea>
+                            <textarea class="form-control" id="category-description" rows="3" placeholder="Optional description for this category"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -413,22 +617,33 @@
     <script>
         // Check if user is admin
         function checkAdminAccess() {
+            const token = localStorage.getItem('token');
             const isAdmin = localStorage.getItem('isAdmin') === 'true';
             const userData = localStorage.getItem('userData');
 
-            if (!isAdmin || !userData) {
-                alert('Access denied. Admin privileges required.');
+            // If no token, redirect to login
+            if (!token) {
+                console.warn('No token found, redirecting to login');
+                alert('Please login first');
                 window.location.href = '../login.html';
                 return;
             }
 
             // Load admin name
             try {
-                const user = JSON.parse(userData);
-                document.getElementById('admin-name').textContent = user.username || user.email || 'Admin';
+                if (userData) {
+                    const user = JSON.parse(userData);
+                    document.getElementById('admin-name').textContent = user.username || user.email || 'Admin';
+                } else {
+                    document.getElementById('admin-name').textContent = 'Admin';
+                }
             } catch (err) {
                 console.warn('Could not parse user data:', err);
+                document.getElementById('admin-name').textContent = 'Admin';
             }
+
+            // Note: We'll verify admin privileges when calling protected APIs
+            // The backend will return 403 if user is not admin
         }
 
         // Section Navigation
@@ -443,6 +658,31 @@
                 this.classList.add('active');
             });
         });
+
+        // Order status filter
+        document.addEventListener('DOMContentLoaded', function() {
+            const orderStatusFilter = document.getElementById('order-status-filter');
+            if (orderStatusFilter) {
+                orderStatusFilter.addEventListener('change', function() {
+                    filterOrders();
+                });
+            }
+        });
+
+        let allOrders = []; // Store all orders for filtering
+
+        function filterOrders() {
+            const filterValue = document.getElementById('order-status-filter').value;
+            
+            if (filterValue === '') {
+                // Show all orders
+                renderOrdersTable(allOrders);
+            } else {
+                // Filter by status
+                const filtered = allOrders.filter(order => order.status === filterValue);
+                renderOrdersTable(filtered);
+            }
+        }
 
         function showSection(section) {
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
@@ -468,6 +708,10 @@
                 case 'categories':
                     sectionElement = document.getElementById('categories-section');
                     loadCategoriesData();
+                    break;
+                case 'pcparts':
+                    sectionElement = document.getElementById('pcparts-section');
+                    loadPCPartsData();
                     break;
             }
             
@@ -505,10 +749,21 @@
                 }
                 const totalOrders = Array.isArray(orders) ? orders.length : 0;
                 document.getElementById('total-orders').textContent = totalOrders;
-                const totalRevenue = Array.isArray(orders) ? orders.reduce((sum, o) => sum + (o.total_amount || 0), 0) : 0;
-                document.getElementById('total-revenue').textContent = `$${totalRevenue.toFixed(2)}`;
+                
+                // Calculate revenue from delivered orders only
+                const totalRevenue = Array.isArray(orders) 
+                    ? orders.filter(o => o.status === 'delivered').reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0) 
+                    : 0;
+                document.getElementById('total-revenue').textContent = formatVND(totalRevenue);
+                
                 const pendingOrders = Array.isArray(orders) ? orders.filter(o => o.status === 'pending').length : 0;
                 document.getElementById('pending-orders').textContent = pendingOrders;
+
+                // Render status breakdown
+                renderStatusBreakdown(orders);
+
+                // Render revenue chart
+                renderRevenueChart(orders);
 
                 // Recent orders list (top 5)
                 const recentList = document.getElementById('recent-orders-list');
@@ -533,7 +788,7 @@
                     recentList.innerHTML = '<p class="text-muted">No orders yet</p>';
                 }
 
-                // Items
+                // Items (not used in overview currently)
                 let items = [];
                 if (itemsRes.status === 'fulfilled' && itemsRes.value.ok) {
                     try { items = await itemsRes.value.json(); } catch(e) { items = []; }
@@ -544,6 +799,150 @@
                 console.log('Dashboard stats: Using mock data. Connect backend when ready.', err);
             }
         }
+
+        function renderStatusBreakdown(orders) {
+            const statusCounts = {
+                pending: 0,
+                shipped: 0,
+                delivered: 0,
+                cancelled: 0
+            };
+
+            orders.forEach(order => {
+                const status = order.status || 'pending';
+                if (statusCounts.hasOwnProperty(status)) {
+                    statusCounts[status]++;
+                }
+            });
+
+            const container = document.getElementById('status-breakdown');
+            container.innerHTML = Object.entries(statusCounts).map(([status, count]) => `
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="badge bg-${getStatusColor(status)}">${status}</span>
+                    <strong>${count}</strong>
+                </div>
+            `).join('');
+        }
+
+        let revenueChart = null;
+
+        function renderRevenueChart(orders) {
+            const period = document.getElementById('revenue-period').value;
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+
+            // Destroy existing chart
+            if (revenueChart) {
+                revenueChart.destroy();
+            }
+
+            // Filter delivered orders only
+            const deliveredOrders = orders.filter(o => o.status === 'delivered');
+
+            let labels = [];
+            let data = [];
+
+            if (period === 'monthly') {
+                // Last 12 months
+                const monthlyData = {};
+                const now = new Date();
+                
+                // Initialize last 12 months
+                for (let i = 11; i >= 0; i--) {
+                    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                    monthlyData[key] = 0;
+                }
+
+                // Aggregate revenue by month
+                deliveredOrders.forEach(order => {
+                    const orderDate = new Date(order.order_date);
+                    const key = `${orderDate.getFullYear()}-${String(orderDate.getMonth() + 1).padStart(2, '0')}`;
+                    if (monthlyData.hasOwnProperty(key)) {
+                        monthlyData[key] += Number(order.total_amount) || 0;
+                    }
+                });
+
+                labels = Object.keys(monthlyData).map(key => {
+                    const [year, month] = key.split('-');
+                    return new Date(year, month - 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                });
+                data = Object.values(monthlyData);
+            } else {
+                // Yearly - last 5 years
+                const yearlyData = {};
+                const currentYear = new Date().getFullYear();
+                
+                for (let i = 4; i >= 0; i--) {
+                    const year = currentYear - i;
+                    yearlyData[year] = 0;
+                }
+
+                deliveredOrders.forEach(order => {
+                    const year = new Date(order.order_date).getFullYear();
+                    if (yearlyData.hasOwnProperty(year)) {
+                        yearlyData[year] += Number(order.total_amount) || 0;
+                    }
+                });
+
+                labels = Object.keys(yearlyData);
+                data = Object.values(yearlyData);
+            }
+
+            revenueChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Revenue (VNĐ)',
+                        data: data,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Revenue: ' + formatVND(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return new Intl.NumberFormat('vi-VN', { 
+                                        notation: 'compact',
+                                        compactDisplay: 'short'
+                                    }).format(value) + ' ₫';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Event listener for period change
+        document.addEventListener('DOMContentLoaded', function() {
+            const revenuePeriodSelect = document.getElementById('revenue-period');
+            if (revenuePeriodSelect) {
+                revenuePeriodSelect.addEventListener('change', function() {
+                    loadDashboardData();
+                });
+            }
+        });
 
         // Load Users Data
         async function loadUsersData() {
@@ -618,7 +1017,8 @@
                 }
 
                 const orders = await response.json();
-                renderOrdersTable(orders);
+                allOrders = orders; // Store all orders for filtering
+                filterOrders(); // Apply current filter
             } catch (err) {
                 console.error('Error loading orders:', err);
                 const tbody = document.getElementById('orders-table-body');
@@ -657,7 +1057,6 @@
         function getStatusColor(status) {
             const colors = {
                 'pending': 'warning',
-                'processing': 'info',
                 'shipped': 'primary',
                 'delivered': 'success',
                 'cancelled': 'danger'
@@ -667,28 +1066,27 @@
 
         // Load Products Data
         async function loadProductsData() {
+            const tbody = document.getElementById('products-table-body');
+            
             try {
-                // TODO: Connect to backend - Implement this endpoint
-                // GET /api/items - Fetch all products/items
-                
-                /* EXPECTED RESPONSE FORMAT:
-                    [{ 
-                        item_id, name, description, price, stock, category_id, 
-                        image_url, created_at, updated_at,
-                        category_name (from categories table - optional join)
-                    }, ...]
-                */
-
                 const response = await fetch('http://localhost:5000/api/items', {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
+
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+
                 const products = await response.json();
 
-                if (response.ok && products.length > 0) {
+                if (Array.isArray(products)) {
                     renderProductsTable(products);
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Invalid response from server</td></tr>`;
                 }
             } catch (err) {
-                console.log('Backend API not connected. Products will show mock data when ready.');
+                console.error('Error loading products:', err);
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Error: ${err.message}. Please check if server is running.</td></tr>`;
             }
         }
 
@@ -704,12 +1102,13 @@
                     <td>${product.item_id}</td>
                     <td>${product.name}</td>
                     <td>${product.category_name || 'N/A'}</td>
-                    <td>$${(product.price||0).toFixed(2)}</td>
+                    <td>${formatVND(product.price || 0)}</td>
                     <td><span class="badge ${product.stock > 0 ? 'bg-success' : 'bg-danger'}">${product.stock}</span></td>
                     <td>${product.created_at ? new Date(product.created_at).toLocaleDateString() : '-'}</td>
                     <td>
-                        <button class="btn btn-sm btn-warning" onclick="editProduct(${product.item_id})"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.item_id})"><i class="bi bi-trash"></i></button>
+                        <button class="btn btn-sm btn-info" onclick="viewProductDetails(${product.item_id})" title="View Details"><i class="bi bi-eye"></i></button>
+                        <button class="btn btn-sm btn-warning" onclick="editProduct(${product.item_id})" title="Edit"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.item_id})" title="Delete"><i class="bi bi-trash"></i></button>
                     </td>
                 </tr>
             `).join('');
@@ -717,26 +1116,22 @@
 
         // Load Categories Data
         async function loadCategoriesData() {
+            const tbody = document.getElementById('categories-table-body');
+            
             try {
-                // TODO: Connect to backend - Implement this endpoint
-                // GET /api/categories - Fetch all product categories
-                
-                /* EXPECTED RESPONSE FORMAT:
-                    [{ 
-                        category_id, name, description, created_at, updated_at 
-                    }, ...]
-                */
-
                 const response = await fetch('http://localhost:5000/api/categories', {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
-                const categories = await response.json();
 
-                if (response.ok && categories.length > 0) {
-                    renderCategoriesTable(categories);
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
                 }
+
+                const categories = await response.json();
+                renderCategoriesTable(categories);
             } catch (err) {
-                console.log('Backend API not connected. Categories will show mock data when ready.');
+                console.error('Error loading categories:', err);
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Error loading categories: ${err.message}</td></tr>`;
             }
         }
 
@@ -768,16 +1163,286 @@
             new bootstrap.Modal(document.getElementById('userModal')).show();
         }
 
+        let productSpecs = [];
+        let productImages = [];
+
         function openAddProductModal() {
             document.getElementById('productForm').reset();
+            document.getElementById('product-id').value = '';
             document.getElementById('productModalTitle').textContent = 'Add Product';
+            
+            // Reset specs and images
+            productSpecs = [];
+            productImages = [];
+            document.getElementById('specs-container').innerHTML = '<p class="text-muted">No specifications added yet. Click "Add Spec" to add technical specifications.</p>';
+            document.getElementById('images-container').innerHTML = '<p class="text-muted">No additional images added yet. Click "Add Image" to add product images.</p>';
+            
+            // Load categories for dropdown
+            loadCategoriesForDropdown();
+            
             new bootstrap.Modal(document.getElementById('productModal')).show();
+        }
+
+        async function loadCategoriesForDropdown() {
+            try {
+                const response = await fetch('http://localhost:5000/api/categories', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                const categories = await response.json();
+                
+                const select = document.getElementById('product-category');
+                select.innerHTML = '<option value="">Select a category</option>';
+                
+                if (response.ok && Array.isArray(categories)) {
+                    categories.forEach(cat => {
+                        select.innerHTML += `<option value="${cat.category_id}">${cat.name}</option>`;
+                    });
+                }
+            } catch (err) {
+                console.error('Error loading categories:', err);
+            }
+        }
+
+        function addSpecRow() {
+            const container = document.getElementById('specs-container');
+            
+            // Remove "no specs" message if exists
+            if (container.querySelector('.text-muted')) {
+                container.innerHTML = '';
+            }
+            
+            const index = productSpecs.length;
+            const row = document.createElement('div');
+            row.className = 'card mb-2';
+            row.innerHTML = `
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <select class="form-select form-select-sm" id="spec-section-${index}">
+                                <option value="">Select Section</option>
+                                <option value="CPU">CPU</option>
+                                <option value="GPU">GPU</option>
+                                <option value="RAM">RAM</option>
+                                <option value="Storage">Storage</option>
+                                <option value="Motherboard">Motherboard</option>
+                                <option value="PSU">PSU</option>
+                                <option value="Cooling">Cooling</option>
+                                <option value="Case">Case</option>
+                                <option value="General">General</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control form-control-sm" placeholder="Spec Key (e.g., Model)" id="spec-key-${index}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control form-control-sm" placeholder="Spec Value (e.g., RTX 4070)" id="spec-value-${index}" required>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-sm btn-danger w-100" onclick="removeSpecRow(${index})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(row);
+            
+            productSpecs.push({ index });
+        }
+
+        function removeSpecRow(index) {
+            const container = document.getElementById('specs-container');
+            const rows = container.querySelectorAll('.card');
+            if (rows[index]) rows[index].remove();
+            
+            productSpecs.splice(index, 1);
+            
+            if (productSpecs.length === 0) {
+                container.innerHTML = '<p class="text-muted">No specifications added yet. Click "Add Spec" to add technical specifications.</p>';
+            }
+        }
+
+        function addImageRow() {
+            const container = document.getElementById('images-container');
+            
+            // Remove "no images" message if exists
+            if (container.querySelector('.text-muted')) {
+                container.innerHTML = '';
+            }
+            
+            const index = productImages.length;
+            const row = document.createElement('div');
+            row.className = 'card mb-2';
+            row.innerHTML = `
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <input type="url" class="form-control form-control-sm" placeholder="Image URL" id="image-url-${index}" required>
+                        </div>
+                        <div class="col-md-5">
+                            <input type="text" class="form-control form-control-sm" placeholder="Alt Text (optional)" id="image-alt-${index}">
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-sm btn-danger w-100" onclick="removeImageRow(${index})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(row);
+            
+            productImages.push({ index });
+        }
+
+        function removeImageRow(index) {
+            const container = document.getElementById('images-container');
+            const rows = container.querySelectorAll('.card');
+            if (rows[index]) rows[index].remove();
+            
+            productImages.splice(index, 1);
+            
+            if (productImages.length === 0) {
+                container.innerHTML = '<p class="text-muted">No additional images added yet. Click "Add Image" to add product images.</p>';
+            }
+        }
+
+        function renderSpecsList() {
+            const container = document.getElementById('specs-container');
+            container.innerHTML = '';
+            
+            if (productSpecs.length === 0) {
+                container.innerHTML = '<p class="text-muted">No specifications added yet. Click "Add Spec" to add technical specifications.</p>';
+                return;
+            }
+            
+            productSpecs.forEach((spec, index) => {
+                const row = document.createElement('div');
+                row.className = 'card mb-2';
+                const currentSection = spec.section || '';
+                row.innerHTML = `
+                    <div class="card-body">
+                        <div class="row g-2">
+                            <div class="col-md-3">
+                                <select class="form-select form-select-sm" id="spec-section-${index}">
+                                    <option value="">Select Section</option>
+                                    <option value="CPU" ${currentSection === 'CPU' ? 'selected' : ''}>CPU</option>
+                                    <option value="GPU" ${currentSection === 'GPU' ? 'selected' : ''}>GPU</option>
+                                    <option value="RAM" ${currentSection === 'RAM' ? 'selected' : ''}>RAM</option>
+                                    <option value="Storage" ${currentSection === 'Storage' ? 'selected' : ''}>Storage</option>
+                                    <option value="Motherboard" ${currentSection === 'Motherboard' ? 'selected' : ''}>Motherboard</option>
+                                    <option value="PSU" ${currentSection === 'PSU' ? 'selected' : ''}>PSU</option>
+                                    <option value="Cooling" ${currentSection === 'Cooling' ? 'selected' : ''}>Cooling</option>
+                                    <option value="Case" ${currentSection === 'Case' ? 'selected' : ''}>Case</option>
+                                    <option value="General" ${currentSection === 'General' ? 'selected' : ''}>General</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control form-control-sm" placeholder="Spec Key (e.g., Model)" id="spec-key-${index}" value="${spec.key || spec.spec_key || ''}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control form-control-sm" placeholder="Spec Value (e.g., RTX 4070)" id="spec-value-${index}" value="${spec.value || spec.spec_value || ''}" required>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-sm btn-danger w-100" onclick="removeSpecRow(${index})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function renderImagesList() {
+            const container = document.getElementById('images-container');
+            container.innerHTML = '';
+            
+            if (productImages.length === 0) {
+                container.innerHTML = '<p class="text-muted">No additional images added yet. Click "Add Image" to add product images.</p>';
+                return;
+            }
+            
+            productImages.forEach((image, index) => {
+                const row = document.createElement('div');
+                row.className = 'card mb-2';
+                row.innerHTML = `
+                    <div class="card-body">
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <input type="url" class="form-control form-control-sm" placeholder="Image URL" id="image-url-${index}" value="${image.url || image.image_url || ''}" required>
+                            </div>
+                            <div class="col-md-5">
+                                <input type="text" class="form-control form-control-sm" placeholder="Alt Text (optional)" id="image-alt-${index}" value="${image.alt_text || ''}">
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-sm btn-danger w-100" onclick="removeImageRow(${index})">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
         }
 
         function openAddCategoryModal() {
             document.getElementById('categoryForm').reset();
+            document.getElementById('category-id').value = '';
             document.getElementById('categoryModalTitle').textContent = 'Add Category';
             new bootstrap.Modal(document.getElementById('categoryModal')).show();
+        }
+
+        async function handleCategorySubmit(event) {
+            event.preventDefault();
+            
+            const categoryId = document.getElementById('category-id').value;
+            const name = document.getElementById('category-name').value.trim();
+            const description = document.getElementById('category-description').value.trim();
+            
+            if (!name) {
+                alert('Category name is required');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                const isEdit = !!categoryId;
+                const url = isEdit 
+                    ? `http://localhost:5000/api/categories/${categoryId}` 
+                    : 'http://localhost:5000/api/categories';
+                
+                const response = await fetch(url, {
+                    method: isEdit ? 'PUT' : 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, description })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to save category');
+                }
+
+                const result = await response.json();
+                alert(isEdit ? 'Category updated successfully!' : 'Category created successfully!');
+                
+                // Close modal and reload data
+                bootstrap.Modal.getInstance(document.getElementById('categoryModal')).hide();
+                loadCategoriesData();
+            } catch (err) {
+                console.error('Error saving category:', err);
+                alert('Error: ' + err.message);
+            }
         }
 
         // CRUD Operations (placeholder - connect to backend)
@@ -791,23 +1456,292 @@
             }
         }
 
-        function editProduct(productId) {
-            alert('Edit product ' + productId + ' (Backend integration required)');
+        function viewProductDetails(productId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            fetch(`http://localhost:5000/api/public/items/${productId}`)
+                .then(res => {
+                    console.log('Product details response status:', res.status);
+                    if (!res.ok) {
+                        return res.json().then(err => {
+                            throw new Error(err.error || `Server error: ${res.status}`);
+                        }).catch(() => {
+                            throw new Error(`Server error: ${res.status}`);
+                        });
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('Product details data:', data);
+                    const product = data.item;
+                    if (!product) throw new Error('Product not found');
+
+                    // Build specs HTML
+                    let specsHTML = '';
+                    if (product.specs && Object.keys(product.specs).length > 0) {
+                        specsHTML = Object.entries(product.specs).map(([section, specs]) => {
+                            const specsRows = specs.map(spec => `
+                                <tr>
+                                    <td class="fw-semibold" style="width: 40%;">${spec.key}</td>
+                                    <td>${spec.value}</td>
+                                </tr>
+                            `).join('');
+                            
+                            return `
+                                <div class="mb-3">
+                                    <h6 class="fw-bold" style="color: #1e293b;">${section}</h6>
+                                    <table class="table table-sm table-bordered align-middle">
+                                        <tbody>${specsRows}</tbody>
+                                    </table>
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        specsHTML = '<p class="text-muted">No specifications available.</p>';
+                    }
+
+                    // Build images HTML
+                    let imagesHTML = '';
+                    if (product.images && product.images.length > 0) {
+                        imagesHTML = product.images.map(img => `
+                            <img src="${img}" class="img-thumbnail me-2 mb-2" style="max-width: 300px; max-height: 300px;" onerror="this.src='https://via.placeholder.com/300'">
+                        `).join('');
+                    } else if (product.image_url) {
+                        imagesHTML = `<img src="${product.image_url}" class="img-thumbnail" style="max-width: 300px;" onerror="this.src='https://via.placeholder.com/300'">`;
+                    } else {
+                        imagesHTML = '<p class="text-muted">No images available.</p>';
+                    }
+
+                    // Create modal
+                    const modal = `
+                        <div class="modal fade" id="productDetailsModal" tabindex="-1">
+                            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header text-white" style="background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #0f172a 100%);">
+                                        <h5 class="modal-title fw-bold text-white">
+                                            <i class="bi bi-laptop"></i> ${product.name}
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h5 class="fw-bold">/// Product Information</h5>
+                                                <p class="mb-1"><strong>ID:</strong> ${product.item_id}</p>
+                                                <p class="mb-1"><strong>Name:</strong> ${product.name}</p>
+                                                <p class="mb-1"><strong>Price:</strong> <span class="text-success fw-bold">$${Number(product.price||0).toFixed(2)}</span></p>
+                                                <p class="mb-3"><strong>Stock:</strong> <span class="badge ${product.stock > 0 ? 'bg-success' : 'bg-danger'}">${product.stock} units</span></p>
+                                                <h5 class="fw-bold mt-3">/// Description:</h5>
+                                                <p class="text-muted">${product.description || 'N/A'}</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6 class="fw-bold">Product Images</h6>
+                                                ${imagesHTML}
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <h6 class="fw-bold"><i class="bi bi-gear-fill"></i> Technical Specifications</h6>
+                                        ${specsHTML}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Remove existing modal if any
+                    const existingModal = document.getElementById('productDetailsModal');
+                    if (existingModal) existingModal.remove();
+
+                    // Add and show modal
+                    document.body.insertAdjacentHTML('beforeend', modal);
+                    new bootstrap.Modal(document.getElementById('productDetailsModal')).show();
+                })
+                .catch(err => {
+                    console.error('Error viewing product:', err);
+                    alert('Error loading product details: ' + err.message);
+                });
         }
 
-        function deleteProduct(productId) {
-            if (confirm('Are you sure you want to delete this product?')) {
-                alert('Product deleted (Backend integration required)');
+        async function editProduct(productId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                // Fetch product details
+                const response = await fetch(`http://localhost:5000/api/items/${productId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch product');
+                }
+
+                const product = await response.json();
+
+                // Fetch specs for this product
+                const specsResponse = await fetch(`http://localhost:5000/api/public/items/${productId}`);
+                const productData = await specsResponse.json();
+
+                // Populate basic info
+                document.getElementById('product-id').value = product.item_id;
+                document.getElementById('product-name').value = product.name;
+                document.getElementById('product-description').value = product.description || '';
+                document.getElementById('product-price').value = product.price || 0; // Backend already returns multiplied by 100
+                document.getElementById('product-stock').value = product.stock || 0;
+                document.getElementById('product-image-url').value = product.image_url || '';
+                
+                // Load categories and select current one
+                await loadCategoriesForDropdown();
+                document.getElementById('product-category').value = product.category_id || '';
+
+                // Populate specs
+                productSpecs = [];
+                const specsContainer = document.getElementById('specs-container');
+                specsContainer.innerHTML = '';
+
+                if (productData.item && productData.item.specs) {
+                    const specs = productData.item.specs;
+                    Object.keys(specs).forEach(section => {
+                        specs[section].forEach(spec => {
+                            productSpecs.push({
+                                section: section,
+                                key: spec.key,
+                                value: spec.value,
+                                display_order: 0
+                            });
+                        });
+                    });
+                    renderSpecsList();
+                }
+
+                // Populate images
+                productImages = [];
+                const imagesContainer = document.getElementById('images-container');
+                imagesContainer.innerHTML = '';
+
+                if (productData.item && productData.item.images) {
+                    productImages = productData.item.images.map((url, idx) => ({
+                        url: url,
+                        alt_text: product.name,
+                        sort_order: idx
+                    }));
+                    renderImagesList();
+                }
+
+                // Update modal title and show
+                document.getElementById('productModalTitle').textContent = 'Edit Product';
+                new bootstrap.Modal(document.getElementById('productModal')).show();
+            } catch (err) {
+                console.error('Error loading product:', err);
+                alert('Error: ' + err.message);
             }
         }
 
-        function editCategory(categoryId) {
-            alert('Edit category ' + categoryId + ' (Backend integration required)');
+        async function deleteProduct(productId) {
+            if (!confirm('⚠️ Are you sure you want to delete this product?\n\nThis will also delete all associated specifications and images.')) {
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/items/${productId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Failed to delete product');
+                }
+
+                alert('✅ Product deleted successfully!');
+                loadProductsData(); // Reload the products list
+
+            } catch (err) {
+                console.error('Error deleting product:', err);
+                alert('❌ Error deleting product: ' + err.message);
+            }
         }
 
-        function deleteCategory(categoryId) {
-            if (confirm('Are you sure you want to delete this category?')) {
-                alert('Category deleted (Backend integration required)');
+        async function editCategory(categoryId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                // Fetch category details
+                const response = await fetch(`http://localhost:5000/api/categories/${categoryId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch category');
+                }
+
+                const category = await response.json();
+
+                // Populate form
+                document.getElementById('category-id').value = category.category_id;
+                document.getElementById('category-name').value = category.name;
+                document.getElementById('category-description').value = category.description || '';
+                document.getElementById('categoryModalTitle').textContent = 'Edit Category';
+
+                // Show modal
+                new bootstrap.Modal(document.getElementById('categoryModal')).show();
+            } catch (err) {
+                console.error('Error loading category:', err);
+                alert('Error: ' + err.message);
+            }
+        }
+
+        async function deleteCategory(categoryId) {
+            if (!confirm('Are you sure you want to delete this category? Products in this category will have their category removed.')) {
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/categories/${categoryId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to delete category');
+                }
+
+                alert('Category deleted successfully!');
+                loadCategoriesData();
+            } catch (err) {
+                console.error('Error deleting category:', err);
+                alert('Error: ' + err.message);
             }
         }
 
@@ -913,8 +1847,61 @@
                 return;
             }
 
-            const newStatus = prompt('Enter new status (pending, processing, shipped, delivered, cancelled):', 'pending');
-            if (!newStatus) return;
+            // Fetch current order to get current status
+            fetch(`http://localhost:5000/api/orders/${orderId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            })
+            .then(res => res.json())
+            .then(order => {
+                const modal = `
+                    <div class="modal fade" id="updateStatusModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Update Order Status</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="mb-3"><strong>Order #${order.order_id}</strong> - ${order.username}</p>
+                                    <div class="mb-3">
+                                        <label class="form-label">Current Status: <span class="badge bg-${getStatusColor(order.status)}">${order.status}</span></label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="newOrderStatus" class="form-label">New Status</label>
+                                        <select class="form-select" id="newOrderStatus">
+                                            <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                            <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                                            <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                                            <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <button type="button" class="btn btn-primary" onclick="confirmStatusUpdate(${orderId})">Update Status</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                const oldModal = document.getElementById('updateStatusModal');
+                if (oldModal) oldModal.remove();
+                
+                document.body.insertAdjacentHTML('beforeend', modal);
+                new bootstrap.Modal(document.getElementById('updateStatusModal')).show();
+            })
+            .catch(err => {
+                console.error('Error loading order:', err);
+                alert('Error loading order: ' + err.message);
+            });
+        }
+
+        function confirmStatusUpdate(orderId) {
+            const newStatus = document.getElementById('newOrderStatus').value;
+            const token = localStorage.getItem('token');
+
+            console.log('Updating order:', orderId, 'to status:', newStatus);
 
             fetch(`http://localhost:5000/api/orders/${orderId}`, {
                 method: 'PUT',
@@ -924,13 +1911,24 @@
                 },
                 body: JSON.stringify({ status: newStatus })
             })
-            .then(res => {
-                if (!res.ok) throw new Error('Failed to update order');
+            .then(async res => {
+                console.log('Response status:', res.status);
+                if (!res.ok) {
+                    const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
+                    console.error('Server error:', errorData);
+                    throw new Error(errorData.error || `Server returned ${res.status}`);
+                }
                 return res.json();
             })
-            .then(() => {
-                alert('Order status updated successfully');
+            .then((data) => {
+                console.log('Update successful:', data);
+                const modalEl = document.getElementById('updateStatusModal');
+                if (modalEl) {
+                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                    if (modalInstance) modalInstance.hide();
+                }
                 loadOrdersData();
+                alert('Order status updated successfully!');
             })
             .catch(err => {
                 console.error('Error updating order:', err);
@@ -948,9 +1946,560 @@
             }
         }
 
+        // Load PC Parts Data
+        let allPCParts = [];
+
+        async function loadPCPartsData() {
+            const tbody = document.getElementById('pcparts-table-body');
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/view/pc_specs');
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+
+                const result = await response.json();
+                allPCParts = result.data;
+                filterPCParts();
+            } catch (err) {
+                console.error('Error loading PC parts:', err);
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Error: ${err.message}</td></tr>`;
+            }
+        }
+
+        function getSectionColor(section) {
+            const colors = {
+                'CPU': 'danger',        // Red
+                'GPU': 'success',       // Green
+                'RAM': 'primary',       // Blue
+                'Storage': 'warning',   // Yellow
+                'Motherboard': 'info',  // Cyan
+                'PSU': 'secondary',     // Gray
+                'Cooling': 'dark',      // Dark
+                'Case': 'purple',       // Purple (custom)
+                'General': 'light text-dark' // Light gray with dark text
+            };
+            return colors[section] || 'info';
+        }
+
+        function filterPCParts() {
+            const tbody = document.getElementById('pcparts-table-body');
+            const filterValue = document.getElementById('pcparts-section-filter').value;
+            
+            let filtered = allPCParts;
+            if (filterValue) {
+                filtered = allPCParts.filter(spec => (spec.section || 'General') === filterValue);
+            }
+
+            if (Array.isArray(filtered) && filtered.length > 0) {
+                tbody.innerHTML = filtered.map(spec => {
+                    const section = spec.section || 'General';
+                    return `
+                    <tr>
+                        <td><input type="checkbox" class="pcpart-checkbox" value="${spec.spec_id}" onchange="updateSelectedPCPartsCount()"></td>
+                        <td>${spec.spec_id}</td>
+                        <td><span class="badge bg-${getSectionColor(section)}">${section}</span></td>
+                        <td><strong>${spec.spec_key}</strong></td>
+                        <td>${spec.spec_value}</td>
+                        <td>${spec.display_order || 0}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning" onclick="editPCPart(${spec.spec_id})" title="Edit"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deletePCPart(${spec.spec_id})" title="Delete"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                `}).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No PC parts found.</td></tr>`;
+            }
+            updateSelectedPCPartsCount();
+        }
+
+        // PC Parts filter event listener
+        document.addEventListener('DOMContentLoaded', function() {
+            const pcpartsFilter = document.getElementById('pcparts-section-filter');
+            if (pcpartsFilter) {
+                pcpartsFilter.addEventListener('change', filterPCParts);
+            }
+        });
+
+        function toggleSelectAllPCParts(checkbox) {
+            const checkboxes = document.querySelectorAll('.pcpart-checkbox');
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+            updateSelectedPCPartsCount();
+        }
+
+        function updateSelectedPCPartsCount() {
+            const selected = document.querySelectorAll('.pcpart-checkbox:checked');
+            const count = selected.length;
+            document.getElementById('selectedPCPartsCount').textContent = count;
+            document.getElementById('deleteSelectedPCPartsBtn').style.display = count > 0 ? 'block' : 'none';
+            
+            // Update select all checkbox state
+            const selectAllCheckbox = document.getElementById('selectAllPCParts');
+            const allCheckboxes = document.querySelectorAll('.pcpart-checkbox');
+            if (selectAllCheckbox && allCheckboxes.length > 0) {
+                selectAllCheckbox.checked = count === allCheckboxes.length;
+                selectAllCheckbox.indeterminate = count > 0 && count < allCheckboxes.length;
+            }
+        }
+
+        async function deleteSelectedPCParts() {
+            const selected = Array.from(document.querySelectorAll('.pcpart-checkbox:checked')).map(cb => cb.value);
+            
+            if (selected.length === 0) {
+                alert('No PC parts selected');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to delete ${selected.length} PC part(s)? This will remove them from all products using these specs.`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                let deleteCount = 0;
+                let errorCount = 0;
+
+                for (const specId of selected) {
+                    try {
+                        const response = await fetch(`http://localhost:5000/api/pcspecs/${specId}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+
+                        if (response.ok) {
+                            deleteCount++;
+                        } else {
+                            errorCount++;
+                        }
+                    } catch (err) {
+                        errorCount++;
+                        console.error('Error deleting spec:', specId, err);
+                    }
+                }
+
+                if (deleteCount > 0) {
+                    alert(`Successfully deleted ${deleteCount} PC part(s)` + (errorCount > 0 ? ` (${errorCount} failed)` : ''));
+                    loadPCPartsData();
+                } else {
+                    alert('Failed to delete PC parts');
+                }
+            } catch (err) {
+                console.error('Error deleting PC parts:', err);
+                alert('Error: ' + err.message);
+            }
+        }
+
+        function openAddPCPartModal() {
+            alert('Add PC Part feature coming soon - for now, parts are created with products');
+        }
+
+        function editPCPart(specId) {
+            alert('Edit PC Part ' + specId + ' (Feature coming soon)');
+        }
+
+        async function deletePCPart(specId) {
+            if (!confirm('Are you sure you want to delete this PC part? It will be removed from all products using it.')) {
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/pcspecs/${specId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    alert('PC part deleted successfully');
+                    loadPCPartsData();
+                } else {
+                    const error = await response.json();
+                    alert('Error: ' + (error.error || 'Failed to delete PC part'));
+                }
+            } catch (err) {
+                console.error('Error deleting PC part:', err);
+                alert('Error: ' + err.message);
+            }
+        }
+
+        // Select Existing Specs Modal
+        async function openSelectExistingSpecsModal() {
+            const modal = new bootstrap.Modal(document.getElementById('selectSpecsModal'));
+            modal.show();
+
+            try {
+                const response = await fetch('http://localhost:5000/api/view/pc_specs');
+                const result = await response.json();
+                const specs = result.data;
+
+                const container = document.getElementById('existing-specs-list');
+                
+                if (!specs || specs.length === 0) {
+                    container.innerHTML = '<p class="text-center text-muted">No existing specifications found. Create some first by adding products with specs.</p>';
+                    return;
+                }
+
+                // Group specs by section
+                const grouped = {};
+                specs.forEach(spec => {
+                    const section = spec.section || 'General';
+                    if (!grouped[section]) grouped[section] = [];
+                    grouped[section].push(spec);
+                });
+
+                let html = '';
+                Object.entries(grouped).forEach(([section, sectionSpecs]) => {
+                    html += `
+                        <div class="mb-3">
+                            <h6 class="text-primary">${section}</h6>
+                            <div class="list-group">
+                    `;
+                    
+                    sectionSpecs.forEach(spec => {
+                        html += `
+                            <div class="list-group-item list-group-item-action" style="cursor: pointer;" onclick="addExistingSpec('${section}', '${spec.spec_key}', '${spec.spec_value}')">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>${spec.spec_key}</strong>: ${spec.spec_value}
+                                    </div>
+                                    <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); addExistingSpec('${section}', '${spec.spec_key}', '${spec.spec_value}')">
+                                        <i class="bi bi-plus"></i> Add
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+
+                // Add search functionality
+                document.getElementById('spec-search').addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    document.querySelectorAll('#existing-specs-list .list-group-item').forEach(item => {
+                        const text = item.textContent.toLowerCase();
+                        item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+                    });
+                });
+
+            } catch (err) {
+                console.error('Error loading specs:', err);
+                document.getElementById('existing-specs-list').innerHTML = '<p class="text-danger">Error loading specifications.</p>';
+            }
+        }
+
+        function addExistingSpec(section, key, value) {
+            const container = document.getElementById('specs-container');
+            
+            // Remove "no specs" message if exists
+            if (container.querySelector('.text-muted')) {
+                container.innerHTML = '';
+            }
+            
+            const index = productSpecs.length;
+            const row = document.createElement('div');
+            row.className = 'card mb-2 border-success';
+            row.innerHTML = `
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control form-control-sm" value="${section}" id="spec-section-${index}">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control form-control-sm" value="${key}" id="spec-key-${index}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control form-control-sm" value="${value}" id="spec-value-${index}" required>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-sm btn-danger w-100" onclick="removeSpecRow(${index})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(row);
+            
+            productSpecs.push({ index });
+
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('selectSpecsModal')).hide();
+        }
+
+        // Select Existing Images Modal
+        async function openSelectExistingImagesModal() {
+            const modal = new bootstrap.Modal(document.getElementById('selectImagesModal'));
+            modal.show();
+
+            try {
+                const response = await fetch('http://localhost:5000/api/view/item_images');
+                const result = await response.json();
+                const images = result.data;
+
+                const container = document.getElementById('existing-images-list');
+                
+                if (!images || images.length === 0) {
+                    container.innerHTML = '<p class="text-center text-muted">No existing images found. Add some first by creating products with images.</p>';
+                    return;
+                }
+
+                // Get unique images (remove duplicates by URL)
+                const uniqueImages = [];
+                const seenUrls = new Set();
+                images.forEach(img => {
+                    if (!seenUrls.has(img.url)) {
+                        seenUrls.add(img.url);
+                        uniqueImages.push(img);
+                    }
+                });
+
+                let html = '<div class="row g-3">';
+                
+                uniqueImages.forEach(img => {
+                    html += `
+                        <div class="col-md-4 image-item">
+                            <div class="card h-100" style="cursor: pointer;" onclick="addExistingImage('${img.url}', '${img.alt_text || ''}')">
+                                <img src="${img.url}" class="card-img-top" style="height: 200px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/300x200?text=Image+Not+Found'">
+                                <div class="card-body">
+                                    <p class="card-text small text-truncate" title="${img.url}">${img.url}</p>
+                                    ${img.alt_text ? `<p class="card-text small text-muted">${img.alt_text}</p>` : ''}
+                                    <button class="btn btn-sm btn-primary w-100" onclick="event.stopPropagation(); addExistingImage('${img.url}', '${img.alt_text || ''}')">
+                                        <i class="bi bi-plus"></i> Add This Image
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                container.innerHTML = html;
+
+                // Add search functionality
+                document.getElementById('image-search').addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    document.querySelectorAll('#existing-images-list .image-item').forEach(item => {
+                        const text = item.textContent.toLowerCase();
+                        item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+                    });
+                });
+
+            } catch (err) {
+                console.error('Error loading images:', err);
+                document.getElementById('existing-images-list').innerHTML = '<p class="text-danger">Error loading images.</p>';
+            }
+        }
+
+        function addExistingImage(url, altText) {
+            const container = document.getElementById('images-container');
+            
+            // Remove "no images" message if exists
+            if (container.querySelector('.text-muted')) {
+                container.innerHTML = '';
+            }
+            
+            const index = productImages.length;
+            const row = document.createElement('div');
+            row.className = 'card mb-2 border-success';
+            row.innerHTML = `
+                <div class="card-body">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-2">
+                            <img src="${url}" class="img-thumbnail" style="max-height: 60px;" onerror="this.src='https://via.placeholder.com/60'">
+                        </div>
+                        <div class="col-md-5">
+                            <input type="url" class="form-control form-control-sm" value="${url}" id="image-url-${index}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control form-control-sm" value="${altText}" placeholder="Alt Text (optional)" id="image-alt-${index}">
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-sm btn-danger w-100" onclick="removeImageRow(${index})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.appendChild(row);
+            
+            productImages.push({ index });
+
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('selectImagesModal')).hide();
+        }
+
+        // Product Form Submission Handler
+        document.getElementById('productForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            // Check if editing or adding
+            const productId = document.getElementById('product-id').value;
+            const isEdit = !!productId;
+
+            // Collect basic info
+            const name = document.getElementById('product-name').value;
+            const category_id = document.getElementById('product-category').value;
+            const price = parseFloat(document.getElementById('product-price').value) / 100; // Divide by 100 for DB storage
+            const stock = parseInt(document.getElementById('product-stock').value);
+            const image_url = document.getElementById('product-image-url').value || null;
+            const description = document.getElementById('product-description').value || '';
+
+            // Collect specs
+            const specs = [];
+            productSpecs.forEach((spec, idx) => {
+                const section = document.getElementById(`spec-section-${idx}`)?.value || 'General';
+                const key = document.getElementById(`spec-key-${idx}`)?.value;
+                const value = document.getElementById(`spec-value-${idx}`)?.value;
+                
+                if (key && value) {
+                    specs.push({
+                        section: section,
+                        key: key,
+                        value: value,
+                        display_order: idx
+                    });
+                }
+            });
+
+            // Collect images
+            const images = [];
+            productImages.forEach((img, idx) => {
+                const url = document.getElementById(`image-url-${idx}`)?.value;
+                const alt_text = document.getElementById(`image-alt-${idx}`)?.value || '';
+                
+                if (url) {
+                    images.push({
+                        url: url,
+                        alt_text: alt_text,
+                        sort_order: idx
+                    });
+                }
+            });
+
+            try {
+                if (isEdit) {
+                    // Update existing product (basic info only)
+                    const basicData = { name, category_id: category_id || null, price, stock, image_url, description };
+                    
+                    const updateResponse = await fetch(`http://localhost:5000/api/items/${productId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(basicData)
+                    });
+
+                    if (!updateResponse.ok) {
+                        throw new Error('Failed to update product');
+                    }
+
+                    // Delete old specs and images
+                    await fetch(`http://localhost:5000/api/items/${productId}/specs`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    await fetch(`http://localhost:5000/api/items/${productId}/images`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    // Add new specs if any
+                    if (specs.length > 0) {
+                        await fetch(`http://localhost:5000/api/items/${productId}/specs`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ specs })
+                        });
+                    }
+
+                    // Add new images if any
+                    if (images.length > 0) {
+                        await fetch(`http://localhost:5000/api/items/${productId}/images`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ images })
+                        });
+                    }
+
+                    alert('Product updated successfully!');
+                } else {
+                    // Create new product
+                    const productData = {
+                        name,
+                        category_id: category_id || null,
+                        price,
+                        stock,
+                        image_url,
+                        description,
+                        specs,
+                        images
+                    };
+
+                    const response = await fetch('http://localhost:5000/api/items', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(productData)
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(result.error || 'Failed to create product');
+                    }
+
+                    alert(`✅ Product "${name}" created successfully!\nProduct ID: ${result.item_id}`);
+                }
+                
+                // Close modal and reload products
+                bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+                loadProductsData();
+
+            } catch (err) {
+                console.error('Error saving product:', err);
+                alert('❌ Error saving product: ' + err.message);
+            }
+        });
+
         // Initialize
         checkAdminAccess();
         loadDashboardData();
+        loadProductsData(); // Pre-load products
     </script>
 </body>
 </html>

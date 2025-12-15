@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product</title>
+    <title id="page-title">Product - Gaming PC</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../CSS/style.css">
     <link rel="stylesheet" href="../CSS/Products.css">
@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-    <!-- Header (same as other pages) -->
+    <!-- Header -->
     <header class="text-white">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-dark">
@@ -30,19 +30,33 @@
                     </ul>
                     <ul class="navbar-nav ms-auto user-nav">
                         <li class="nav-item" id="login-register">
-                            <a class="nav-link login-icon-btn" href="../login.html" title="Login">Login</a>
+                            <a class="nav-link login-icon-btn" href="../login.html" title="Login">
+                                <span class="sr-only">Login</span>
+                                <svg class="icon icon-account icon-lg" viewBox="0 0 24 24" stroke="currentColor" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="10.5" height="10.5" x="6.75" y="1.75" rx="5.25"></rect>
+                                    <path stroke-linecap="round" d="M12 15.5c1.5 0 4 .333 4.5.5.5.167 3.7.8 4.5 2 1 1.5 1 2 1 4m-10-6.5c-1.5 0-4 .333-4.5.5-.5.167-3.7.8-4.5 2-1 1.5-1 2-1 4"></path>
+                                </svg>
+                            </a>
                         </li>
+                        <li class="nav-item"><a class="nav-link hidden" href="../account/profile.html" id="profile">Hồ Sơ</a></li>
                         <li class="nav-item cart-item">
-                            <a class="nav-link cart-toggle" href="#" role="button" id="cart-toggle">Cart</a>
+                            <a class="nav-link cart-toggle" href="#" role="button" id="cart-toggle">
+                                <svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M1 1h.5v0c.226 0 .339 0 .44.007a3 3 0 0 1 2.62 1.976c.034.095.065.204.127.42l.17.597m0 0 1.817 6.358c.475 1.664.713 2.496 1.198 3.114a4 4 0 0 0 1.633 1.231c.727.297 1.592.297 3.322.297h2.285c1.75 0 2.626 0 3.359-.302a4 4 0 0 0 1.64-1.253c.484-.627.715-1.472 1.175-3.161l.06-.221c.563-2.061.844-3.092.605-3.906a3 3 0 0 0-1.308-1.713C19.92 4 18.853 4 16.716 4H4.857ZM12 20a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm8 0a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"></path>
+                                </svg>
+                                <span id="cart-count" class="cart-count-badge" style="display: none;">0</span>
+                            </a>
                         </li>
                     </ul>
                 </div>
             </nav>
         </div>
     </header>
-
+    
     <div class="product-container">
+        <!-- Main Product Section -->
         <div class="product-main">
+            <!-- Gallery -->
             <div class="product-gallery">
                 <div class="main-image">
                     <button class="gallery-arrow arrow-left" id="prevImage">&lt;</button>
@@ -50,31 +64,78 @@
                     <button class="gallery-arrow arrow-right" id="nextImage">&gt;</button>
                 </div>
                 <div class="thumbnail-list">
-                    <!-- thumbnails will be injected -->
+                    <!-- thumbnails injected dynamically -->
                 </div>
             </div>
 
+            <!-- Product Info -->
             <div class="product-info">
                 <h1 class="product-title">Loading...</h1>
-                <div class="product-price">&nbsp;</div>
+                <div class="product-price">Từ 0₫</div>
+                
                 <div class="product-description" id="productDescription">
-                    <!-- description injected -->
+                    <p>Loading product information...</p>
                 </div>
 
-                <div id="dynamic-specs" class="specs-list"></div>
+                <!-- Specs -->
+                <div class="specs-list" id="specs-list">
+                    <!-- specs injected dynamically -->
+                </div>
 
+                <!-- Highlights -->
+                <div class="highlights" id="highlights">
+                    <div class="highlight-item" id="highlight-cpu">
+                        <div class="highlight-icon">
+                            <img src="https://zttbuilds.com/cdn/shop/files/cpu-svgrepo-com.svg?v=1756930799" alt="CPU">
+                        </div>
+                        <div class="highlight-content">
+                            <div class="highlight-label">N/A</div>
+                            <div class="highlight-sublabel">CPU</div>
+                        </div>
+                    </div>
+                    <div class="highlight-item" id="highlight-gpu">
+                        <div class="highlight-icon">
+                            <img src="https://zttbuilds.com/cdn/shop/files/gpu-card.png?v=1756930913" alt="GPU">
+                        </div>
+                        <div class="highlight-content">
+                            <div class="highlight-label">N/A</div>
+                            <div class="highlight-sublabel">GPU</div>
+                        </div>
+                    </div>
+                    <div class="highlight-item" id="highlight-ram">
+                        <div class="highlight-icon">
+                            <img src="https://zttbuilds.com/cdn/shop/files/ram-memory-svgrepo-com.svg?v=1756931063" alt="RAM">
+                        </div>
+                        <div class="highlight-content">
+                            <div class="highlight-label">N/A</div>
+                            <div class="highlight-sublabel">RAM</div>
+                        </div>
+                    </div>
+                    <div class="highlight-item" id="highlight-storage">
+                        <div class="highlight-icon">
+                            <img src="https://zttbuilds.com/cdn/shop/files/ssd_1.png?v=1756931832" alt="SSD">
+                        </div>
+                        <div class="highlight-content">
+                            <div class="highlight-label">N/A</div>
+                            <div class="highlight-sublabel">SSD</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stock Status -->
                 <div class="stock-status" id="stockStatus">
                     <span class="stock-dot"></span>
                     <span id="stockText">Checking stock...</span>
                 </div>
 
+                <!-- Buy Section -->
                 <div class="buy-section">
                     <div class="quantity-selector d-flex align-items-center border rounded">
                         <button type="button" class="btn btn-sm border-0 quantity-btn quantity-decrease d-flex align-items-center justify-content-center" id="decreaseQty" style="width: 40px; height: 44px;">-</button>
                         <input type="number" class="form-control border-0 text-center quantity-input" value="1" min="1" id="quantity" style="width: 40px; height: 44px; padding: 0; font-size: 16px;">
                         <button type="button" class="btn btn-sm border-0 quantity-btn quantity-increase d-flex align-items-center justify-content-center" id="increaseQty" style="width: 40px; height: 44px;">+</button>
                     </div>
-                    <button class="add-to-cart-btn btn btn-dark" id="addToCartBtn" data-product="" data-price="0" disabled>
+                    <button class="add-to-cart-btn btn btn-dark" id="addToCartBtn" disabled>
                         <span id="buyLabel">Thêm vào giỏ</span>
                         <span>- <span id="totalPrice">0₫</span></span>
                     </button>
@@ -82,104 +143,315 @@
             </div>
         </div>
 
-        <div class="specifications-section">
+        <!-- Specifications Section -->
+        <div class="specifications-section" style="display: none;">
             <h2 class="section-title">Bao Gồm Trong Hộp</h2>
             <div class="specifications-wrapper">
                 <div class="accordion-list">
-                    <!-- keep a few helpful static accordion notes -->
                     <div class="accordion">
                         <div class="accordion-header"><span>PC Đã Cập Nhật & Cấu Hình</span><span class="accordion-icon">+</span></div>
                         <div class="accordion-content"><div class="accordion-body"><p>Tất cả PC đều sẵn sàng sử dụng với các điều kiện sau.</p></div></div>
                     </div>
+                    <div class="accordion">
+                        <div class="accordion-header"><span>Bảo Hành & Hỗ Trợ</span><span class="accordion-icon">+</span></div>
+                        <div class="accordion-content"><div class="accordion-body"><p>1 năm bảo hành linh kiện, hỗ trợ kỹ thuật trọn đời.</p></div></div>
+                    </div>
+                    <div class="accordion">
+                        <div class="accordion-header"><span>Vận Chuyển</span><span class="accordion-icon">+</span></div>
+                        <div class="accordion-content"><div class="accordion-body"><p>Giao hàng toàn quốc với đóng gói chuyên nghiệp.</p></div></div>
+                    </div>
+                </div>
+                
+                <!-- Specs Sidebar -->
+                <div class="specs-sidebar" id="specs-sidebar">
+                    <svg class="icon-box" viewBox="0 0 234 74" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M233 73H1V1H233V73Z" stroke="currentColor" stroke-width="2"></path>
+                    </svg>
+                    <p class="sidebar-title">Bao Gồm Trong Hộp</p>
+                    <ul class="sidebar-items" id="sidebar-items">
+                        <!-- items injected dynamically -->
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Cart Drawer -->
+    <div id="cart-drawer" class="cart-drawer drawer drawer--end" aria-hidden="true">
+        <div class="cart-overlay"></div>
+        <div class="cart-inner">
+            <div class="cart-header d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <h5 class="mb-0">Giỏ Hàng</h5>
+                    <span id="drawer-count" class="badge bg-dark">0</span>
+                </div>
+                <button class="btn-close" id="cart-close"></button>
+            </div>
+            <div class="cart-body">
+                <div id="cart-empty-state" class="cart-empty text-center py-5" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-cart-x mb-3 text-muted" viewBox="0 0 16 16">
+                        <path d="M7.354 5.646a.5.5 0 1 0-.708.708L7.793 7.5 6.646 8.646a.5.5 0 1 0 .708.708L8.5 8.207l1.146 1.147a.5.5 0 0 0 .708-.708L9.207 7.5l1.147-1.146a.5.5 0 0 0-.708-.708L8.5 6.793z"/>
+                        <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1zm3.915 10L3.102 4h10.796l-1.313 7zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0m7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0"/>
+                    </svg>
+                    <p>Giỏ hàng trống</p>
+                </div>
+                <ul id="drawer-items" class="list-unstyled"></ul>
+            </div>
+            <div class="cart-footer" id="cart-footer-content" style="display: none;">
+                <div class="d-flex justify-content-between mb-3">
+                    <div>Tổng Tiền</div>
+                    <div id="drawer-subtotal">0₫</div>
+                </div>
+                <a href="../checkout.html" class="btn btn-dark w-100" id="drawer-checkout">Thanh toán ngay</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-white py-5 site-footer">
+        <div class="container">
+            <div class="row align-items-start">
+                <!-- Left Column - Logo -->
+                <div class="col-md-3 mb-4 mb-md-0">
+                    <div>
+                        <img src="../images/FIREPCmini.png" alt="FirePCGaming Logo" class="site-logo">
+                    </div>
+                </div>
+                
+                <!-- Middle Column - Quick Links -->
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <h5 class="mb-3 fw-bold">Quick links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Chính sách bảo hành & Đổi trả</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">FAQ/Vận chuyển</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">FirePC Discord</a></li>
+                        <li class="mb-2"><a href="#" class="text-white text-decoration-none">Careers</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Right Column - Social Icons -->
+                <div class="col-md-3 text-md-end">
+                    <div class="d-flex gap-3 justify-content-md-end">
+                        <a href="https://discord.com" target="_blank" class="text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M13.545 2.907a13.227 13.227 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.19 12.19 0 0 0-3.658 0 8.258 8.258 0 0 0-.412-.833.051.051 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.041.041 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032c.001.014.01.028.021.037a13.276 13.276 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019c.308-.42.582-.863.818-1.329a.05.05 0 0 0-.01-.059.051.051 0 0 0-.018-.011 8.875 8.875 0 0 1-1.248-.595.05.05 0 0 1-.02-.066.051.051 0 0 1 .015-.019c.084-.063.168-.129.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.052.052 0 0 1 .053.007c.08.066.164.132.248.195a.051.051 0 0 1-.004.085 8.254 8.254 0 0 1-1.249.594.05.05 0 0 0-.03.03.052.052 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.235 13.235 0 0 0 4.001-2.02.049.049 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.034.034 0 0 0-.02-.019Zm-8.198 7.307c-.789 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.45.73 1.438 1.613 0 .888-.637 1.612-1.438 1.612Zm5.316 0c-.788 0-1.438-.724-1.438-1.612 0-.889.637-1.613 1.438-1.613.807 0 1.451.73 1.438 1.613 0 .888-.631 1.612-1.438 1.612Z"/>
+                            </svg>
+                        </a>
+                        <a href="https://youtu.be/dQw4w9WgXcQ?si=anJRhwjNBw9R27Qg" target="_blank" class="text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.007 2.007 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.007 2.007 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31.4 31.4 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.007 2.007 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A99.788 99.788 0 0 1 7.858 2h.193zM6.4 5.209v4.818l4.157-2.408L6.4 5.209z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4 pt-3 footer-border">
+                <div class="col-12 text-center">
+                    <p class="mb-0 small text-white-50">© 2025 bởi FirePCGaming LLC</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
     <script src="../JS/script.js"></script>
     <script>
-    (async function(){
-        function qsel(s){return document.querySelector(s)}
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get('id');
-        if (!id) {
-            qsel('.product-title').textContent = 'Missing product id';
-            qsel('#productDescription').innerHTML = '<p>Product id is required in the URL: ?id=123</p>';
-            return;
-        }
-
-        try {
-            const res = await fetch('/api/view/items');
-            if (!res.ok) throw new Error('Failed to fetch items');
-            const json = await res.json();
-            const items = json.data || [];
-            const item = items.find(it => String(it.item_id) === String(id) || String(it.item_id) === id);
-            if (!item) {
-                qsel('.product-title').textContent = 'Product not found';
-                qsel('#productDescription').innerHTML = '<p>Không tìm thấy sản phẩm.</p>';
+        (async function() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            
+            if (!id) {
+                document.querySelector('.product-title').textContent = 'Missing product ID';
+                document.querySelector('#productDescription').innerHTML = '<p>Product ID is required in the URL: ?id=123</p>';
                 return;
             }
 
-            // populate basic fields
-            qsel('.product-title').textContent = item.name || 'Unnamed';
-            const priceNum = Number(item.price) || 0;
-            qsel('.product-price').textContent = new Intl.NumberFormat('vi-VN', { style:'currency', currency:'VND' }).format(priceNum);
-            qsel('#productDescription').innerHTML = item.description || '';
+            try {
+                const res = await fetch(`http://localhost:5000/api/public/items/${id}`);
+                if (!res.ok) throw new Error('Failed to fetch product');
+                
+                const json = await res.json();
+                const item = json.item;
+                
+                if (!item) {
+                    document.querySelector('.product-title').textContent = 'Product not found';
+                    document.querySelector('#productDescription').innerHTML = '<p>Không tìm thấy sản phẩm.</p>';
+                    return;
+                }
 
-            // images
-            const mainImage = qsel('#mainImage');
-            mainImage.src = item.image_url || '../images/placeholder.png';
-            const thumbs = qsel('.thumbnail-list');
-            thumbs.innerHTML = '';
-            const thumbHtml = `<div class="thumbnail active" data-image="${item.image_url || ''}"><img src="${item.image_url || ''}" alt=""></div>`;
-            thumbs.innerHTML = thumbHtml;
+                // Update page title
+                document.getElementById('page-title').textContent = `${item.name} - Gaming PC`;
+                
+                // Populate basic fields
+                document.querySelector('.product-title').textContent = item.name || 'Unnamed';
+                const priceNum = Number(item.price) || 0;
+                document.querySelector('.product-price').textContent = 'Từ ' + priceNum.toLocaleString('vi-VN') + '₫';
+                document.querySelector('#productDescription').innerHTML = item.description || '<p>Không có mô tả</p>';
 
-            // stock
-            const stockText = qsel('#stockText');
-            if (item.stock && Number(item.stock) > 0) {
-                stockText.textContent = 'Còn hàng';
-                qsel('#addToCartBtn').disabled = false;
-            } else {
-                stockText.textContent = 'Hết Hàng';
-                qsel('#addToCartBtn').disabled = true;
+                // Handle images
+                const mainImage = document.getElementById('mainImage');
+                const thumbnailList = document.querySelector('.thumbnail-list');
+                const images = item.images || [];
+                
+                if (images.length > 0) {
+                    mainImage.src = images[0];
+                    mainImage.alt = item.name;
+                    thumbnailList.innerHTML = images.map((img, idx) => 
+                        `<div class="thumbnail ${idx === 0 ? 'active' : ''}" data-image="${img}">
+                            <img src="${img}" alt="${item.name}">
+                        </div>`
+                    ).join('');
+                } else if (item.image_url) {
+                    mainImage.src = item.image_url;
+                    mainImage.alt = item.name;
+                    thumbnailList.innerHTML = `<div class="thumbnail active" data-image="${item.image_url}">
+                        <img src="${item.image_url}" alt="${item.name}">
+                    </div>`;
+                }
+
+                // Display specs in the main specs list and highlights
+                const specsListContainer = document.getElementById('specs-list');
+                const sidebarItems = document.getElementById('sidebar-items');
+                
+                if (item.specs && Object.keys(item.specs).length > 0) {
+                    let specsHtml = '';
+                    let sidebarHtml = '';
+                    
+                    // Update highlights for CPU, GPU, RAM, Storage
+                    if (item.specs.CPU && item.specs.CPU.length > 0) {
+                        document.querySelector('#highlight-cpu .highlight-label').textContent = item.specs.CPU[0].value;
+                    }
+                    if (item.specs.GPU && item.specs.GPU.length > 0) {
+                        document.querySelector('#highlight-gpu .highlight-label').textContent = item.specs.GPU[0].value;
+                    }
+                    if (item.specs.RAM && item.specs.RAM.length > 0) {
+                        document.querySelector('#highlight-ram .highlight-label').textContent = item.specs.RAM[0].value;
+                    }
+                    if (item.specs.Storage && item.specs.Storage.length > 0) {
+                        document.querySelector('#highlight-storage .highlight-label').textContent = item.specs.Storage[0].value;
+                    }
+                    
+                    Object.entries(item.specs).forEach(([section, specs]) => {
+                        specs.forEach(spec => {
+                            specsHtml += `<div class="spec-item">${section} - ${spec.value}</div>`;
+                            sidebarHtml += `<li>${section}: ${spec.value}</li>`;
+                        });
+                    });
+                    
+                    specsListContainer.innerHTML = specsHtml;
+                    sidebarItems.innerHTML = sidebarHtml;
+                } else {
+                    specsListContainer.innerHTML = '<div class="spec-item">Thông số kỹ thuật sẽ được cập nhật</div>';
+                    sidebarItems.innerHTML = '<li>Thông tin sẽ được cập nhật</li>';
+                }
+
+                // Stock status
+                const stockStatus = document.getElementById('stockStatus');
+                const stockText = document.getElementById('stockText');
+                const addToCartBtn = document.getElementById('addToCartBtn');
+                
+                if (item.stock && Number(item.stock) > 0) {
+                    stockStatus.className = 'stock-status';
+                    stockText.textContent = 'Còn hàng';
+                    addToCartBtn.disabled = false;
+                } else {
+                    stockStatus.className = 'stock-status';
+                    stockText.textContent = 'Hết Hàng';
+                    addToCartBtn.disabled = true;
+                }
+
+                // Setup price for quantity
+                window.__productPrice = priceNum;
+                window.__productName = item.name;
+                window.__productImage = images[0] || item.image_url;
+                
+                function updateTotalPrice() {
+                    const price = window.__productPrice || 0;
+                    const qty = Number(document.getElementById('quantity').value || 1);
+                    const total = price * qty;
+                    document.getElementById('totalPrice').textContent = total.toLocaleString('vi-VN') + '₫';
+                }
+                
+                // Quantity buttons
+                document.getElementById('increaseQty').addEventListener('click', () => {
+                    const input = document.getElementById('quantity');
+                    input.value = Number(input.value || 1) + 1;
+                    updateTotalPrice();
+                });
+                
+                document.getElementById('decreaseQty').addEventListener('click', () => {
+                    const input = document.getElementById('quantity');
+                    if (Number(input.value) > 1) {
+                        input.value = Number(input.value) - 1;
+                        updateTotalPrice();
+                    }
+                });
+                
+                document.getElementById('quantity').addEventListener('change', updateTotalPrice);
+                updateTotalPrice();
+
+                // Add to cart
+                document.getElementById('addToCartBtn').addEventListener('click', () => {
+                    if (addToCartBtn.disabled) return;
+                    
+                    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                    const qty = Number(document.getElementById('quantity').value || 1);
+                    
+                    cart.push({
+                        item_id: item.item_id,
+                        name: window.__productName,
+                        price: window.__productPrice,
+                        quantity: qty,
+                        image: window.__productImage
+                    });
+                    
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    alert('Đã thêm vào giỏ hàng!');
+                });
+
+                // Image gallery functionality
+                const thumbnails = document.querySelectorAll('.thumbnail');
+                const prevBtn = document.getElementById('prevImage');
+                const nextBtn = document.getElementById('nextImage');
+                let currentImageIndex = 0;
+
+                thumbnails.forEach((thumb, index) => {
+                    thumb.addEventListener('click', function() {
+                        currentImageIndex = index;
+                        updateGalleryImage();
+                    });
+                });
+
+                prevBtn.addEventListener('click', () => {
+                    currentImageIndex = (currentImageIndex - 1 + thumbnails.length) % thumbnails.length;
+                    updateGalleryImage();
+                });
+
+                nextBtn.addEventListener('click', () => {
+                    currentImageIndex = (currentImageIndex + 1) % thumbnails.length;
+                    updateGalleryImage();
+                });
+
+                function updateGalleryImage() {
+                    thumbnails.forEach(t => t.classList.remove('active'));
+                    thumbnails[currentImageIndex].classList.add('active');
+                    mainImage.src = thumbnails[currentImageIndex].dataset.image;
+                }
+
+                // Accordion functionality
+                const accordions = document.querySelectorAll('.accordion');
+                accordions.forEach(accordion => {
+                    const header = accordion.querySelector('.accordion-header');
+                    header.addEventListener('click', () => {
+                        accordion.classList.toggle('active');
+                    });
+                });
+
+            } catch (err) {
+                console.error('Error loading product:', err);
+                document.querySelector('.product-title').textContent = 'Error loading product';
+                document.querySelector('#productDescription').innerHTML = '<p>Error loading product data. Please try again.</p>';
             }
-
-            // setup price for quantity
-            window.__productPrice = priceNum;
-            function updateTotalPriceDynamic(){
-                const price = window.__productPrice || 0;
-                const qty = Number(qsel('#quantity').value || 1);
-                const total = price * qty;
-                qsel('#totalPrice').textContent = new Intl.NumberFormat('vi-VN', { style:'currency', currency:'VND' }).format(total);
-            }
-            // wire quantity buttons
-            qsel('#increaseQty').addEventListener('click', ()=>{ qsel('#quantity').value = Number(qsel('#quantity').value || 1) + 1; updateTotalPriceDynamic(); });
-            qsel('#decreaseQty').addEventListener('click', ()=>{ if (Number(qsel('#quantity').value) > 1) qsel('#quantity').value = Number(qsel('#quantity').value) - 1; updateTotalPriceDynamic(); });
-            qsel('#quantity').addEventListener('change', updateTotalPriceDynamic);
-            updateTotalPriceDynamic();
-
-            // add to cart button (simple localStorage implementation)
-            qsel('#addToCartBtn').addEventListener('click', ()=>{
-                if (qsel('#addToCartBtn').disabled) return;
-                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-                const qty = Number(qsel('#quantity').value || 1);
-                cart.push({ item_id: item.item_id, name: item.name, price: priceNum, quantity: qty, image: item.image_url });
-                localStorage.setItem('cart', JSON.stringify(cart));
-                alert('Added to cart');
-            });
-
-        } catch (err) {
-            console.error(err);
-            qsel('.product-title').textContent = 'Error loading product';
-            qsel('#productDescription').innerHTML = '<p>Error loading product data</p>';
-        }
-    })();
+        })();
     </script>
-
-    <footer class="text-white py-5 site-footer">
-        <div class="container text-center">
-            <p class="mb-0 small text-muted">© 2025 bởi FirePCGaming LLC</p>
-        </div>
-    </footer>
 </body>
 </html>

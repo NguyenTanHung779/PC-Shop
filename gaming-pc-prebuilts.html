@@ -843,5 +843,124 @@
 <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
 <script src="js/script.js"></script>
 <script src="JS/product-redirect.js"></script>
+<script>
+    // Load dynamic products from API
+    async function loadDynamicProducts() {
+        try {
+            const response = await fetch('http://localhost:5000/api/public/items');
+            if (!response.ok) {
+                console.error('Failed to load products from API:', response.status);
+                return;
+            }
+            
+            const products = await response.json();
+            
+            if (!Array.isArray(products) || products.length === 0) {
+                console.log('No products found in API');
+                return;
+            }
+            
+            console.log('Loaded', products.length, 'products from API');
+            
+            const productGrid = document.getElementById('product-grid');
+            
+            // Load each product with specs
+            for (const product of products) {
+                try {
+                    // Fetch detailed product info with specs and images
+                    const detailResponse = await fetch(`http://localhost:5000/api/public/items/${product.item_id}`);
+                    let cpu = 'N/A', gpu = 'N/A', ram = 'N/A', storage = 'N/A';
+                    let images = [];
+                    
+                    if (detailResponse.ok) {
+                        const detailData = await detailResponse.json();
+                        const specs = detailData.item?.specs || {};
+                        images = detailData.item?.images || [];
+                        
+                        // Extract specs
+                        if (specs.CPU && specs.CPU.length > 0) cpu = specs.CPU[0].value;
+                        if (specs.GPU && specs.GPU.length > 0) gpu = specs.GPU[0].value;
+                        if (specs.RAM && specs.RAM.length > 0) ram = specs.RAM[0].value;
+                        if (specs.Storage && specs.Storage.length > 0) storage = specs.Storage[0].value;
+                    }
+                    
+                    // Use images array or fallback to image_url
+                    if (images.length === 0 && product.image_url) {
+                        images = [product.image_url];
+                    }
+                    if (images.length === 0) {
+                        images = ['images/placeholder.png'];
+                    }
+                    
+                    // Format price in VND
+                    const price = new Intl.NumberFormat('vi-VN').format(product.price || 0);
+                    
+                    // Prepare image HTML - use dual image approach like hardcoded products
+                    let imageHTML = `<img src="${images[0]}" class="product-image product-image-primary" alt="${product.name}">`;
+                    if (images.length > 1) {
+                        imageHTML += `<img src="${images[1]}" class="product-image product-image-secondary" alt="${product.name}" style="display: none;">`;
+                    }
+                
+                // Create product card
+                const productCard = document.createElement('div');
+                productCard.className = 'col-md-6 col-lg-4';
+                productCard.innerHTML = `
+                    <div class="product-card">
+                        <a href="products/product.html?id=${product.item_id}" class="product-link">
+                            <div class="product-image-wrapper">
+                                ${imageHTML}
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-title">${product.name}</h3>
+                                <div class="product-price">Từ ${price}₫</div>
+                                <div class="product-specs">
+                                    <div class="spec-item">
+                                        <img src="images/icons/cpu-icon.svg" alt="CPU" class="spec-icon">
+                                        <span class="spec-label">CPU</span>
+                                        <span class="spec-value">${cpu}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <img src="images/icons/gpu-icon.png" alt="GPU" class="spec-icon">
+                                        <span class="spec-label">GPU</span>
+                                        <span class="spec-value">${gpu}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <img src="images/icons/ram-icon.svg" alt="RAM" class="spec-icon">
+                                        <span class="spec-label">RAM</span>
+                                        <span class="spec-value">${ram}</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <img src="images/icons/ssd-icon.png" alt="SSD" class="spec-icon">
+                                        <span class="spec-label">SSD</span>
+                                        <span class="spec-value">${storage}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        <button type="button" class="btn btn-dark w-100 mt-3 add-to-cart-btn" data-product="${product.name}" data-price="${product.price}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus me-2" viewBox="0 0 16 16" style="vertical-align: middle;">
+                                <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9V5.5z"/>
+                                <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                            </svg>
+                            Thêm vào giỏ
+                        </button>
+                    </div>
+                `;
+                
+                    productGrid.appendChild(productCard);
+                } catch (productError) {
+                    console.error('Error loading product', product.item_id, productError);
+                }
+            }
+            
+            console.log(`Successfully loaded ${products.length} dynamic products`);
+        } catch (error) {
+            console.error('Error loading dynamic products:', error);
+        }
+    }
+    
+    // Load products when page loads
+    document.addEventListener('DOMContentLoaded', loadDynamicProducts);
+</script>
 </body>
 </html>

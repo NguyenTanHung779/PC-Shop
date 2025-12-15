@@ -695,13 +695,12 @@ body.page-enter.active { opacity: 1; transform: translateY(0); transition: opaci
 
 .product-image {
     position: absolute;
-    top: -80px;
-    left: -80px;
-    width: calc(100% - -160px);
-    height: calc(100% - -160px);
+    top: 5%;
+    left: 5%;
+    width: 90%;
+    height: 90%;
     object-fit: contain;
-    transition: opacity 0.25s ease-in-out, transform 0.3s ease-out;
-    will-change: opacity, transform;
+    transition: opacity 0.25s ease-in-out;
 }
 
 .product-image-primary {
@@ -715,16 +714,13 @@ body.page-enter.active { opacity: 1; transform: translateY(0); transition: opaci
     display: block !important;
 }
 
+/* Fade effect for hardcoded products with secondary images */
 .product-card:hover .product-image-primary {
     opacity: 0;
 }
 
 .product-card:hover .product-image-secondary {
     opacity: 1;
-}
-
-.product-card:hover .product-image {
-    transform: scale(1.05);
 }
 
 /* Quick Add Button */

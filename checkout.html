@@ -152,11 +152,14 @@
                     <div class="mb-4">
                         <h2 class="section-title">Phương thức thanh toán</h2>
                         
-                        <div class="payment-method active" onclick="selectPayment('zalopay')">
+                        <div class="payment-method active" onclick="selectPayment('momo')">
                             <label class="d-flex align-items-center w-100 cursor-pointer">
-                                <input type="radio" name="payment" value="zalopay" checked>
-                                <img src="images/icons/Logo-ZaloPay-Square.webp" width="32" alt="ZaloPay" class="mx-2">
-                                <span class="flex-grow-1">Thanh toán ZaloPay QR</span>
+                                <input type="radio" name="payment" value="momo" checked>
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="mx-2">
+                                    <circle cx="16" cy="16" r="16" fill="#A50064"/>
+                                    <path d="M8 12L12 20L14 15L16 20L20 12M20 12L24 20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                                </svg>
+                                <span class="flex-grow-1">Thanh toán Momo</span>
                             </label>
                         </div>
 
@@ -178,23 +181,6 @@
                                 </svg>
                                 <span class="flex-grow-1">Chuyển khoản ngân hàng</span>
                             </label>
-                        </div>
-
-                        <!-- ZaloPay QR Code Container -->
-                        <div class="momo-qr-container active" id="zalopayQRContainer">
-                            <h4 class="momo-qr-heading">Quét mã QR ZaloPay để thanh toán</h4>
-                            <div class="momo-qr-code" id="zalopayQrCodeContainer">
-                                <div class="qr-placeholder">
-                                    Mã QR sẽ được tạo sau khi bạn nhấn "Thanh toán ngay"
-                                </div>
-                            </div>
-                            <div class="momo-info">
-                                <p class="my-1"><strong>Số tiền:</strong> <span id="zalopayAmount">0 VNĐ</span></p>
-                                <p class="my-1"><strong>Nội dung:</strong> <span id="zalopayContent">Thanh toán đơn hàng PC Shop</span></p>
-                                <p class="momo-info-note">
-                                    <em>Sau khi thanh toán, đơn hàng sẽ được xác nhận tự động</em>
-                                </p>
-                            </div>
                         </div>
                     </div>
 
@@ -267,7 +253,6 @@
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
     <script>
         // CAPTCHA generation
         let captchaText = "";
@@ -361,8 +346,6 @@
 
             document.getElementById('subtotal').textContent = formatPrice(subtotal) + ' VNĐ';
             document.getElementById('total').textContent = formatPrice(total) + ' VNĐ';
-            const zalopayAmountEl = document.getElementById('zalopayAmount');
-            if (zalopayAmountEl) zalopayAmountEl.textContent = formatPrice(total) + ' VNĐ';
         }
 
         // Format price
@@ -382,73 +365,47 @@
 
             // Check the radio button
             document.querySelector(`input[value="${method}"]`).checked = true;
-
-            // Show/hide ZaloPay QR container
-            const zalopayContainer = document.getElementById('zalopayQRContainer');
-            if (method === 'zalopay') {
-                if (zalopayContainer) zalopayContainer.classList.add('active');
-            } else {
-                if (zalopayContainer) zalopayContainer.classList.remove('active');
-            }
         }
-        // Generate ZaloPay QR Code via backend
-        async function generateZaloPayQR(orderData) {
-            const qrContainer = document.getElementById('zalopayQrCodeContainer');
-            if (!qrContainer) return;
-            qrContainer.innerHTML = '';
 
+        // Generate Momo Payment Link via backend
+        async function generateMomoPayment(orderData) {
             try {
-                const resp = await fetch('http://localhost:5000/api/payment/zalopay', {
+                // Momo requires integer amount (no decimals)
+                const momoAmount = Math.round(orderData.total_raw || orderData.total);
+                
+                console.log('DEBUG: Momo payment request', {
+                    original_total: orderData.total,
+                    raw_total: orderData.total_raw,
+                    sending_amount: momoAmount
+                });
+                
+                const resp = await fetch('http://localhost:5000/api/payment/momo', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        amount: orderData.total,
+                        amount: momoAmount,
                         description: `Thanh toán đơn hàng PC Shop - ${orderData.email || ''}`,
                         items: orderData.items || [],
-                        embed_data: { email: orderData.email }
+                        orderId: `ORD${Date.now()}`
                     })
                 });
                 const data = await resp.json();
+                console.log('Momo API response:', data);
+                
                 if (!resp.ok) {
-                    console.error('ZaloPay create order error', data);
-                    qrContainer.innerHTML = '<p class="text-danger">Không thể tạo yêu cầu thanh toán. Vui lòng thử lại.</p>';
-                    return;
+                    console.error('Momo create order error', data);
+                    const errorMsg = data.message || data.error || 'Unknown error';
+                    alert(`Không thể tạo yêu cầu thanh toán Momo: ${errorMsg}\nVui lòng kiểm tra console để biết thêm chi tiết.`);
+                    return null;
                 }
 
-                // If server returned base64 qr image
-                if (data.qr_code) {
-                    const img = document.createElement('img');
-                    img.src = 'data:image/png;base64,' + data.qr_code;
-                    img.style.maxWidth = '250px';
-                    qrContainer.appendChild(img);
-                } else if (data.order_url) {
-                    // fallback: render QR for order_url
-                    const canvas = document.createElement('canvas');
-                    await QRCode.toCanvas(canvas, data.order_url, { width: 250, margin: 2 });
-                    qrContainer.appendChild(canvas);
-
-                    const link = document.createElement('a');
-                    link.href = data.order_url;
-                    link.target = '_blank';
-                    link.style.display = 'block';
-                    link.style.marginTop = '10px';
-                    link.textContent = 'Mở liên kết thanh toán ZaloPay';
-                    qrContainer.appendChild(link);
-                } else {
-                    qrContainer.innerHTML = '<p class="text-danger">Phản hồi không hợp lệ từ máy chủ thanh toán.</p>';
-                }
-
-                // Add instructions
-                const instructions = document.createElement('p');
-                instructions.style.marginTop = '15px';
-                instructions.style.fontSize = '14px';
-                instructions.style.color = '#666';
-                instructions.innerHTML = '<strong>Hướng dẫn:</strong><br>1. Mở ứng dụng ZaloPay<br>2. Chọn "Quét mã QR" hoặc mở liên kết<br>3. Quét mã hoặc làm theo hướng dẫn để thanh toán';
-                qrContainer.appendChild(instructions);
+                // Return the pay URL for redirect
+                return data.payUrl || null;
 
             } catch (error) {
-                console.error('Error generating ZaloPay QR:', error);
-                qrContainer.innerHTML = '<p class="text-danger">Không thể tạo mã QR. Vui lòng thử lại.</p>';
+                console.error('Error generating Momo payment:', error);
+                alert('Không thể tạo yêu cầu thanh toán. Vui lòng thử lại.');
+                return null;
             }
         }
 
@@ -556,24 +513,35 @@
             };
 
             try {
-                // If ZaloPay payment, generate QR code via backend
-                if (orderData.payment === 'zalopay') {
-                    await generateZaloPayQR(orderData);
+                // If Momo payment, redirect to Momo pay URL
+                if (orderData.payment === 'momo') {
+                    const payUrl = await generateMomoPayment(orderData);
                     document.getElementById('loadingOverlay').classList.remove('active');
 
-                    // Scroll to QR code
-                    const c = document.getElementById('zalopayQRContainer');
-                    if (c) c.scrollIntoView({ behavior: 'smooth' });
+                    if (payUrl) {
+                        // Create order first in the database
+                        const createResp = await fetch('http://localhost:5000/api/orders/create', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(orderData)
+                        });
 
-                    // Show success message
-                    alert('Vui lòng quét mã QR ZaloPay để hoàn tất thanh toán');
-
-                    // In production, poll your backend or handle webhook to confirm payment
-                    setTimeout(() => {
-                        if (confirm('Đã thanh toán xong? Nhấn OK để xác nhận.')) {
-                            processOrder(orderData);
+                        const createResult = await createResp.json();
+                        
+                        if (!createResp.ok) {
+                            alert('❌ Lỗi khi tạo đơn hàng: ' + (createResult.error || 'Unknown error'));
+                            return;
                         }
-                    }, 5000);
+
+                        // Clear cart and checkout items
+                        localStorage.removeItem('cart');
+                        localStorage.removeItem('cartItems');
+                        localStorage.removeItem('checkoutItems');
+
+                        // Redirect to Momo pay URL
+                        alert('Bạn sẽ được chuyển hướng đến Momo để hoàn tất thanh toán.');
+                        window.location.href = payUrl;
+                    }
 
                 } else {
                     // Process other payment methods
