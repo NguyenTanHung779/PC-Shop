@@ -106,7 +106,21 @@
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Địa chỉ email *</label>
-                            <input type="email" class="form-control" id="email" required>
+                            <div class="input-group">
+                                <input type="email" class="form-control" id="email" required>
+                                <button type="button" class="btn btn-outline-primary" id="send-otp-btn">
+                                    📧 Gửi OTP
+                                </button>
+                            </div>
+                            <small class="text-muted">Chúng tôi sẽ gửi mã xác minh đến email của bạn</small>
+                        </div>
+                        <div class="mb-3" id="otp-field" style="display:none;">
+                            <label for="otp" class="form-label">Mã OTP *</label>
+                            <input type="text" class="form-control" id="otp" maxlength="6" placeholder="Nhập mã 6 số">
+                            <small class="text-success" id="otp-sent-msg" style="display:none;">
+                                ✅ Mã OTP đã được gửi đến email của bạn. Vui lòng kiểm tra (có thể trong spam).
+                            </small>
+                            <small class="text-muted" id="otp-timer"></small>
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Mật khẩu *</label>
@@ -130,7 +144,7 @@
                             <input type="text" class="form-control" id="captchaInput"
                                 placeholder="Nhập captcha" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Đăng Ký</button>
+                        <button type="submit" class="btn btn-primary w-100" id="register-btn">Đăng Ký</button>
                         <p class="text-center mt-3">Đã có tài khoản? <a href="login.html">Đăng nhập tại đây</a></p>
                     </form>
                 </div>
@@ -225,6 +239,85 @@
     $("#refreshCaptcha").click(generateCaptcha);
     generateCaptcha();
     // --- END SIMPLE LOCAL CAPTCHA ---
+    
+    let otpSent = false;
+    let otpTimer = null;
+    let otpExpiry = null;
+    
+    // Send OTP Button Handler
+    $('#send-otp-btn').click(async function() {
+        const email = $('#email').val();
+        
+        if (!email) {
+            alert('⚠️ Vui lòng nhập địa chỉ email');
+            return;
+        }
+        
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert('⚠️ Địa chỉ email không hợp lệ');
+            return;
+        }
+        
+        const btn = $(this);
+        btn.prop('disabled', true).text('⏳ Đang gửi...');
+        
+        try {
+            const response = await fetch('http://localhost:5000/api/send-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, purpose: 'registration' })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                otpSent = true;
+                $('#otp-field').slideDown();
+                $('#otp-sent-msg').show();
+                $('#email').prop('readonly', true);
+                btn.text('✅ Đã gửi').addClass('btn-success').removeClass('btn-outline-primary');
+                
+                // Start countdown timer
+                otpExpiry = Date.now() + (data.expiresIn * 1000);
+                startOTPTimer();
+                
+                // Allow resend after 60 seconds
+                setTimeout(() => {
+                    btn.prop('disabled', false).text('🔄 Gửi lại OTP').removeClass('btn-success').addClass('btn-outline-primary');
+                }, 60000);
+                
+                alert('✅ Mã OTP đã được gửi đến email của bạn!');
+            } else {
+                alert(`⚠️ ${data.error || 'Failed to send OTP'}`);
+                btn.prop('disabled', false).text('📧 Gửi OTP');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('❌ Failed to connect to the server.');
+            btn.prop('disabled', false).text('📧 Gửi OTP');
+        }
+    });
+    
+    function startOTPTimer() {
+        if (otpTimer) clearInterval(otpTimer);
+        
+        otpTimer = setInterval(() => {
+            const remaining = Math.max(0, Math.floor((otpExpiry - Date.now()) / 1000));
+            const minutes = Math.floor(remaining / 60);
+            const seconds = remaining % 60;
+            
+            $('#otp-timer').text(`Mã hết hạn sau: ${minutes}:${seconds.toString().padStart(2, '0')}`);
+            
+            if (remaining <= 0) {
+                clearInterval(otpTimer);
+                $('#otp-timer').text('⚠️ Mã OTP đã hết hạn. Vui lòng gửi lại.');
+                otpSent = false;
+            }
+        }, 1000);
+    }
+    
     $(document).ready(function () {
         $('#register-form').submit(async function (e) {
             e.preventDefault();
@@ -233,11 +326,13 @@
             const email = $('#email').val();
             const password = $('#password').val();
             const confirmPassword = $('#confirm-password').val();
+            const otp = $('#otp').val();
 
             if (password !== confirmPassword) {
-            alert('////////// Passwords do not match! //////////');
-            return;
+                alert('////////// Passwords do not match! //////////');
+                return;
             }
+            
             // CHECK CAPTCHA
             const userCaptcha = $("#captchaInput").val().trim().toUpperCase();
             if (userCaptcha !== captchaText) {
@@ -245,25 +340,40 @@
                 generateCaptcha();
                 return;
             }
+            
+            if (!otpSent) {
+                alert('⚠️ Vui lòng gửi và nhập mã OTP để xác minh email');
+                return;
+            }
+            
+            if (!otp || otp.length !== 6) {
+                alert('⚠️ Vui lòng nhập mã OTP 6 số');
+                return;
+            }
+
+            const btn = $('#register-btn');
+            btn.prop('disabled', true).html('<span class=\"spinner-border spinner-border-sm\"></span> Đang đăng ký...');
 
             try {
-            const response = await fetch('http://localhost:5000/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password })
-            });
+                const response = await fetch('http://localhost:5000/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, otp })
+                });
 
-            const data = await response.json();
+                const data = await response.json();
 
-            if (response.ok) {
-                alert('✅ Registration successful!');
-                window.location.href = 'login.html';
-            } else {
-                alert(`⚠️ ${data.error}`);
-            }
+                if (response.ok) {
+                    alert('✅ Đăng ký thành công! Email của bạn đã được xác minh.');
+                    window.location.href = 'login.html';
+                } else {
+                    alert(`⚠️ ${data.error}`);
+                    btn.prop('disabled', false).text('Đăng Ký');
+                }
             } catch (error) {
-            console.error('Error:', error);
-            alert('❌ Failed to connect to the server.');
+                console.error('Error:', error);
+                alert('❌ Failed to connect to the server.');
+                btn.prop('disabled', false).text('Đăng Ký');
             }
         });
     });

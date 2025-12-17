@@ -6,8 +6,642 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, height=device-height">
     <meta name="csrf-param" content="authenticity_token">
     <link rel="icon" type="image/x-icon" href="../images/icons/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../CSS/account.css">
+    <link rel="stylesheet" href="../CSS/style.css">
     <title>Profile - FirePC Gaming</title>
+    <style>
+        /* Enhanced Profile Page Styling to Match Home.html Aesthetic */
+        body {
+            background: linear-gradient(135deg, #f6f6f7 0%, #efefef 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        header {
+            background: #fff;
+            border-bottom: 1px solid #e1e3e5;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #2d3e50 100%);
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #202223;
+            margin-bottom: 2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .profile-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border: 1px solid #e1e3e5;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .profile-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .profile-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #202223;
+            letter-spacing: -0.01em;
+        }
+
+        .edit-btn {
+            background: none;
+            border: 1px solid #e1e3e5;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #616161;
+        }
+
+        .edit-btn:hover {
+            border-color: #202223;
+            color: #202223;
+            background: #f9f9f9;
+        }
+
+        .profile-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .profile-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #999;
+        }
+
+        .info-value {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: #202223;
+            word-break: break-word;
+        }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: #0066cc;
+            cursor: pointer;
+            font-weight: 500;
+            padding: 0;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .btn-link:hover {
+            color: #0052a3;
+            text-decoration: underline;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #202223;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e1e3e5;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #202223;
+            box-shadow: 0 0 0 3px rgba(32, 34, 35, 0.1);
+        }
+
+        .form-group input:disabled {
+            background: #f9f9f9;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .help-text {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 0.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #ff5252 0%, #e63946 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header .btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: #fff;
+        }
+
+        .section-header .btn:hover {
+            background: linear-gradient(135deg, #ff5252 0%, #e63946 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        }
+
+        .section-header .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .status-card {
+            background: #f9f9f9;
+            border: 1px solid #e1e3e5;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e1e3e5;
+            border-radius: 50%;
+            color: #616161;
+        }
+
+        .status-text {
+            color: #616161;
+            font-size: 0.95rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: #f9f9f9;
+            border-radius: 12px;
+            border: 2px dashed #e1e3e5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #202223;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: #999;
+            margin-bottom: 1rem;
+        }
+
+        .order-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e1e3e5;
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .order-card:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .order-header {
+            background: #f9f9f9;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            border-bottom: 1px solid #e1e3e5;
+        }
+
+        .order-number {
+            font-weight: 600;
+            color: #202223;
+            font-size: 1.1rem;
+        }
+
+        .order-number span {
+            color: #0066cc;
+        }
+
+        .order-date {
+            color: #616161;
+            font-size: 0.9rem;
+        }
+
+        .order-status-badge {
+            padding: 0.375rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: #e8f0fe;
+            color: #0066cc;
+        }
+
+        .order-status-badge.confirmed {
+            background: #e6f7ed;
+            color: #137333;
+        }
+
+        .order-status-badge.pending {
+            background: #fef7e0;
+            color: #f57c00;
+        }
+
+        .order-items {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e1e3e5;
+        }
+
+        .order-item {
+            display: grid;
+            grid-template-columns: 80px 1fr auto;
+            gap: 1rem;
+            align-items: start;
+            padding-bottom: 1rem;
+        }
+
+        .order-item:last-child {
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .item-image {
+            width: 80px;
+            height: 80px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            color: #999;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #202223;
+        }
+
+        .item-quantity {
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .item-price {
+            font-weight: 600;
+            color: #202223;
+            text-align: right;
+        }
+
+        .order-summary {
+            padding: 1.5rem;
+            background: #f9f9f9;
+            border-bottom: 1px solid #e1e3e5;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        .summary-row .label {
+            color: #616161;
+        }
+
+        .summary-row .value {
+            font-weight: 500;
+            color: #202223;
+        }
+
+        .summary-total {
+            border-top: 2px solid #e1e3e5;
+            padding-top: 1rem;
+            padding-bottom: 0;
+            font-size: 1.1rem;
+        }
+
+        .summary-total .label {
+            font-weight: 600;
+            color: #202223;
+        }
+
+        .summary-total .value {
+            font-weight: 700;
+            color: #202223;
+        }
+
+        .shipping-address-section {
+            padding: 1.5rem;
+            border-top: 1px solid #e1e3e5;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+        }
+
+        .modal-overlay {
+            display: flex;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e1e3e5;
+        }
+
+        .modal-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #202223;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.2s ease;
+            border-radius: 4px;
+        }
+
+        .modal-close:hover {
+            color: #202223;
+            background: #f0f0f0;
+        }
+
+        footer {
+            background: #202223;
+            color: #fff;
+            margin-top: 4rem;
+            padding-top: 3rem;
+            padding-bottom: 2rem;
+            border-top: 1px solid #333;
+        }
+
+        .footer-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-nav button,
+        .footer-nav a {
+            background: none;
+            border: none;
+            color: #ccc;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-nav button:hover,
+        .footer-nav a:hover {
+            color: #fff;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #202223;
+            color: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .view-mode.hidden {
+            display: none;
+        }
+
+        .edit-mode {
+            display: none;
+        }
+
+        .edit-mode.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 1.75rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .profile-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-header-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .order-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .order-item {
+                grid-template-columns: 60px 1fr;
+            }
+
+            .item-price {
+                grid-column: 1 / -1;
+                text-align: left;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+            }
+
+            .notification {
+                left: 1rem;
+                right: 1rem;
+                bottom: 1rem;
+            }
+        }
+
+        /* Header Dark Theme Overrides */
+        header .logo {
+            color: #fff;
+        }
+
+        header .logo:hover {
+            color: #e0e7ff;
+        }
+
+        header nav a {
+            color: #a0aec0;
+        }
+
+        header nav a:hover {
+            color: #fff;
+        }
+
+        header nav a[aria-current="page"] {
+            color: #fff;
+        }
+
+        header nav a[aria-current="page"]::after {
+            background: #fff;
+        }
+
+        header .account-btn {
+            color: #a0aec0;
+        }
+
+        header .account-btn:hover {
+            color: #fff;
+        }
+
+        header .account-btn svg {
+            stroke: currentColor;
+        }
+    </style>
 </head>
 <body>
     <!-- Skip to content link for accessibility -->
@@ -23,7 +657,6 @@
                     <nav aria-label="Main navigation">
                         <ul>
                             <li><a href="home.html">Shop</a></li>
-                            <li><a href="order.html">Orders</a></li>
                         </ul>
                     </nav>
 
@@ -54,9 +687,6 @@
                                 <div class="account-menu-email" id="menu-email">customer@example.com</div>
                             </div>
                             <ul class="account-menu-list">
-                                <li class="account-menu-item">
-                                    <a href="order.html" class="account-menu-link">Orders</a>
-                                </li>
                                 <li class="account-menu-item">
                                     <button class="account-menu-button" onclick="handleSignOut()">Sign out</button>
                                 </li>
@@ -90,12 +720,21 @@
                     <div class="view-mode" id="view-mode">
                         <div class="profile-info-grid">
                             <div class="profile-info-item">
-                                <span class="info-label">Full Name</span>
-                                <span class="info-value" id="display-fullname">No name added</span>
+                                <span class="info-label">Username</span>
+                                <span class="info-value" id="display-username">Loading...</span>
                             </div>
                             <div class="profile-info-item">
                                 <span class="info-label">Email Address</span>
-                                <span class="info-value" id="display-email">customer@example.com</span>
+                                <span class="info-value" id="display-email" style="font-family: monospace;">Loading...</span>
+                                <button class="btn-link" onclick="openEmailChangeModal()" style="margin-top: 0.5rem; display: inline-block;">Change Email</button>
+                            </div>
+                            <div class="profile-info-item">
+                                <span class="info-label">Account Created</span>
+                                <span class="info-value" id="display-created-date">Loading...</span>
+                            </div>
+                            <div class="profile-info-item">
+                                <span class="info-label">Account Role</span>
+                                <span class="info-value" id="display-role">Loading...</span>
                             </div>
                             <div class="profile-info-item">
                                 <span class="info-label">Password</span>
@@ -107,26 +746,19 @@
                     <!-- Edit Mode -->
                     <div class="edit-mode" id="edit-mode">
                         <form id="profile-form">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="first-name">First Name</label>
-                                    <input type="text" id="first-name" name="firstName" required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="last-name">Last Name</label>
-                                    <input type="text" id="last-name" name="lastName" required>
-                                </div>
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" name="username" disabled>
+                                <p class="help-text">Username can't be edited</p>
                             </div>
 
                             <div class="form-group">
                                 <label for="email">Email Address</label>
                                 <input type="email" id="email" name="email" disabled>
-                                <p class="help-text">Email can't be edited</p>
+                                <p class="help-text">Email and username can't be edited</p>
                             </div>
 
                             <div class="form-actions">
-                                <button type="submit" class="btn btn-primary">Save Changes</button>
                                 <button type="button" class="btn" onclick="cancelEdit()">Cancel</button>
                             </div>
                         </form>
@@ -157,8 +789,55 @@
 
                 <!-- Account Actions -->
                 <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
-                    <a href="../account.html" class="btn">View Orders</a>
                     <button class="btn" onclick="handleLogout()">Sign Out</button>
+                    <button class="btn" style="background-color: #dc3545; border-color: #dc3545;" onclick="handleDeactivateAccount()">Deactivate Account</button>
+                </div>
+
+                <!-- Shopping Cart & Orders Section - Split Layout -->
+                <div style="margin-top: 3rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+                    
+                    <!-- Shopping Cart Section -->
+                    <div style="border-top: 2px solid #e1e3e5; padding-top: 2rem;">
+                        <h2 class="section-title" style="margin-bottom: 1.5rem;">Shopping Cart</h2>
+
+                        <!-- Empty Cart State -->
+                        <div class="empty-state" id="empty-cart-state" style="display: none;">
+                            <h3>Your cart is empty</h3>
+                            <p>Start shopping to add items to your cart.</p>
+                            <a href="../gaming-pc-prebuilts.html" class="btn" style="margin-top: 1rem; text-decoration: none; display: inline-block;">Continue Shopping</a>
+                        </div>
+
+                        <!-- Cart Items List -->
+                        <div id="cart-items-container" style="display: none;">
+                            <div id="cart-items-list" style="display: flex; flex-direction: column; gap: 1rem;">
+                                <!-- Cart items will be loaded here dynamically -->
+                            </div>
+                            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e1e3e5;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                    <span style="font-weight: 600; font-size: 1.1rem; color: #202223;">Total:</span>
+                                    <span style="font-weight: 700; font-size: 1.25rem; color: #202223;" id="cart-total">$0.00</span>
+                                </div>
+                                <a href="../checkout.html" class="btn btn-primary" style="width: 100%; text-align: center; text-decoration: none; display: block;">Proceed to Checkout</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Orders Section -->
+                    <div style="border-top: 2px solid #e1e3e5; padding-top: 2rem;">
+                        <h2 class="section-title" style="margin-bottom: 1.5rem;">Orders</h2>
+
+                        <!-- Empty State -->
+                        <div class="empty-state" id="empty-state" style="display: none;">
+                            <h3>No orders yet</h3>
+                            <p>Go to store to place an order.</p>
+                            <a href="../gaming-pc-prebuilts.html" class="btn" style="margin-top: 1rem;">Go to Store</a>
+                        </div>
+
+                        <!-- Orders List -->
+                        <div id="orders-container">
+                            <!-- Orders will be loaded here dynamically -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -174,7 +853,8 @@
                         </svg>
                     </button>
                 </div>
-                <form id="password-form">
+                <!-- Password Input Form -->
+                <form id="password-form" style="display: block;">
                     <div class="form-group">
                         <label for="current-password">Current Password</label>
                         <input type="password" id="current-password" name="currentPassword" required>
@@ -189,8 +869,88 @@
                         <input type="password" id="confirm-password" name="confirmPassword" required>
                     </div>
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Update Password</button>
+                        <button type="submit" class="btn btn-primary">Send OTP</button>
                         <button type="button" class="btn" onclick="closePasswordModal()">Cancel</button>
+                    </div>
+                </form>
+
+                <!-- OTP Verification Form -->
+                <form id="password-otp-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="password-otp">Enter OTP</label>
+                        <input type="text" id="password-otp" name="otp" placeholder="6-digit code" maxlength="6" required>
+                        <p class="help-text">Check your email for the OTP code</p>
+                    </div>
+                    <div class="form-group">
+                        <label style="color: #999; font-size: 0.85rem;">
+                            Didn't receive the code? 
+                            <button type="button" class="btn-link" onclick="requestPasswordOTP()" style="padding: 0;">Resend OTP</button>
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Verify & Change Password</button>
+                        <button type="button" class="btn" onclick="backToPasswordForm()">Back</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Email Change Modal -->
+        <div class="modal-overlay" id="email-modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Change Email Address</h2>
+                    <button class="modal-close" onclick="closeEmailModal()" aria-label="Close">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 14" width="14" height="14">
+                            <path stroke-linecap="round" d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Email Input Form -->
+                <form id="email-form" style="display: block;">
+                    <div class="form-group">
+                        <label for="old-email">Current Email Address</label>
+                        <input type="email" id="old-email" name="oldEmail" required>
+                        <p class="help-text">This is your current email address</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-email">New Email Address</label>
+                        <input type="email" id="new-email" name="newEmail" required>
+                        <p class="help-text">Your new email address</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-new-email">Confirm New Email</label>
+                        <input type="email" id="confirm-new-email" name="confirmNewEmail" required>
+                        <p class="help-text">Please confirm your new email address</p>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Send Verification Codes</button>
+                        <button type="button" class="btn" onclick="closeEmailModal()">Cancel</button>
+                    </div>
+                </form>
+
+                <!-- OTP Verification Form -->
+                <form id="email-otp-form" style="display: none;">
+                    <div class="form-group">
+                        <label for="old-email-otp">Verification Code for Current Email</label>
+                        <input type="text" id="old-email-otp" name="oldEmailOtp" placeholder="6-digit code" maxlength="6" required>
+                        <p class="help-text">Check your current email for the verification code</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-email-otp">Verification Code for New Email</label>
+                        <input type="text" id="new-email-otp" name="newEmailOtp" placeholder="6-digit code" maxlength="6" required>
+                        <p class="help-text">Check your new email for the verification code</p>
+                    </div>
+                    <div class="form-group">
+                        <label style="color: #999; font-size: 0.85rem;">
+                            Didn't receive the codes? 
+                            <button type="button" class="btn-link" onclick="requestEmailOTPs()" style="padding: 0;">Resend Codes</button>
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Verify & Change Email</button>
+                        <button type="button" class="btn" onclick="backToEmailForm()">Back</button>
                     </div>
                 </form>
             </div>
@@ -211,21 +971,271 @@
     </div>
 
     <script>
-        // Load profile data
-        function loadProfileData() {
+        // Mask email function: show first 3 letters, hide rest except domain
+        function maskEmail(email) {
+            if (!email) return '***@example.com';
+            const [localPart, domain] = email.split('@');
+            if (!localPart || !domain) return '***@example.com';
+            
+            const visiblePart = localPart.substring(0, 3);
+            const hiddenCount = localPart.length - 3;
+            const mask = hiddenCount > 0 ? '*'.repeat(hiddenCount) : '';
+            return `${visiblePart}${mask}@${domain}`;
+        }
+
+        // Format money
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount);
+        }
+
+        // Create order card HTML
+        function createOrderCard(order) {
+            const orderDiv = document.createElement('div');
+            orderDiv.className = 'order-card';
+            orderDiv.style.marginBottom = '1.5rem';
+            
+            const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Multiply price by 100 to match original values (database stores prices divided by 100)
+            const subtotal = order.items.reduce((sum, item) => sum + ((item.price * 100) * item.quantity), 0);
+            const shipping = 0;
+            const taxes = subtotal * 0.1;
+            const total = subtotal + shipping + taxes;
+            
+            orderDiv.innerHTML = `
+                <div class="order-header">
+                    <div class="order-number">Order #${order.orderId}</div>
+                    <div class="order-date">Confirmed ${orderDate}</div>
+                    <span class="order-status-badge">${order.payment === 'cod' ? 'Pending Payment' : 'Confirmed'}</span>
+                </div>
+                <div class="order-items">
+                    ${order.items.map(item => `
+                        <div class="order-item">
+                            <div class="item-image">
+                                ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">` : `
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                </svg>
+                                `}
+                            </div>
+                            <div class="item-info">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-quantity">Quantity: ${item.quantity}</div>
+                            </div>
+                            <div class="item-price">${formatMoney((item.price * 100) * item.quantity)}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span class="label">Subtotal</span>
+                        <span class="value">${formatMoney(subtotal)}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="label">Shipping</span>
+                        <span class="value">${shipping === 0 ? 'Free' : formatMoney(shipping)}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="label">Taxes</span>
+                        <span class="value">${formatMoney(taxes)}</span>
+                    </div>
+                    <div class="summary-row summary-total">
+                        <span class="label">Total</span>
+                        <span class="value">${formatMoney(total)}</span>
+                    </div>
+                </div>
+                <div class="shipping-address-section">
+                    <h3 style="font-size: 0.875rem; font-weight: 600; color: #202223; margin-bottom: 0.75rem; text-transform: uppercase;">Shipping Address</h3>
+                    <p style="color: #616161; font-size: 0.9375rem; line-height: 1.6; margin: 0;">
+                        ${order.firstName} ${order.lastName}<br>
+                        ${order.address1}<br>
+                        ${order.province}<br>
+                        Phone: ${order.phone}
+                    </p>
+                </div>
+            `;
+            
+            return orderDiv;
+        }
+
+        // Load orders: try server first, fall back to localStorage
+        async function loadOrders() {
+            // require logged in user data
+            const userDataRaw = localStorage.getItem('userData');
+            const userEmail = localStorage.getItem('userEmail');
+            let user = null;
+            try {
+                if (userDataRaw) user = JSON.parse(userDataRaw);
+            } catch (e) {
+                console.warn('Invalid userData in localStorage', e);
+            }
+
+            if (!user && !userEmail) {
+                document.getElementById('empty-state').style.display = 'block';
+                return;
+            }
+
+            // Attempt to fetch orders from server viewer endpoint.
+            // Treat server response as authoritative (even if empty).
+            let allOrders = [];
+            let fetchedFromServer = false;
+            try {
+                const res = await fetch('/api/view/orders');
+                if (res.ok) {
+                    const data = await res.json();
+                    // server viewer returns rows directly
+                    allOrders = Array.isArray(data) ? data : (data.data || []);
+                    fetchedFromServer = true;
+                } else {
+                    console.info('Server orders endpoint returned non-OK status', res.status);
+                }
+            } catch (err) {
+                // ignore and fall back to localStorage
+                console.info('Server orders not available, will fall back to local cache', err);
+            }
+
+            // If we couldn't fetch from server (network error / non-OK), use localStorage cache
+            if (!fetchedFromServer) {
+                allOrders = JSON.parse(localStorage.getItem('orders')) || [];
+            }
+
+            // Normalize and filter by user id (preferred) or email
+            const userId = user && (user.user_id || user.id || user.userId);
+            const userIdentifierEmail = (user && user.email) || userEmail;
+
+            const userOrders = allOrders.filter(order => {
+                // support different possible field names
+                if (userId && (order.user_id || order.userId || order.userId)) {
+                    return Number(order.user_id || order.userId) === Number(userId);
+                }
+                if (userIdentifierEmail) {
+                    // some stored orders use `email` or `customerEmail`
+                    return (order.email && order.email === userIdentifierEmail) || (order.customerEmail && order.customerEmail === userIdentifierEmail);
+                }
+                return false;
+            });
+
+            if (!userOrders || userOrders.length === 0) {
+                document.getElementById('empty-state').style.display = 'block';
+                document.getElementById('orders-container').style.display = 'none';
+                return;
+            }
+
+            // Hide empty state and show orders
+            document.getElementById('empty-state').style.display = 'none';
+            document.getElementById('orders-container').style.display = 'block';
+
+            // Display each order
+            const ordersContainer = document.getElementById('orders-container');
+            ordersContainer.innerHTML = '';
+
+            // show newest first
+            userOrders.reverse().forEach(order => {
+                const orderCard = createOrderCard(order);
+                ordersContainer.appendChild(orderCard);
+            });
+        }
+
+        // Load profile data from API or localStorage fallback
+        async function loadProfileData() {
+            try {
+                // Get JWT token from localStorage
+                const token = localStorage.getItem('token');
+                
+                if (!token) {
+                    // No token, fallback to localStorage data
+                    loadProfileDataFromLocalStorage();
+                    return;
+                }
+
+                // Fetch from API
+                const response = await fetch('http://localhost:5000/api/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    
+                    // Format created date
+                    const createdDate = new Date(user.created_at).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+
+                    // Display username
+                    document.getElementById('display-username').textContent = user.username || 'N/A';
+                    
+                    // Display email with masking
+                    const maskedEmail = maskEmail(user.email);
+                    document.getElementById('display-email').textContent = maskedEmail;
+                    
+                    // Display created date
+                    document.getElementById('display-created-date').textContent = createdDate;
+                    
+                    // Display role (capitalize first letter)
+                    const roleDisplay = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+                    document.getElementById('display-role').textContent = roleDisplay;
+
+                    // Store for edit mode (read-only fields)
+                    const usernameField = document.getElementById('username');
+                    const emailField = document.getElementById('email');
+                    if (usernameField) usernameField.value = user.username || 'N/A';
+                    if (emailField) emailField.value = user.email;
+
+                    // Save to localStorage for fallback
+                    localStorage.setItem('userEmail', user.email);
+                    localStorage.setItem('accountCreatedDate', createdDate);
+                    localStorage.setItem('userRole', roleDisplay);
+                    localStorage.setItem('username', user.username);
+
+                } else {
+                    // API error, fallback to localStorage
+                    console.warn('Failed to fetch profile from API');
+                    loadProfileDataFromLocalStorage();
+                }
+            } catch (err) {
+                console.error('Error loading profile:', err);
+                loadProfileDataFromLocalStorage();
+            }
+        }
+
+        // Fallback function to load profile from localStorage
+        function loadProfileDataFromLocalStorage() {
             const firstName = localStorage.getItem('firstName') || '';
             const lastName = localStorage.getItem('lastName') || '';
             const email = localStorage.getItem('userEmail') || 'customer@example.com';
+            const createdDate = localStorage.getItem('accountCreatedDate') || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const role = localStorage.getItem('userRole') || 'Customer';
+            const username = localStorage.getItem('username') || (firstName && lastName ? `${firstName} ${lastName}` : 'User');
 
-            // Display full name or "No name added"
-            const fullName = firstName && lastName ? `${firstName} ${lastName}` : 'No name added';
-            document.getElementById('display-fullname').textContent = fullName;
-            document.getElementById('display-email').textContent = email;
+            // Display username
+            document.getElementById('display-username').textContent = username;
+            
+            // Display email with masking
+            const maskedEmail = maskEmail(email);
+            document.getElementById('display-email').textContent = maskedEmail;
+            
+            // Display created date
+            document.getElementById('display-created-date').textContent = createdDate;
+            
+            // Display role
+            document.getElementById('display-role').textContent = role;
 
-            // Edit mode
-            document.getElementById('first-name').value = firstName;
-            document.getElementById('last-name').value = lastName;
-            document.getElementById('email').value = email;
+            // Edit mode - populate read-only fields
+            const usernameField = document.getElementById('username');
+            const emailField = document.getElementById('email');
+            if (usernameField) usernameField.value = username;
+            if (emailField) emailField.value = email;
         }
 
         // Toggle edit mode
@@ -265,31 +1275,14 @@
         }
 
         // Handle form submission
-        document.getElementById('profile-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const firstName = document.getElementById('first-name').value;
-            const lastName = document.getElementById('last-name').value;
-
-            // Validation
-            if (firstName.length > 255 || lastName.length > 255) {
-                alert('Name is too long (maximum is 255 characters)');
-                return;
-            }
-
-            // Save to localStorage (in a real app, this would be sent to a server)
-            localStorage.setItem('firstName', firstName);
-            localStorage.setItem('lastName', lastName);
-
-            // Update display
-            loadProfileData();
-
-            // Exit edit mode
-            cancelEdit();
-
-            // Show success message
-            showNotification('Profile updated successfully!');
-        });
+        const profileForm = document.getElementById('profile-form');
+        if (profileForm) {
+            profileForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Form is read-only, just close edit mode
+                cancelEdit();
+            });
+        }
 
         // Handle logout
         function handleLogout() {
@@ -355,16 +1348,61 @@
         function openPasswordModal() {
             document.getElementById('password-modal').style.display = 'flex';
             document.getElementById('password-form').reset();
+            document.getElementById('password-form').style.display = 'block';
+            document.getElementById('password-otp-form').style.display = 'none';
+            document.getElementById('password-otp').value = '';
         }
 
         // Close password modal
         function closePasswordModal() {
             document.getElementById('password-modal').style.display = 'none';
             document.getElementById('password-form').reset();
+            document.getElementById('password-otp-form').reset();
+            document.getElementById('password-form').style.display = 'block';
+            document.getElementById('password-otp-form').style.display = 'none';
         }
 
-        // Handle password form submission
-        document.getElementById('password-form').addEventListener('submit', function(e) {
+        // Store password change data temporarily
+        let passwordChangeData = {};
+
+        // Request OTP for password change
+        async function requestPasswordOTP() {
+            const token = localStorage.getItem('token');
+            const userEmail = localStorage.getItem('userEmail');
+
+            if (!userEmail) {
+                alert('Email not found. Please reload the page.');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/api/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail, purpose: 'password_change' })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    showNotification('OTP sent to your email');
+                } else {
+                    alert('Failed to send OTP: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('OTP request error:', err);
+                alert('Error sending OTP: ' + err.message);
+            }
+        }
+
+        // Back to password form
+        function backToPasswordForm() {
+            document.getElementById('password-form').style.display = 'block';
+            document.getElementById('password-otp-form').style.display = 'none';
+            document.getElementById('password-form').reset();
+        }
+
+        // Handle password form submission (initial step)
+        document.getElementById('password-form').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const currentPassword = document.getElementById('current-password').value;
@@ -383,27 +1421,275 @@
                 return;
             }
 
-            // In a real application, you would verify the current password with the server
-            // For this demo, we'll just save the new password to localStorage
-            const storedPassword = localStorage.getItem('userPassword');
-            
-            if (storedPassword && storedPassword !== currentPassword) {
-                alert('Current password is incorrect');
+            // Store data for OTP verification
+            passwordChangeData = {
+                currentPassword,
+                newPassword
+            };
+
+            // Request OTP
+            await requestPasswordOTP();
+
+            // Show OTP form
+            document.getElementById('password-form').style.display = 'none';
+            document.getElementById('password-otp-form').style.display = 'block';
+            document.getElementById('password-otp').focus();
+        });
+
+        // Handle OTP verification for password change
+        document.getElementById('password-otp-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const otp = document.getElementById('password-otp').value;
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('Session expired. Please refresh the page.');
                 return;
             }
 
-            // Save new password
-            localStorage.setItem('userPassword', newPassword);
+            try {
+                const response = await fetch('http://localhost:5000/api/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        currentPassword: passwordChangeData.currentPassword,
+                        newPassword: passwordChangeData.newPassword,
+                        otp: otp
+                    })
+                });
 
-            // Close modal and show success
-            closePasswordModal();
-            showNotification('Password updated successfully!');
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('Password changed successfully!');
+                    closePasswordModal();
+                    passwordChangeData = {};
+                } else {
+                    alert('Failed to change password: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Password change error:', err);
+                alert('Error changing password: ' + err.message);
+            }
         });
 
-        // Close modal when clicking outside
-        document.getElementById('password-modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closePasswordModal();
+        // Handle deactivate account
+        function handleDeactivateAccount() {
+            if (confirm('Are you sure you want to deactivate your account? This action cannot be undone.')) {
+                if (confirm('This will permanently deactivate your account. Are you absolutely sure?')) {
+                    // Deactivate account functionality coming soon
+                    alert('Account deactivation feature is coming soon.');
+                    // TODO: Implement account deactivation on backend
+                }
+            }
+        }
+
+        // Email change modal functions
+        function openEmailChangeModal() {
+            const currentEmail = localStorage.getItem('userEmail');
+            document.getElementById('email-modal').style.display = 'flex';
+            document.getElementById('old-email').value = currentEmail || '';
+            document.getElementById('email-form').reset();
+            document.getElementById('email-form').style.display = 'block';
+            document.getElementById('email-otp-form').style.display = 'none';
+            document.getElementById('old-email-otp').value = '';
+            document.getElementById('new-email-otp').value = '';
+        }
+
+        function closeEmailModal() {
+            document.getElementById('email-modal').style.display = 'none';
+            document.getElementById('email-form').reset();
+            document.getElementById('email-otp-form').reset();
+            document.getElementById('email-form').style.display = 'block';
+            document.getElementById('email-otp-form').style.display = 'none';
+        }
+
+        // Store email change data temporarily
+        let emailChangeData = {};
+
+        // Request OTPs for email change (both old and new)
+        async function requestEmailOTPs() {
+            const currentEmail = localStorage.getItem('userEmail');
+            const newEmail = emailChangeData.newEmail;
+
+            if (!currentEmail || !newEmail) {
+                alert('Email not found. Please try again.');
+                return;
+            }
+
+            try {
+                // Send OTP to old email
+                const oldEmailResponse = await fetch('http://localhost:5000/api/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: currentEmail, purpose: 'email_change_old' })
+                });
+
+                const oldEmailData = await oldEmailResponse.json();
+                if (!oldEmailResponse.ok) {
+                    alert('Failed to send verification code to old email: ' + (oldEmailData.error || 'Unknown error'));
+                    return;
+                }
+
+                // Send OTP to new email
+                const newEmailResponse = await fetch('http://localhost:5000/api/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: newEmail, purpose: 'email_change_new' })
+                });
+
+                const newEmailData = await newEmailResponse.json();
+                if (!newEmailResponse.ok) {
+                    alert('Failed to send verification code to new email: ' + (newEmailData.error || 'Unknown error'));
+                    return;
+                }
+
+                showNotification('Verification codes sent to both email addresses');
+            } catch (err) {
+                console.error('OTP request error:', err);
+                alert('Error sending verification codes: ' + err.message);
+            }
+        }
+
+        // Initial OTP request on form submission
+        async function sendEmailChangeOTPs() {
+            const currentEmail = localStorage.getItem('userEmail');
+            const newEmail = emailChangeData.newEmail;
+
+            if (!currentEmail || !newEmail) {
+                alert('Email not found. Please try again.');
+                return;
+            }
+
+            try {
+                // Send OTP to old email
+                const oldEmailResponse = await fetch('http://localhost:5000/api/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: currentEmail, purpose: 'email_change_old' })
+                });
+
+                const oldEmailData = await oldEmailResponse.json();
+                if (!oldEmailResponse.ok) {
+                    alert('Failed to send verification code to old email: ' + (oldEmailData.error || 'Unknown error'));
+                    return;
+                }
+
+                // Send OTP to new email
+                const newEmailResponse = await fetch('http://localhost:5000/api/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: newEmail, purpose: 'email_change_new' })
+                });
+
+                const newEmailData = await newEmailResponse.json();
+                if (!newEmailResponse.ok) {
+                    alert('Failed to send verification code to new email: ' + (newEmailData.error || 'Unknown error'));
+                    return;
+                }
+
+                showNotification('Verification codes sent to both email addresses');
+                return true;
+            } catch (err) {
+                console.error('OTP request error:', err);
+                alert('Error sending verification codes: ' + err.message);
+                return false;
+            }
+        }
+
+        // Back to email form
+        function backToEmailForm() {
+            document.getElementById('email-form').style.display = 'block';
+            document.getElementById('email-otp-form').style.display = 'none';
+            document.getElementById('email-form').reset();
+        }
+
+        // Handle email form submission (initial step)
+        document.getElementById('email-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const oldEmail = localStorage.getItem('userEmail');
+            const newEmail = document.getElementById('new-email').value;
+            const confirmNewEmail = document.getElementById('confirm-new-email').value;
+
+            if (newEmail !== confirmNewEmail) {
+                alert('New email addresses do not match');
+                return;
+            }
+
+            if (newEmail === oldEmail) {
+                alert('New email must be different from current email');
+                return;
+            }
+
+            // Store data for OTP verification
+            emailChangeData = { newEmail };
+
+            // Request OTPs
+            const success = await sendEmailChangeOTPs();
+            if (success) {
+                // Show OTP form
+                document.getElementById('email-form').style.display = 'none';
+                document.getElementById('email-otp-form').style.display = 'block';
+                document.getElementById('old-email-otp').focus();
+            }
+        });
+
+        // Handle OTP verification for email change (dual OTP)
+        document.getElementById('email-otp-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const oldEmailOtp = document.getElementById('old-email-otp').value;
+            const newEmailOtp = document.getElementById('new-email-otp').value;
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('Session expired. Please refresh the page.');
+                return;
+            }
+
+            if (!oldEmailOtp || !newEmailOtp) {
+                alert('Please enter both verification codes');
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/api/change-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        newEmail: emailChangeData.newEmail,
+                        oldEmailOtp: oldEmailOtp,
+                        newEmailOtp: newEmailOtp
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update localStorage with new email
+                    localStorage.setItem('userEmail', data.newEmail);
+
+                    showNotification('Email changed successfully!');
+                    closeEmailModal();
+                    emailChangeData = {};
+
+                    // Reload profile data to update display
+                    loadProfileData();
+                    loadUserEmail();
+                } else {
+                    alert('Failed to change email: ' + (data.error || 'Unknown error'));
+                }
+            } catch (err) {
+                console.error('Email change error:', err);
+                alert('Error changing email: ' + err.message);
             }
         });
 
@@ -411,6 +1697,188 @@
         checkLogin();
         loadProfileData();
         loadUserEmail();
+        loadOrders();
+        loadProfileCart();
+
+        // Load and display cart items
+        async function loadProfileCart() {
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            if (!token) {
+                document.getElementById('empty-cart-state').style.display = 'block';
+                document.getElementById('cart-items-container').style.display = 'none';
+                return;
+            }
+
+            try {
+                // Get or create cart
+                const cartResponse = await fetch('http://localhost:5000/api/cart', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!cartResponse.ok) {
+                    console.error('Failed to load cart');
+                    document.getElementById('empty-cart-state').style.display = 'block';
+                    document.getElementById('cart-items-container').style.display = 'none';
+                    return;
+                }
+
+                const cartData = await cartResponse.json();
+                const cartId = cartData.cart_id;
+
+                // Get cart items
+                const itemsResponse = await fetch(`http://localhost:5000/api/cart/${cartId}/items`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!itemsResponse.ok) {
+                    console.error('Failed to load cart items');
+                    document.getElementById('empty-cart-state').style.display = 'block';
+                    document.getElementById('cart-items-container').style.display = 'none';
+                    return;
+                }
+
+                const itemsData = await itemsResponse.json();
+                const items = itemsData.items || [];
+
+                if (items.length === 0) {
+                    document.getElementById('empty-cart-state').style.display = 'block';
+                    document.getElementById('cart-items-container').style.display = 'none';
+                    return;
+                }
+
+                // Display cart items
+                document.getElementById('empty-cart-state').style.display = 'none';
+                document.getElementById('cart-items-container').style.display = 'block';
+
+                const cartItemsList = document.getElementById('cart-items-list');
+                cartItemsList.innerHTML = '';
+
+                let total = 0;
+
+                items.forEach(item => {
+                    const itemTotal = (item.price * 100) * item.quantity; // price is in cents
+                    total += itemTotal;
+
+                    const cartItemDiv = document.createElement('div');
+                    cartItemDiv.className = 'cart-item-card';
+                    cartItemDiv.innerHTML = `
+                        <div class="cart-item-image">
+                            ${item.image ? `<img src="${item.image}" alt="${item.name}">` : '<span style="color: #999;">No Image</span>'}
+                        </div>
+                        <div class="cart-item-details">
+                            <div class="cart-item-name">${item.name}</div>
+                            ${item.sku ? `<div class="cart-item-sku">SKU: ${item.sku}</div>` : ''}
+                            <div class="cart-item-info-row">
+                                <span class="cart-item-info-label">Unit Price:</span>
+                                <span class="cart-item-info-value">$${(item.price * 100).toFixed(2)}</span>
+                            </div>
+                        </div>
+                        <div class="cart-item-actions">
+                            <div class="cart-item-price">$${itemTotal.toFixed(2)}</div>
+                            <div class="cart-item-quantity">
+                                <label style="font-size: 0.9rem; color: #999;">Qty:</label>
+                                <input type="number" class="quantity-input" value="${item.quantity}" min="1" onchange="updateProfileCartItemQuantity(${item.id}, this.value, '${token}')">
+                            </div>
+                            <button class="remove-btn" onclick="removeProfileCartItem(${item.id}, '${token}')">Remove</button>
+                        </div>
+                    `;
+                    cartItemsList.appendChild(cartItemDiv);
+                });
+
+                // Update total
+                document.getElementById('cart-total').textContent = '$' + total.toFixed(2);
+
+            } catch (err) {
+                console.error('Error loading profile cart:', err);
+                document.getElementById('empty-cart-state').style.display = 'block';
+                document.getElementById('cart-items-container').style.display = 'none';
+            }
+        }
+
+        // Update cart item quantity
+        async function updateProfileCartItemQuantity(itemId, newQuantity, token) {
+            if (newQuantity < 1) {
+                alert('Quantity must be at least 1');
+                return;
+            }
+
+            try {
+                const cartResponse = await fetch('http://localhost:5000/api/cart', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const cartData = await cartResponse.json();
+                const cartId = cartData.cart_id;
+
+                const response = await fetch(`http://localhost:5000/api/cart/${cartId}/items/${itemId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ quantity: parseInt(newQuantity) })
+                });
+
+                if (response.ok) {
+                    loadProfileCart();
+                } else {
+                    alert('Failed to update quantity');
+                }
+            } catch (err) {
+                console.error('Error updating cart item:', err);
+                alert('Error updating quantity');
+            }
+        }
+
+        // Remove cart item
+        async function removeProfileCartItem(itemId, token) {
+            if (!confirm('Remove this item from cart?')) {
+                return;
+            }
+
+            try {
+                const cartResponse = await fetch('http://localhost:5000/api/cart', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const cartData = await cartResponse.json();
+                const cartId = cartData.cart_id;
+
+                const response = await fetch(`http://localhost:5000/api/cart/${cartId}/items/${itemId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    loadProfileCart();
+                    showNotification('Item removed from cart');
+                } else {
+                    alert('Failed to remove item');
+                }
+            } catch (err) {
+                console.error('Error removing cart item:', err);
+                alert('Error removing item');
+            }
+        }
     </script>
 </body>
 </html>

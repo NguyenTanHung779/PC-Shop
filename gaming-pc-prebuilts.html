@@ -105,6 +105,84 @@
     <!-- Pre-Built PCs Section -->
     <section class="products-section py-5">
         <div class="container">
+            <!-- Search and Filter Bar -->
+            <div class="search-filter-container mb-5">
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <div class="search-box">
+                            <input type="text" 
+                                   id="searchInput" 
+                                   class="form-control search-input" 
+                                   placeholder="Tìm kiếm PC gaming... (Tên, CPU, GPU, RAM)">
+                            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.003-.003.007-.007.01-.01l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.01-.01zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="row g-3">
+                    <!-- Price Filter -->
+                    <div class="col-md-3">
+                        <div class="filter-group">
+                            <label class="filter-label">Giá Tiền</label>
+                            <div class="price-inputs">
+                                <input type="number" 
+                                       id="minPrice" 
+                                       class="form-control filter-input" 
+                                       placeholder="Từ" 
+                                       min="0">
+                                <span class="price-separator">-</span>
+                                <input type="number" 
+                                       id="maxPrice" 
+                                       class="form-control filter-input" 
+                                       placeholder="Đến" 
+                                       min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CPU Filter -->
+                    <div class="col-md-3">
+                        <div class="filter-group">
+                            <label class="filter-label">CPU</label>
+                            <select id="cpuFilter" class="form-select filter-select">
+                                <option value="">Tất cả CPU</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- GPU Filter -->
+                    <div class="col-md-3">
+                        <div class="filter-group">
+                            <label class="filter-label">GPU</label>
+                            <select id="gpuFilter" class="form-select filter-select">
+                                <option value="">Tất cả GPU</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- RAM Filter -->
+                    <div class="col-md-3">
+                        <div class="filter-group">
+                            <label class="filter-label">RAM</label>
+                            <select id="ramFilter" class="form-select filter-select">
+                                <option value="">Tất cả RAM</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Actions -->
+                <div class="row mt-3">
+                    <div class="col-12 d-flex gap-2 justify-content-between align-items-center">
+                        <button id="resetFilters" class="btn btn-outline-secondary">Xóa Bộ Lọc</button>
+                        <span id="resultsCount" class="text-muted small">Đang tải...</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="row g-4" id="product-grid">
                 <!-- Product Card 1 -->
                 <div class="col-md-6 col-lg-4">
@@ -154,6 +232,9 @@
                             <div class="product-image-wrapper">
                                 <img src="images\Frost Nova v6.png" class="product-image product-image-primary" alt="Frost Nova v6">
                                 <img src="images\side-Frost Nova v6.png" class="product-image product-image-secondary" alt="Frost Nova v6" style="display: none;">
+                                <div class="quick-add">
+                                    <button type="button" class="button button--secondary button--blur" disabled>Hết Hàng</button>
+                                </div>
                             </div>
                             <div class="product-info">
                                 <h3 class="product-title">Frost Nova v6</h3>
@@ -182,13 +263,6 @@
                                 </div>
                             </div>
                         </a>
-                        <button type="button" class="btn btn-dark w-100 mt-3 add-to-cart-btn" data-product="Frost Nova v6" data-price="32990000">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus me-2" viewBox="0 0 16 16" style="vertical-align: middle;">
-                                <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9V5.5z"/>
-                                <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-                            </svg>
-                            Thêm vào giỏ
-                        </button>
                     </div>
                 </div>
 
@@ -199,6 +273,9 @@
                             <div class="product-image-wrapper">
                                 <img src="images\Obliterate-v1.png" class="product-image product-image-primary" alt="Obliterate v1">
                                 <img src="images\side-obliterate.png" class="product-image product-image-secondary" alt="Obliterate v1" style="display: none;">
+                                <div class="quick-add">
+                                    <button type="button" class="button button--secondary button--blur" disabled>Hết Hàng</button>
+                                </div>
                             </div>
                             <div class="product-info">
                                 <h3 class="product-title">Obliterate v1</h3>
@@ -227,13 +304,6 @@
                                 </div>
                             </div>
                         </a>
-                        <button type="button" class="btn btn-dark w-100 mt-3 add-to-cart-btn" data-product="Obliterate v1" data-price="152990000">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus me-2" viewBox="0 0 16 16" style="vertical-align: middle;">
-                                <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9V5.5z"/>
-                                <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-                            </svg>
-                            Thêm vào giỏ
-                        </button>
                     </div>
                 </div>
             </div>
@@ -845,6 +915,8 @@
 <script src="JS/product-redirect.js"></script>
 <script>
     // Load dynamic products from API
+    let allProducts = [];
+    
     async function loadDynamicProducts() {
         try {
             const response = await fetch('http://localhost:5000/api/public/items');
@@ -853,13 +925,16 @@
                 return;
             }
             
-            const products = await response.json();
+            const json = await response.json();
+            // Handle both response formats
+            const products = Array.isArray(json) ? json : (json.items || []);
             
             if (!Array.isArray(products) || products.length === 0) {
                 console.log('No products found in API');
                 return;
             }
             
+            allProducts = products;
             console.log('Loaded', products.length, 'products from API');
             
             const productGrid = document.getElementById('product-grid');
@@ -874,17 +949,16 @@
                     
                     if (detailResponse.ok) {
                         const detailData = await detailResponse.json();
-                        const specs = detailData.item?.specs || {};
-                        images = detailData.item?.images || [];
+                        const itemData = detailData.item || {};
+                        const specs = itemData.specs || {};
+                        images = itemData.images || [];
                         
-                        // Extract specs
                         if (specs.CPU && specs.CPU.length > 0) cpu = specs.CPU[0].value;
                         if (specs.GPU && specs.GPU.length > 0) gpu = specs.GPU[0].value;
                         if (specs.RAM && specs.RAM.length > 0) ram = specs.RAM[0].value;
                         if (specs.Storage && specs.Storage.length > 0) storage = specs.Storage[0].value;
                     }
                     
-                    // Use images array or fallback to image_url
                     if (images.length === 0 && product.image_url) {
                         images = [product.image_url];
                     }
@@ -892,66 +966,74 @@
                         images = ['images/placeholder.png'];
                     }
                     
-                    // Format price in VND
                     const price = new Intl.NumberFormat('vi-VN').format(product.price || 0);
                     
-                    // Prepare image HTML - use dual image approach like hardcoded products
-                    let imageHTML = `<img src="${images[0]}" class="product-image product-image-primary" alt="${product.name}">`;
+                    let imageHTML = `<img src="${images[0]}" class="product-image product-image-primary" alt="${product.name}" onerror="this.src='images/placeholder.png'">`;
                     if (images.length > 1) {
-                        imageHTML += `<img src="${images[1]}" class="product-image product-image-secondary" alt="${product.name}" style="display: none;">`;
+                        imageHTML += `<img src="${images[1]}" class="product-image product-image-secondary" alt="${product.name}" style="display: none;" onerror="this.src='images/placeholder.png'">`;
                     }
                 
-                // Create product card
-                const productCard = document.createElement('div');
-                productCard.className = 'col-md-6 col-lg-4';
-                productCard.innerHTML = `
-                    <div class="product-card">
-                        <a href="products/product.html?id=${product.item_id}" class="product-link">
-                            <div class="product-image-wrapper">
-                                ${imageHTML}
-                            </div>
-                            <div class="product-info">
-                                <h3 class="product-title">${product.name}</h3>
-                                <div class="product-price">Từ ${price}₫</div>
-                                <div class="product-specs">
-                                    <div class="spec-item">
-                                        <img src="images/icons/cpu-icon.svg" alt="CPU" class="spec-icon">
-                                        <span class="spec-label">CPU</span>
-                                        <span class="spec-value">${cpu}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <img src="images/icons/gpu-icon.png" alt="GPU" class="spec-icon">
-                                        <span class="spec-label">GPU</span>
-                                        <span class="spec-value">${gpu}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <img src="images/icons/ram-icon.svg" alt="RAM" class="spec-icon">
-                                        <span class="spec-label">RAM</span>
-                                        <span class="spec-value">${ram}</span>
-                                    </div>
-                                    <div class="spec-item">
-                                        <img src="images/icons/ssd-icon.png" alt="SSD" class="spec-icon">
-                                        <span class="spec-label">SSD</span>
-                                        <span class="spec-value">${storage}</span>
+                    const productCard = document.createElement('div');
+                    productCard.className = 'col-md-6 col-lg-4';
+                    productCard.setAttribute('data-product-id', product.item_id);
+                    productCard.setAttribute('data-product-name', product.name.toLowerCase());
+                    productCard.setAttribute('data-cpu', cpu.toLowerCase());
+                    productCard.setAttribute('data-gpu', gpu.toLowerCase());
+                    productCard.setAttribute('data-ram', ram.toLowerCase());
+                    productCard.setAttribute('data-storage', storage.toLowerCase());
+                    productCard.setAttribute('data-price', product.price || 0);
+                    
+                    productCard.innerHTML = `
+                        <div class="product-card">
+                            <a href="products/product.html?id=${product.item_id}" class="product-link">
+                                <div class="product-image-wrapper">
+                                    ${imageHTML}
+                                </div>
+                                <div class="product-info">
+                                    <h3 class="product-title">${product.name}</h3>
+                                    <div class="product-price">Từ ${price}₫</div>
+                                    <div class="product-specs">
+                                        <div class="spec-item">
+                                            <img src="images/icons/cpu-icon.svg" alt="CPU" class="spec-icon">
+                                            <span class="spec-label">CPU</span>
+                                            <span class="spec-value">${cpu}</span>
+                                        </div>
+                                        <div class="spec-item">
+                                            <img src="images/icons/gpu-icon.png" alt="GPU" class="spec-icon">
+                                            <span class="spec-label">GPU</span>
+                                            <span class="spec-value">${gpu}</span>
+                                        </div>
+                                        <div class="spec-item">
+                                            <img src="images/icons/ram-icon.svg" alt="RAM" class="spec-icon">
+                                            <span class="spec-label">RAM</span>
+                                            <span class="spec-value">${ram}</span>
+                                        </div>
+                                        <div class="spec-item">
+                                            <img src="images/icons/ssd-icon.png" alt="SSD" class="spec-icon">
+                                            <span class="spec-label">SSD</span>
+                                            <span class="spec-value">${storage}</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </a>
-                        <button type="button" class="btn btn-dark w-100 mt-3 add-to-cart-btn" data-product="${product.name}" data-price="${product.price}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus me-2" viewBox="0 0 16 16" style="vertical-align: middle;">
-                                <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9V5.5z"/>
-                                <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-                            </svg>
-                            Thêm vào giỏ
-                        </button>
-                    </div>
-                `;
-                
+                            </a>
+                            <button type="button" class="btn btn-dark w-100 mt-3 add-to-cart-btn" data-item-id="${product.item_id}" data-product="${product.name || 'Unknown Product'}" data-price="${product.price || 0}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus me-2" viewBox="0 0 16 16" style="vertical-align: middle;">
+                                    <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9V5.5z"/>
+                                    <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                </svg>
+                                Thêm vào giỏ
+                            </button>
+                        </div>
+                    `;
+                    
                     productGrid.appendChild(productCard);
                 } catch (productError) {
                     console.error('Error loading product', product.item_id, productError);
                 }
             }
+            
+            // Populate filters
+            populateFilters();
             
             console.log(`Successfully loaded ${products.length} dynamic products`);
         } catch (error) {
@@ -959,8 +1041,145 @@
         }
     }
     
-    // Load products when page loads
-    document.addEventListener('DOMContentLoaded', loadDynamicProducts);
+    // Populate filter options from loaded products
+    function populateFilters() {
+        const cpuSet = new Set();
+        const gpuSet = new Set();
+        const ramSet = new Set();
+        
+        document.querySelectorAll('[data-cpu]').forEach(card => {
+            const cpu = card.getAttribute('data-cpu');
+            const cpuValue = card.getAttribute('data-cpu').split(' ')[0];
+            if (cpu && cpu !== 'n/a') cpuSet.add(cpu);
+        });
+        
+        document.querySelectorAll('[data-gpu]').forEach(card => {
+            const gpu = card.getAttribute('data-gpu');
+            if (gpu && gpu !== 'n/a') gpuSet.add(gpu);
+        });
+        
+        document.querySelectorAll('[data-ram]').forEach(card => {
+            const ram = card.getAttribute('data-ram');
+            if (ram && ram !== 'n/a') ramSet.add(ram);
+        });
+        
+        // Populate CPU
+        const cpuFilter = document.getElementById('cpuFilter');
+        Array.from(cpuSet).sort().forEach(cpu => {
+            const option = document.createElement('option');
+            option.value = cpu;
+            option.textContent = cpu;
+            cpuFilter.appendChild(option);
+        });
+        
+        // Populate GPU
+        const gpuFilter = document.getElementById('gpuFilter');
+        Array.from(gpuSet).sort().forEach(gpu => {
+            const option = document.createElement('option');
+            option.value = gpu;
+            option.textContent = gpu;
+            gpuFilter.appendChild(option);
+        });
+        
+        // Populate RAM
+        const ramFilter = document.getElementById('ramFilter');
+        Array.from(ramSet).sort().forEach(ram => {
+            const option = document.createElement('option');
+            option.value = ram;
+            option.textContent = ram;
+            ramFilter.appendChild(option);
+        });
+    }
+    
+    // Apply filters using CSS display property
+    function applyFilters() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+        const maxPrice = parseFloat(document.getElementById('maxPrice').value) || Infinity;
+        const selectedCPU = document.getElementById('cpuFilter').value.toLowerCase();
+        const selectedGPU = document.getElementById('gpuFilter').value.toLowerCase();
+        const selectedRAM = document.getElementById('ramFilter').value.toLowerCase();
+        
+        let visibleCount = 0;
+        let matchedCount = 0;
+        
+        document.querySelectorAll('[data-product-id]').forEach(card => {
+            const name = card.getAttribute('data-product-name');
+            const cpu = card.getAttribute('data-cpu');
+            const gpu = card.getAttribute('data-gpu');
+            const ram = card.getAttribute('data-ram');
+            const storage = card.getAttribute('data-storage');
+            const price = parseFloat(card.getAttribute('data-price')) || 0;
+            
+            let matches = true;
+            let isMatched = true;
+            
+            // Search filter
+            if (searchTerm) {
+                const searchInText = `${name} ${cpu} ${gpu} ${ram} ${storage}`;
+                matches = searchInText.includes(searchTerm);
+                isMatched = matches;
+            }
+            
+            // Price filter
+            if (matches && minPrice >= 0) matches = price >= minPrice;
+            if (matches && maxPrice < Infinity) matches = price <= maxPrice;
+            
+            // CPU filter
+            if (matches && selectedCPU) matches = cpu.includes(selectedCPU);
+            
+            // GPU filter
+            if (matches && selectedGPU) matches = gpu.includes(selectedGPU);
+            
+            // RAM filter
+            if (matches && selectedRAM) matches = ram.includes(selectedRAM);
+            
+            if (matches) {
+                card.style.display = '';
+                card.classList.toggle('non-matched', !isMatched);
+                visibleCount++;
+                if (isMatched) matchedCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Update results count
+        const resultsText = searchTerm || selectedCPU || selectedGPU || selectedRAM || minPrice > 0 || maxPrice < Infinity
+            ? `Tìm thấy ${visibleCount} sản phẩm${matchedCount < visibleCount ? ` (${matchedCount} khớp)` : ''}`
+            : `Hiển thị ${visibleCount} sản phẩm`;
+        document.getElementById('resultsCount').textContent = resultsText;
+    }
+    
+    // Reset all filters
+    function resetFilters() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('minPrice').value = '';
+        document.getElementById('maxPrice').value = '';
+        document.getElementById('cpuFilter').value = '';
+        document.getElementById('gpuFilter').value = '';
+        document.getElementById('ramFilter').value = '';
+        
+        document.querySelectorAll('[data-product-id]').forEach(card => {
+            card.style.display = '';
+            card.classList.remove('non-matched');
+        });
+        
+        document.getElementById('resultsCount').textContent = `Hiển thị ${allProducts.length} sản phẩm`;
+    }
+    
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        loadDynamicProducts();
+        
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('minPrice').addEventListener('input', applyFilters);
+        document.getElementById('maxPrice').addEventListener('input', applyFilters);
+        document.getElementById('cpuFilter').addEventListener('change', applyFilters);
+        document.getElementById('gpuFilter').addEventListener('change', applyFilters);
+        document.getElementById('ramFilter').addEventListener('change', applyFilters);
+        document.getElementById('resetFilters').addEventListener('click', resetFilters);
+    });
 </script>
 </body>
 </html>

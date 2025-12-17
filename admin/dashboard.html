@@ -17,7 +17,7 @@
         <nav class="admin-sidebar">
             <div class="sidebar-header">
                 <h3 class="sidebar-title">
-                    <i class="bi bi-speedometer2"></i> Admin Panel
+                    <i class="bi bi-speedometer2"></i> FirePC Shop
                 </h3>
             </div>
 
@@ -50,6 +50,16 @@
                 <li class="nav-item">
                     <a href="#pcparts" class="nav-link" data-section="pcparts">
                         <i class="bi bi-cpu"></i> PC Parts
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#gallery" class="nav-link" data-section="gallery">
+                        <i class="bi bi-image"></i> Gallery
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#auditlogs" class="nav-link" data-section="auditlogs">
+                        <i class="bi bi-journal-text"></i> Audit Logs
                     </a>
                 </li>
                 <li class="nav-item border-top mt-3 pt-3">
@@ -182,9 +192,44 @@
                 <section id="users-section" class="content-section">
                     <div class="section-header">
                         <h2>Users Management</h2>
-                        <button class="btn btn-primary btn-sm" onclick="openAddUserModal()">
-                            <i class="bi bi-plus-lg"></i> Add User
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-danger btn-sm" id="bulkDeleteUsersBtn" onclick="bulkDeleteUsers()" style="display:none;">
+                                <i class="bi bi-trash"></i> Delete Selected (<span id="selectedUsersCount">0</span>)
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="openAddUserModal()">
+                                <i class="bi bi-plus-lg"></i> Add User
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search and Filter Controls -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control form-control-sm" id="user-search" placeholder="Search by username or email..." onkeyup="filterUsers()">
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select form-select-sm" id="user-role-filter" onchange="filterUsers()">
+                                        <option value="">All Roles</option>
+                                        <option value="admin">Admin</option>
+                                        <option value="user">User</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select class="form-select form-select-sm" id="user-status-filter" onchange="filterUsers()">
+                                        <option value="">All Status</option>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <button class="btn btn-sm btn-outline-secondary w-100" onclick="clearUserFilters()">
+                                        <i class="bi bi-x-circle"></i> Clear
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="card">
@@ -193,6 +238,7 @@
                                 <table class="table table-hover">
                                     <thead class="table-light">
                                         <tr>
+                                            <th><input type="checkbox" id="selectAllUsers" onchange="toggleSelectAllUsers(this)"></th>
                                             <th>User ID</th>
                                             <th>Username</th>
                                             <th>Email</th>
@@ -204,10 +250,17 @@
                                     </thead>
                                     <tbody id="users-table-body">
                                         <tr>
-                                            <td colspan="7" class="text-center text-muted">No users found. Connect to backend API.</td>
+                                            <td colspan="8" class="text-center text-muted">No users found. Connect to backend API.</td>
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+                            <!-- Pagination -->
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div class="text-muted" id="users-showing-info">Showing 0 of 0 users</div>
+                                <nav>
+                                    <ul class="pagination pagination-sm mb-0" id="users-pagination"></ul>
+                                </nav>
                             </div>
                         </div>
                     </div>
@@ -217,14 +270,30 @@
                 <section id="orders-section" class="content-section">
                     <div class="section-header">
                         <h2>Orders Management</h2>
-                        <div class="filter-group">
-                            <select class="form-select form-select-sm" id="order-status-filter" style="max-width: 200px;">
-                                <option value="">All Statuses</option>
-                                <option value="pending">Pending</option>
-                                <option value="shipped">Shipped</option>
-                                <option value="delivered">Delivered</option>
-                                <option value="cancelled">Cancelled</option>
-                            </select>
+                    </div>
+
+                    <!-- Search and Filter Controls -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control form-control-sm" id="order-search" placeholder="Search by order ID, user, or email..." onkeyup="filterOrders()">
+                                </div>
+                                <div class="col-md-5">
+                                    <select class="form-select form-select-sm" id="order-status-filter" onchange="filterOrders()">
+                                        <option value="">All Statuses</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="shipped">Shipped</option>
+                                        <option value="delivered">Delivered</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-sm btn-outline-secondary w-100" onclick="clearOrderFilters()">
+                                        <i class="bi bi-x-circle"></i> Clear
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -295,24 +364,42 @@
                     <div class="section-header">
                         <h2>PC Parts (Specifications)</h2>
                         <div class="d-flex gap-2 align-items-center">
-                            <select class="form-select form-select-sm" id="pcparts-section-filter" style="max-width: 200px;">
-                                <option value="">All Sections</option>
-                                <option value="CPU">CPU</option>
-                                <option value="GPU">GPU</option>
-                                <option value="RAM">RAM</option>
-                                <option value="Storage">Storage</option>
-                                <option value="Motherboard">Motherboard</option>
-                                <option value="PSU">PSU</option>
-                                <option value="Cooling">Cooling</option>
-                                <option value="Case">Case</option>
-                                <option value="General">General</option>
-                            </select>
                             <button class="btn btn-danger btn-sm" id="deleteSelectedPCPartsBtn" onclick="deleteSelectedPCParts()" style="display:none;">
                                 <i class="bi bi-trash"></i> Delete Selected (<span id="selectedPCPartsCount">0</span>)
                             </button>
                             <button class="btn btn-primary btn-sm" onclick="openAddPCPartModal()">
                                 <i class="bi bi-plus-lg"></i> Add PC Part
                             </button>
+                        </div>
+                    </div>
+
+                    <!-- Search and Filter Controls -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control form-control-sm" id="pcparts-search" placeholder="Search by key, value, or section..." onkeyup="filterPCParts()">
+                                </div>
+                                <div class="col-md-5">
+                                    <select class="form-select form-select-sm" id="pcparts-section-filter" onchange="filterPCParts()">
+                                        <option value="">All Sections</option>
+                                        <option value="CPU">CPU</option>
+                                        <option value="GPU">GPU</option>
+                                        <option value="RAM">RAM</option>
+                                        <option value="Storage">Storage</option>
+                                        <option value="Motherboard">Motherboard</option>
+                                        <option value="PSU">PSU</option>
+                                        <option value="Cooling">Cooling</option>
+                                        <option value="Case">Case</option>
+                                        <option value="General">General</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-sm btn-outline-secondary w-100" onclick="clearPCPartsFilters()">
+                                        <i class="bi bi-x-circle"></i> Clear
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -334,6 +421,73 @@
                                     <tbody id="pcparts-table-body">
                                         <tr>
                                             <td colspan="8" class="text-center text-muted">No PC parts found.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Gallery Section -->
+                <section id="gallery-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Gallery - Item Images</h2>
+                        <div class="d-flex gap-2 align-items-center">
+                            <button class="btn btn-danger btn-sm" id="deleteSelectedGalleryBtn" onclick="deleteSelectedGalleryImages()" style="display:none;">
+                                <i class="bi bi-trash"></i> Delete Selected (<span id="selectedGalleryCount">0</span>)
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="openAddGalleryImageModal()">
+                                <i class="bi bi-plus-lg"></i> Add Image
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search and Filter Controls -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control form-control-sm" id="gallery-search" 
+                                           placeholder="Search by item name, alt text, or URL..." onkeyup="filterGalleryImages()">
+                                </div>
+                                <div class="col-md-5">
+                                    <select class="form-select form-select-sm" id="gallery-sort-filter" onchange="filterGalleryImages()">
+                                        <option value="">All Items</option>
+                                        <option value="name-asc">Item Name (A-Z)</option>
+                                        <option value="name-desc">Item Name (Z-A)</option>
+                                        <option value="id-asc">Item ID (Low-High)</option>
+                                        <option value="id-desc">Item ID (High-Low)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-sm btn-outline-secondary w-100" onclick="clearGalleryFilters()">
+                                        <i class="bi bi-x-circle"></i> Clear
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th><input type="checkbox" id="selectAllGallery" onchange="toggleSelectAllGalleryImages(this)"></th>
+                                            <th>Image ID</th>
+                                            <th>Item</th>
+                                            <th>Preview</th>
+                                            <th>URL</th>
+                                            <th>Alt Text</th>
+                                            <th>Sort Order</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="gallery-table-body">
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted">No images found.</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -374,6 +528,66 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- Audit Logs Section -->
+                <section id="auditlogs-section" class="content-section">
+                    <div class="section-header">
+                        <h2>Audit Logs</h2>
+                        <div class="d-flex gap-2">
+                            <input type="text" class="form-control form-control-sm" id="auditlog-search" 
+                                   placeholder="Search by user or description..." style="max-width: 250px;" 
+                                   onkeyup="filterAuditLogs()">
+                            <select class="form-select form-select-sm" id="auditlog-category-filter" 
+                                    style="max-width: 150px;" onchange="filterAuditLogs()">
+                                <option value="">All Categories</option>
+                                <option value="Add">Add</option>
+                                <option value="Edit">Edit</option>
+                                <option value="Delete">Delete</option>
+                            </select>
+                            <select class="form-select form-select-sm" id="auditlog-changein-filter" 
+                                    style="max-width: 200px;" onchange="filterAuditLogs()">
+                                <option value="">All Sections</option>
+                                <option value="User Management">User Management</option>
+                                <option value="Products">Products</option>
+                                <option value="Categories">Categories</option>
+                                <option value="PC Parts">PC Parts</option>
+                                <option value="Orders">Orders</option>
+                            </select>
+                            <button class="btn btn-secondary btn-sm" onclick="clearAuditLogFilters()">
+                                <i class="bi bi-x-circle"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div id="auditlogs-showing-info" class="text-muted">Showing 0-0 of 0 logs</div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Timestamp</th>
+                                            <th>User</th>
+                                            <th>Category</th>
+                                            <th>Section</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="auditlogs-table-body">
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted">No audit logs found.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <nav>
+                                <ul class="pagination justify-content-center" id="auditlogs-pagination"></ul>
+                            </nav>
+                        </div>
+                    </div>
+                </section>
             </div>
         </main>
     </div>
@@ -387,24 +601,33 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="userForm">
+                    <input type="hidden" id="user-id">
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="user-username" class="form-label">Username</label>
+                            <label for="user-username" class="form-label">Username <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="user-username" required>
                         </div>
                         <div class="mb-3">
-                            <label for="user-email" class="form-label">Email</label>
+                            <label for="user-email" class="form-label">Email <span class="text-danger">*</span></label>
                             <input type="email" class="form-control" id="user-email" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="user-password" class="form-label">Password</label>
+                        <div class="mb-3" id="password-field-group">
+                            <label for="user-password" class="form-label">Password <span class="text-danger" id="password-required">*</span></label>
                             <input type="password" class="form-control" id="user-password" required>
+                            <div class="form-text" id="password-help" style="display:none;">Leave blank to keep current password</div>
                         </div>
                         <div class="mb-3">
-                            <label for="user-role" class="form-label">Role</label>
+                            <label for="user-role" class="form-label">Role <span class="text-danger">*</span></label>
                             <select class="form-select" id="user-role" required>
                                 <option value="user">User</option>
                                 <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="user-status" class="form-label">Status</label>
+                            <select class="form-select" id="user-status">
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
                             </select>
                         </div>
                     </div>
@@ -413,6 +636,95 @@
                         <button type="submit" class="btn btn-primary">Save User</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Details Modal -->
+    <div class="modal fade" id="userDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title"><i class="bi bi-person-circle"></i> User Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="user-details-content">
+                    <p class="text-muted">Loading...</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin OTP Verification Modal -->
+    <div class="modal fade" id="adminOTPModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <h5 class="modal-title text-white"><i class="bi bi-shield-lock-fill me-2"></i>Xác Thực Bảo Mật</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="cancelOTPVerification()"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info border-0 mb-3" style="background-color: #e7f3ff;">
+                        <div class="d-flex align-items-start">
+                            <i class="bi bi-info-circle-fill me-2 mt-1 text-primary"></i>
+                            <div>
+                                <strong>Thao tác nhạy cảm yêu cầu xác thực:</strong>
+                                <div id="otp-action-description" class="mt-1 fw-semibold text-dark"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-muted mb-3">
+                        <i class="bi bi-envelope-fill me-2"></i>
+                        Mã OTP sẽ được gửi đến: <strong id="admin-email-display"></strong>
+                    </p>
+
+                    <div id="otp-send-section">
+                        <button type="button" class="btn w-100 text-white mb-2" id="send-admin-otp-btn" 
+                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                            <i class="bi bi-send-fill me-2"></i>Gửi mã OTP
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary w-100" data-bs-dismiss="modal" onclick="cancelOTPVerification()">
+                            <i class="bi bi-arrow-left me-2"></i>Hủy bỏ
+                        </button>
+                    </div>
+
+                    <div id="otp-verify-section" style="display:none;">
+                        <div class="mb-3">
+                            <label for="admin-otp-input" class="form-label fw-semibold">Nhập mã OTP (6 số)</label>
+                            <input type="text" 
+                                   class="form-control form-control-lg text-center mb-2" 
+                                   id="admin-otp-input" 
+                                   maxlength="6" 
+                                   placeholder="000000"
+                                   style="font-size: 1.5rem; letter-spacing: 0.5em;">
+                            <div class="form-text text-center">
+                                <i class="bi bi-clock-fill me-1"></i>
+                                Mã hết hạn sau: <strong id="admin-otp-timer">10:00</strong>
+                            </div>
+                        </div>
+                        <button type="button" class="btn w-100 mb-2 text-white" id="verify-admin-otp-btn"
+                                style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none;">
+                            <i class="bi bi-check-circle-fill me-2"></i>Xác nhận
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary w-100 mb-2" id="resend-admin-otp-btn" disabled>
+                            <i class="bi bi-arrow-clockwise me-2"></i>Gửi lại mã
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary w-100" data-bs-dismiss="modal" onclick="cancelOTPVerification()">
+                            <i class="bi bi-arrow-left me-2"></i>Hủy bỏ
+                        </button>
+                    </div>
+
+                    <div id="otp-verifying" style="display:none;" class="text-center py-3">
+                        <div class="spinner-border text-primary mb-3" role="status">
+                            <span class="visually-hidden">Đang xác thực...</span>
+                        </div>
+                        <p class="text-muted">Đang xác thực mã OTP...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -614,6 +926,102 @@
         </div>
     </div>
 
+    <!-- Edit PC Part Modal -->
+    <div class="modal fade" id="pcPartModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pcPartModalTitle">Edit PC Part</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="pcPartForm">
+                        <input type="hidden" id="pcpart-spec-id">
+                        <div class="mb-3">
+                            <label for="pcpart-section" class="form-label">Section *</label>
+                            <select class="form-select" id="pcpart-section" required>
+                                <option value="">Select Section</option>
+                                <option value="CPU">CPU</option>
+                                <option value="GPU">GPU</option>
+                                <option value="RAM">RAM</option>
+                                <option value="Storage">Storage</option>
+                                <option value="Motherboard">Motherboard</option>
+                                <option value="PSU">PSU</option>
+                                <option value="Cooling">Cooling</option>
+                                <option value="Case">Case</option>
+                                <option value="General">General</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="pcpart-key" class="form-label">Key *</label>
+                            <input type="text" class="form-control" id="pcpart-key" required>
+                            <small class="text-muted">e.g., Processor, Graphics Card, Memory</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="pcpart-value" class="form-label">Value *</label>
+                            <input type="text" class="form-control" id="pcpart-value" required>
+                            <small class="text-muted">e.g., Intel Core i9-13900K, RTX 4090</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="pcpart-display-order" class="form-label">Display Order</label>
+                            <input type="number" class="form-control" id="pcpart-display-order" value="0" min="0">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery Image Modal -->
+    <div class="modal fade" id="galleryImageModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="galleryImageModalTitle">Add Image</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="galleryImageForm">
+                        <input type="hidden" id="gallery-image-id">
+                        <div class="mb-3">
+                            <label for="gallery-item-id" class="form-label">Item ID *</label>
+                            <input type="number" class="form-control" id="gallery-item-id" required min="1">
+                            <small class="text-muted">Enter the product/item ID</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="gallery-image-url" class="form-label">Image URL *</label>
+                            <input type="url" class="form-control" id="gallery-image-url" required placeholder="https://example.com/image.jpg">
+                            <small class="text-muted">Full URL to the image</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="gallery-alt-text" class="form-label">Alt Text</label>
+                            <input type="text" class="form-control" id="gallery-alt-text" placeholder="Descriptive text for accessibility">
+                        </div>
+                        <div class="mb-3">
+                            <label for="gallery-sort-order" class="form-label">Sort Order</label>
+                            <input type="number" class="form-control" id="gallery-sort-order" value="0" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Image Preview</label>
+                            <div id="gallery-preview-container" class="border rounded p-3 bg-light text-center" style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                                <img id="gallery-preview-img" src="" alt="Preview" style="max-width: 100%; max-height: 200px; display: none;">
+                                <p id="gallery-preview-text" class="text-muted mb-0">Image preview will appear here</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Image</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Check if user is admin
         function checkAdminAccess() {
@@ -713,6 +1121,14 @@
                     sectionElement = document.getElementById('pcparts-section');
                     loadPCPartsData();
                     break;
+                case 'gallery':
+                    sectionElement = document.getElementById('gallery-section');
+                    loadGalleryData();
+                    break;
+                case 'auditlogs':
+                    sectionElement = document.getElementById('auditlogs-section');
+                    loadAuditLogsData();
+                    break;
             }
             
             if (sectionElement) {
@@ -752,7 +1168,7 @@
                 
                 // Calculate revenue from delivered orders only
                 const totalRevenue = Array.isArray(orders) 
-                    ? orders.filter(o => o.status === 'delivered').reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0) 
+                    ? orders.filter(o => o.status === 'delivered').reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0) * 100
                     : 0;
                 document.getElementById('total-revenue').textContent = formatVND(totalRevenue);
                 
@@ -778,7 +1194,7 @@
                         const left = document.createElement('div');
                         left.innerHTML = `<strong>#${o.order_id}</strong> — ${o.username || o.email || 'Customer'} <div class="small text-muted">${new Date(o.order_date || o.created_at || Date.now()).toLocaleString()}</div>`;
                         const right = document.createElement('div');
-                        right.innerHTML = `<span class="badge bg-${getStatusColor(o.status)} me-2">${o.status}</span> <strong>$${(o.total_amount||0).toFixed(2)}</strong>`;
+                        right.innerHTML = `<span class="badge bg-${getStatusColor(o.status)} me-2">${o.status}</span> ${formatVND((o.total_amount||0) * 100)}`;
                         item.appendChild(left);
                         item.appendChild(right);
                         ul.appendChild(item);
@@ -858,7 +1274,7 @@
                     const orderDate = new Date(order.order_date);
                     const key = `${orderDate.getFullYear()}-${String(orderDate.getMonth() + 1).padStart(2, '0')}`;
                     if (monthlyData.hasOwnProperty(key)) {
-                        monthlyData[key] += Number(order.total_amount) || 0;
+                        monthlyData[key] += (Number(order.total_amount) || 0) * 100;
                     }
                 });
 
@@ -880,7 +1296,7 @@
                 deliveredOrders.forEach(order => {
                     const year = new Date(order.order_date).getFullYear();
                     if (yearlyData.hasOwnProperty(year)) {
-                        yearlyData[year] += Number(order.total_amount) || 0;
+                        yearlyData[year] += (Number(order.total_amount) || 0) * 100;
                     }
                 });
 
@@ -945,52 +1361,160 @@
         });
 
         // Load Users Data
+        let allUsers = [];
+        let filteredUsers = [];
+        let currentUserPage = 1;
+        const usersPerPage = 10;
+
         async function loadUsersData() {
             try {
-                // TODO: Connect to backend - Implement this endpoint
-                // GET /api/auth/users or GET /api/users - Fetch all registered users
-                
-                /* EXPECTED RESPONSE FORMAT:
-                    [{ 
-                        user_id, username, email, password_hash (never expose!), role, 
-                        created_at, updated_at 
-                    }, ...]
-                */
-
                 const response = await fetch('http://localhost:5000/api/users', {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
                 const users = await response.json();
 
-                if (response.ok && users.length > 0) {
-                    renderUsersTable(users);
+                if (response.ok && Array.isArray(users)) {
+                    allUsers = users;
+                    filterUsers();
+                } else {
+                    throw new Error('Invalid response');
                 }
             } catch (err) {
-                console.log('Backend API not connected. Users will show mock data when ready.');
+                console.error('Error loading users:', err);
+                const tbody = document.getElementById('users-table-body');
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Error loading users: ${err.message}</td></tr>`;
             }
+        }
+
+        function filterUsers() {
+            const searchTerm = document.getElementById('user-search')?.value.toLowerCase() || '';
+            const roleFilter = document.getElementById('user-role-filter')?.value || '';
+            const statusFilter = document.getElementById('user-status-filter')?.value || '';
+
+            filteredUsers = allUsers.filter(user => {
+                const matchesSearch = !searchTerm || 
+                    user.username.toLowerCase().includes(searchTerm) || 
+                    user.email.toLowerCase().includes(searchTerm);
+                
+                const matchesRole = !roleFilter || user.role === roleFilter;
+                
+                const matchesStatus = !statusFilter || 
+                    (user.status || 'active') === statusFilter;
+
+                return matchesSearch && matchesRole && matchesStatus;
+            });
+
+            currentUserPage = 1;
+            renderUsersTable(filteredUsers);
+            renderUsersPagination();
+        }
+
+        function clearUserFilters() {
+            document.getElementById('user-search').value = '';
+            document.getElementById('user-role-filter').value = '';
+            document.getElementById('user-status-filter').value = '';
+            filterUsers();
         }
 
         function renderUsersTable(users) {
             const tbody = document.getElementById('users-table-body');
             if (!Array.isArray(users) || users.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">No users found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No users found.</td></tr>`;
+                document.getElementById('users-showing-info').textContent = 'Showing 0 of 0 users';
                 return;
             }
 
-            tbody.innerHTML = users.map(user => `
+            // Pagination
+            const startIndex = (currentUserPage - 1) * usersPerPage;
+            const endIndex = startIndex + usersPerPage;
+            const paginatedUsers = users.slice(startIndex, endIndex);
+
+            tbody.innerHTML = paginatedUsers.map(user => `
                 <tr>
+                    <td><input type="checkbox" class="user-checkbox" value="${user.user_id}" onchange="updateBulkDeleteButton()"></td>
                     <td>${user.user_id}</td>
                     <td>${user.username}</td>
                     <td>${user.email}</td>
                     <td><span class="badge ${user.role === 'admin' ? 'bg-danger' : 'bg-info'}">${user.role}</span></td>
                     <td>${user.created_at ? new Date(user.created_at).toLocaleDateString() : '-'}</td>
-                    <td><span class="badge bg-success">Active</span></td>
+                    <td><span class="badge ${(user.status === 'inactive') ? 'bg-secondary' : 'bg-success'}">${user.status || 'active'}</span></td>
                     <td>
-                        <button class="btn btn-sm btn-warning" onclick="editUser(${user.user_id})"><i class="bi bi-pencil"></i></button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.user_id})"><i class="bi bi-trash"></i></button>
+                        <button class="btn btn-sm btn-info" onclick="viewUserDetails(${user.user_id})" title="View details"><i class="bi bi-eye"></i></button>
+                        <button class="btn btn-sm btn-warning" onclick="editUser(${user.user_id})" title="Edit"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-secondary" onclick="toggleUserStatus(${user.user_id}, '${user.status || 'active'}')" title="Toggle status"><i class="bi bi-toggle-on"></i></button>
+                        <button class="btn btn-sm btn-primary" onclick="requestPasswordReset(${user.user_id})" title="Reset password"><i class="bi bi-key"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.user_id})" title="Delete"><i class="bi bi-trash"></i></button>
                     </td>
                 </tr>
             `).join('');
+
+            // Update showing info
+            const showingStart = startIndex + 1;
+            const showingEnd = Math.min(endIndex, users.length);
+            document.getElementById('users-showing-info').textContent = `Showing ${showingStart}-${showingEnd} of ${users.length} users`;
+        }
+
+        function renderUsersPagination() {
+            const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+            const pagination = document.getElementById('users-pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            
+            // Previous button
+            html += `<li class="page-item ${currentUserPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changeUserPage(${currentUserPage - 1}); return false;">Previous</a>
+            </li>`;
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentUserPage - 1 && i <= currentUserPage + 1)) {
+                    html += `<li class="page-item ${i === currentUserPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="changeUserPage(${i}); return false;">${i}</a>
+                    </li>`;
+                } else if (i === currentUserPage - 2 || i === currentUserPage + 2) {
+                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                }
+            }
+
+            // Next button
+            html += `<li class="page-item ${currentUserPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changeUserPage(${currentUserPage + 1}); return false;">Next</a>
+            </li>`;
+
+            pagination.innerHTML = html;
+        }
+
+        function changeUserPage(page) {
+            const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentUserPage = page;
+            renderUsersTable(filteredUsers);
+            renderUsersPagination();
+        }
+
+        function toggleSelectAllUsers(checkbox) {
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+            updateBulkDeleteButton();
+        }
+
+        function updateBulkDeleteButton() {
+            const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+            const bulkBtn = document.getElementById('bulkDeleteUsersBtn');
+            const count = document.getElementById('selectedUsersCount');
+            
+            if (checkedBoxes.length > 0) {
+                bulkBtn.style.display = 'block';
+                count.textContent = checkedBoxes.length;
+            } else {
+                bulkBtn.style.display = 'none';
+                document.getElementById('selectAllUsers').checked = false;
+            }
         }
 
         // Load Orders Data
@@ -1026,6 +1550,30 @@
             }
         }
 
+        function filterOrders() {
+            const searchTerm = document.getElementById('order-search').value.toLowerCase();
+            const statusFilter = document.getElementById('order-status-filter').value;
+            
+            let filtered = allOrders.filter(order => {
+                const orderId = (order.order_id || '').toString().toLowerCase();
+                const username = (order.username || '').toLowerCase();
+                const email = (order.email || '').toLowerCase();
+                
+                const matchesSearch = orderId.includes(searchTerm) || username.includes(searchTerm) || email.includes(searchTerm);
+                const matchesStatus = !statusFilter || order.status === statusFilter;
+                
+                return matchesSearch && matchesStatus;
+            });
+            
+            renderOrdersTable(filtered);
+        }
+
+        function clearOrderFilters() {
+            document.getElementById('order-search').value = '';
+            document.getElementById('order-status-filter').value = '';
+            filterOrders();
+        }
+
         function renderOrdersTable(orders) {
             const tbody = document.getElementById('orders-table-body');
             if (!Array.isArray(orders) || orders.length === 0) {
@@ -1039,7 +1587,7 @@
                     <td>${order.username || 'Guest'}</td>
                     <td>${order.email || '-'}</td>
                     <td><span class="badge bg-secondary">${order.item_count || 0} item${order.item_count !== 1 ? 's' : ''}</span></td>
-                    <td>${formatVND(order.total_amount || 0)}</td>
+                    <td>${formatVND((order.total_amount || 0) * 100)}</td>
                     <td><span class="badge bg-${getStatusColor(order.status)}">${order.status}</span></td>
                     <td>${order.order_date ? new Date(order.order_date).toLocaleDateString('vi-VN') : '-'}</td>
                     <td>
@@ -1436,6 +1984,13 @@
                 const result = await response.json();
                 alert(isEdit ? 'Category updated successfully!' : 'Category created successfully!');
                 
+                // Log the action
+                await logAdminAction(
+                    isEdit ? `Updated category: ${name}` : `Created new category: ${name}`,
+                    isEdit ? 'Edit' : 'Add',
+                    'Categories'
+                );
+                
                 // Close modal and reload data
                 bootstrap.Modal.getInstance(document.getElementById('categoryModal')).hide();
                 loadCategoriesData();
@@ -1445,14 +2000,629 @@
             }
         }
 
-        // CRUD Operations (placeholder - connect to backend)
-        function editUser(userId) {
-            alert('Edit user ' + userId + ' (Backend integration required)');
+        // Admin OTP Verification System
+        let pendingAction = null;
+        let adminOTPTimer = null;
+        let adminOTPExpiry = null;
+        let adminEmail = '';
+
+        function getAdminEmail() {
+            const userData = localStorage.getItem('userData');
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    return user.email || '';
+                } catch (e) {
+                    return '';
+                }
+            }
+            return '';
         }
 
-        function deleteUser(userId) {
-            if (confirm('Are you sure you want to delete this user?')) {
-                alert('User deleted (Backend integration required)');
+        async function requireOTPVerification(actionDescription, callback) {
+            adminEmail = getAdminEmail();
+            
+            if (!adminEmail) {
+                alert('❌ Không tìm thấy email admin. Vui lòng đăng nhập lại.');
+                return;
+            }
+
+            pendingAction = callback;
+            
+            document.getElementById('otp-action-description').textContent = actionDescription;
+            document.getElementById('admin-email-display').textContent = adminEmail;
+            document.getElementById('admin-otp-input').value = '';
+            document.getElementById('otp-send-section').style.display = 'block';
+            document.getElementById('otp-verify-section').style.display = 'none';
+            document.getElementById('otp-verifying').style.display = 'none';
+            document.getElementById('admin-email-display').textContent = maskEmail(adminEmail);
+            
+            new bootstrap.Modal(document.getElementById('adminOTPModal')).show();
+        }
+
+        function cancelOTPVerification() {
+            pendingAction = null;
+            if (adminOTPTimer) clearInterval(adminOTPTimer);
+        }
+
+
+
+        document.getElementById('send-admin-otp-btn').addEventListener('click', async function() {
+            const btn = this;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Đang gửi...';
+
+            try {
+                const response = await fetch('http://localhost:5000/api/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: adminEmail, purpose: 'admin_verification' })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('otp-send-section').style.display = 'none';
+                    document.getElementById('otp-verify-section').style.display = 'block';
+                    document.getElementById('admin-otp-input').focus();
+                    
+                    adminOTPExpiry = Date.now() + (data.expiresIn * 1000);
+                    startAdminOTPTimer();
+                    
+                    setTimeout(() => {
+                        document.getElementById('resend-admin-otp-btn').disabled = false;
+                    }, 60000);
+                } else {
+                    alert(`❌ ${data.error || 'Failed to send OTP'}`);
+                    btn.disabled = false;
+                    btn.textContent = '📧 Gửi mã OTP';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Không thể gửi OTP');
+                btn.disabled = false;
+                btn.textContent = '📧 Gửi mã OTP';
+            }
+        });
+
+        document.getElementById('verify-admin-otp-btn').addEventListener('click', async function() {
+            const otp = document.getElementById('admin-otp-input').value.trim();
+            
+            if (otp.length !== 6) {
+                alert('⚠️ Vui lòng nhập mã OTP 6 số');
+                return;
+            }
+
+            document.getElementById('otp-verify-section').style.display = 'none';
+            document.getElementById('otp-verifying').style.display = 'block';
+
+            try {
+                const response = await fetch('http://localhost:5000/api/verify-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: adminEmail, otp, purpose: 'admin_verification' })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    bootstrap.Modal.getInstance(document.getElementById('adminOTPModal')).hide();
+                    
+                    if (pendingAction) {
+                        await pendingAction();
+                        pendingAction = null;
+                    }
+                } else {
+                    alert(`❌ ${data.error || 'OTP không hợp lệ'}`);
+                    document.getElementById('otp-verify-section').style.display = 'block';
+                    document.getElementById('otp-verifying').style.display = 'none';
+                    document.getElementById('admin-otp-input').value = '';
+                    document.getElementById('admin-otp-input').focus();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Lỗi xác minh OTP');
+                document.getElementById('otp-verify-section').style.display = 'block';
+                document.getElementById('otp-verifying').style.display = 'none';
+            }
+        });
+
+        document.getElementById('resend-admin-otp-btn').addEventListener('click', function() {
+            document.getElementById('send-admin-otp-btn').click();
+        });
+
+        function startAdminOTPTimer() {
+            if (adminOTPTimer) clearInterval(adminOTPTimer);
+            
+            adminOTPTimer = setInterval(() => {
+                const remaining = Math.max(0, Math.floor((adminOTPExpiry - Date.now()) / 1000));
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                
+                document.getElementById('admin-otp-timer').textContent = 
+                    `Mã hết hạn sau: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (remaining <= 0) {
+                    clearInterval(adminOTPTimer);
+                    document.getElementById('admin-otp-timer').innerHTML = 
+                        '<span style="color: red;">⚠️ Mã OTP đã hết hạn</span>';
+                    document.getElementById('resend-admin-otp-btn').disabled = false;
+                }
+            }, 1000);
+        }
+
+        // User Form Submission Handler
+        document.getElementById('userForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const userId = document.getElementById('user-id').value;
+            const username = document.getElementById('user-username').value.trim();
+            const email = document.getElementById('user-email').value.trim();
+            const password = document.getElementById('user-password').value;
+            const role = document.getElementById('user-role').value;
+            const status = document.getElementById('user-status').value;
+            
+            if (!username || !email || !role) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                const isEdit = !!userId;
+                const url = isEdit 
+                    ? `http://localhost:5000/api/users/${userId}` 
+                    : 'http://localhost:5000/api/users';
+                
+                const data = { username, email, role, status };
+                
+                // Only include password if provided
+                if (password) {
+                    data.password = password;
+                } else if (!isEdit) {
+                    alert('Password is required for new users');
+                    return;
+                }
+
+                const response = await fetch(url, {
+                    method: isEdit ? 'PUT' : 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to save user');
+                }
+
+                const result = await response.json();
+                alert(isEdit ? '✅ User updated successfully!' : `✅ User "${username}" created successfully!`);
+                
+                // Log the action
+                await logAdminAction(
+                    isEdit ? `Updated user: ${username}` : `Created new user: ${username}`,
+                    isEdit ? 'Edit' : 'Add',
+                    'User Management'
+                );
+                
+                // Close modal and reload data
+                bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
+                loadUsersData();
+            } catch (err) {
+                console.error('Error saving user:', err);
+                alert('❌ Error: ' + err.message);
+            }
+        });
+
+        // Open Add User Modal
+        function openAddUserModal() {
+            document.getElementById('userForm').reset();
+            document.getElementById('user-id').value = '';
+            document.getElementById('userModalTitle').textContent = 'Add User';
+            document.getElementById('user-password').required = true;
+            document.getElementById('password-required').style.display = 'inline';
+            document.getElementById('password-help').style.display = 'none';
+            document.getElementById('user-status').value = 'active';
+            new bootstrap.Modal(document.getElementById('userModal')).show();
+        }
+
+        // Edit User
+        async function editUser(userId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user details');
+                }
+
+                const user = await response.json();
+
+                // Populate form
+                document.getElementById('user-id').value = user.user_id;
+                document.getElementById('user-username').value = user.username;
+                document.getElementById('user-email').value = user.email;
+                document.getElementById('user-password').value = '';
+                document.getElementById('user-password').required = false;
+                document.getElementById('user-role').value = user.role;
+                document.getElementById('user-status').value = user.status || 'active';
+                
+                document.getElementById('userModalTitle').textContent = 'Edit User';
+                document.getElementById('password-required').style.display = 'none';
+                document.getElementById('password-help').style.display = 'block';
+                
+                new bootstrap.Modal(document.getElementById('userModal')).show();
+            } catch (err) {
+                console.error('Error loading user:', err);
+                alert('❌ Error loading user details: ' + err.message);
+            }
+        }
+
+        // Delete User - WITH OTP VERIFICATION
+        async function deleteUser(userId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            // First get user details
+            try {
+                const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('Failed to fetch user');
+                
+                const user = await response.json();
+
+                if (!confirm(`⚠️ Are you sure you want to delete user: ${user.username}?\n\nThis requires OTP verification and cannot be undone.`)) {
+                    return;
+                }
+
+                // REQUIRE OTP VERIFICATION
+                await requireOTPVerification(
+                    `Xóa người dùng: ${user.username} (${user.email})`,
+                    async () => {
+                        // This code runs AFTER OTP is verified
+                        const deleteResponse = await fetch(`http://localhost:5000/api/users/${userId}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+
+                        if (!deleteResponse.ok) {
+                            const error = await deleteResponse.json();
+                            throw new Error(error.error || 'Failed to delete user');
+                        }
+
+                        alert('✅ User deleted successfully!');
+                        
+                        // Log the action
+                        await logAdminAction(
+                            `Deleted user: ${user.username} (ID: ${userId})`,
+                            'Delete',
+                            'User Management'
+                        );
+                        
+                        loadUsersData();
+                    }
+                );
+            } catch (err) {
+                console.error('Error deleting user:', err);
+                alert('❌ Error: ' + err.message);
+            }
+        }
+
+        // Bulk Delete Users - WITH OTP VERIFICATION
+        async function bulkDeleteUsers() {
+            const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
+            const userIds = Array.from(checkedBoxes).map(cb => cb.value);
+            
+            if (userIds.length === 0) {
+                alert('Please select users to delete');
+                return;
+            }
+
+            if (!confirm(`⚠️ Are you sure you want to delete ${userIds.length} user(s)?\n\nThis requires OTP verification and cannot be undone.`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            // REQUIRE OTP VERIFICATION
+            await requireOTPVerification(
+                `Xóa hàng loạt ${userIds.length} người dùng`,
+                async () => {
+                    // This code runs AFTER OTP is verified
+                    let successCount = 0;
+                    let errorCount = 0;
+
+                    for (const userId of userIds) {
+                        try {
+                            const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+                                method: 'DELETE',
+                                headers: { 'Authorization': `Bearer ${token}` }
+                            });
+
+                            if (response.ok) {
+                                successCount++;
+                            } else {
+                                errorCount++;
+                            }
+                        } catch (err) {
+                            console.error(`Error deleting user ${userId}:`, err);
+                            errorCount++;
+                        }
+                    }
+
+                    alert(`✅ Deleted ${successCount} user(s).${errorCount > 0 ? `\n❌ Failed to delete ${errorCount} user(s).` : ''}`);
+                    
+                    // Log the action
+                    if (successCount > 0) {
+                        await logAdminAction(
+                            `Bulk deleted ${successCount} user(s)`,
+                            'Delete',
+                            'User Management'
+                        );
+                    }
+                    
+                    loadUsersData();
+                    document.getElementById('selectAllUsers').checked = false;
+                    updateBulkDeleteButton();
+                }
+            );
+        }
+
+        // Toggle User Status
+        async function toggleUserStatus(userId, currentStatus) {
+            const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to update status');
+                }
+
+                alert(`✅ User status updated to ${newStatus}`);
+                loadUsersData();
+            } catch (err) {
+                console.error('Error updating status:', err);
+                alert('❌ Error: ' + err.message);
+            }
+        }
+
+        // View User Details
+        async function viewUserDetails(userId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user details');
+                }
+
+                const user = await response.json();
+
+                // Fetch user's orders (if any)
+                let ordersHTML = '<p class="text-muted">Loading orders...</p>';
+                try {
+                    const ordersResponse = await fetch('http://localhost:5000/api/orders', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (ordersResponse.ok) {
+                        const allOrders = await ordersResponse.json();
+                        const userOrders = allOrders.filter(o => o.user_id === userId);
+                        
+                        if (userOrders.length > 0) {
+                            ordersHTML = `
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>Date</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${userOrders.map(o => `
+                                            <tr>
+                                                <td>#${o.order_id}</td>
+                                                <td>${new Date(o.order_date).toLocaleDateString()}</td>
+                                                <td>${formatVND((o.total_amount || 0) * 100)}</td>
+                                                <td><span class="badge bg-${getStatusColor(o.status)}">${o.status}</span></td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            `;
+                        } else {
+                            ordersHTML = '<p class="text-muted">No orders yet</p>';
+                        }
+                    }
+                } catch (err) {
+                    ordersHTML = '<p class="text-danger">Error loading orders</p>';
+                }
+
+                const detailsHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">User Information</h6>
+                            <table class="table table-sm">
+                                <tr><th style="width:40%">User ID:</th><td>${user.user_id}</td></tr>
+                                <tr><th>Username:</th><td>${user.username}</td></tr>
+                                <tr><th>Email:</th><td>${user.email}</td></tr>
+                                <tr><th>Role:</th><td><span class="badge ${user.role === 'admin' ? 'bg-danger' : 'bg-info'}">${user.role}</span></td></tr>
+                                <tr><th>Status:</th><td><span class="badge ${(user.status === 'inactive') ? 'bg-secondary' : 'bg-success'}">${user.status || 'active'}</span></td></tr>
+                                <tr><th>Created:</th><td>${user.created_at ? new Date(user.created_at).toLocaleString() : '-'}</td></tr>
+                                <tr><th>Updated:</th><td>${user.updated_at ? new Date(user.updated_at).toLocaleString() : '-'}</td></tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold">Order History</h6>
+                            ${ordersHTML}
+                        </div>
+                    </div>
+                    <div class="alert alert-info mt-3">
+                        <i class="bi bi-info-circle"></i> <strong>Note:</strong> TOTP authentication will be available soon for enhanced security.
+                    </div>
+                `;
+
+                document.getElementById('user-details-content').innerHTML = detailsHTML;
+                new bootstrap.Modal(document.getElementById('userDetailsModal')).show();
+            } catch (err) {
+                console.error('Error viewing user details:', err);
+                alert('❌ Error loading user details: ' + err.message);
+            }
+        }
+
+        // Request Password Reset (User-requested) - WITH OTP VERIFICATION
+        async function requestPasswordReset(userId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                // Fetch user details first
+                const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user details');
+                }
+
+                const user = await response.json();
+
+                if (!confirm(`⚠️ Reset password for user: ${user.username} (${user.email})?\n\nThis requires OTP verification for security.`)) {
+                    return;
+                }
+
+                // REQUIRE OTP VERIFICATION
+                await requireOTPVerification(
+                    `Đặt lại mật khẩu cho người dùng: ${user.username}`,
+                    async () => {
+                        // This code runs AFTER OTP is verified
+                        const tempPassword = 'Temp' + Math.random().toString(36).slice(-8) + '!';
+
+                        const updateResponse = await fetch(`http://localhost:5000/api/users/${userId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ password: tempPassword })
+                        });
+
+                        if (!updateResponse.ok) {
+                            const error = await updateResponse.json();
+                            throw new Error(error.error || 'Failed to reset password');
+                        }
+
+                        // Send temporary password to user's email
+                        let emailSent = false;
+                        try {
+                            console.log('📧 Attempting to send password reset email to:', user.email);
+                            const emailResponse = await fetch(`http://localhost:5000/api/send-email`, {
+                                method: 'POST',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    to: user.email,
+                                    subject: 'Password Reset - Temporary Login Credentials',
+                                    html: `
+                                        <h2>Password Reset Request</h2>
+                                        <p>Hi ${user.username},</p>
+                                        <p>Your password has been reset by an administrator. Please use the temporary password below to log in:</p>
+                                        <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                                            <p><strong>Username:</strong> ${user.username}</p>
+                                            <p><strong>Temporary Password:</strong> <code style="font-size: 16px; letter-spacing: 1px;">${tempPassword}</code></p>
+                                        </div>
+                                        <p style="color: #d9534f;"><strong>⚠️ Important:</strong> Please change this password immediately after logging in.</p>
+                                        <p>If you did not request this password reset, please contact support immediately.</p>
+                                        <br>
+                                        <p>Best regards,<br>PC Shop Admin Team</p>
+                                    `
+                                })
+                            });
+
+                            if (emailResponse.ok) {
+                                const emailData = await emailResponse.json();
+                                console.log('✅ Email sent successfully:', emailData);
+                                emailSent = true;
+                            } else {
+                                const errorData = await emailResponse.json().catch(() => ({}));
+                                console.error('❌ Email sending failed:', emailResponse.status, errorData);
+                            }
+                        } catch (emailErr) {
+                            console.error('❌ Error sending email:', emailErr);
+                        }
+
+                        alert(`✅ Password reset successful!\n\n` +
+                              `User: ${user.username}\n` +
+                              `Email: ${user.email}\n\n` +
+                              `${emailSent ? '✉️ Temporary password has been sent to the user\'s email address.' : '⚠️ Password was reset but email sending may have failed. Check browser console for details.'}\n\n` +
+                              `Temporary Password (shown here for reference): ${tempPassword}\n\n` +
+                              `They should check their email and change the password immediately after logging in.`);
+
+                        console.log('Password reset for user:', user.username, 'Temp password:', tempPassword);
+                        
+                        // Log the action
+                        await logAdminAction(
+                            `Reset password for user: ${user.username} (ID: ${userId})`,
+                            'Edit',
+                            'User Management'
+                        );
+                    }
+                );
+            } catch (err) {
+                console.error('Error resetting password:', err);
+                alert('❌ Error: ' + err.message);
             }
         }
 
@@ -1674,6 +2844,14 @@
                 }
 
                 alert('✅ Product deleted successfully!');
+                
+                // Log the action
+                await logAdminAction(
+                    `Deleted product ID: ${productId}`,
+                    'Delete',
+                    'Products'
+                );
+                
                 loadProductsData(); // Reload the products list
 
             } catch (err) {
@@ -1738,6 +2916,14 @@
                 }
 
                 alert('Category deleted successfully!');
+                
+                // Log the action
+                await logAdminAction(
+                    `Deleted category ID: ${categoryId}`,
+                    'Delete',
+                    'Categories'
+                );
+                
                 loadCategoriesData();
             } catch (err) {
                 console.error('Error deleting category:', err);
@@ -1819,7 +3005,7 @@
                                         </tbody>
                                     </table>
                                     <div class="text-end">
-                                        <h5>Total: ${formatVND(order.total_amount)}</h5>
+                                        <h5>Total: ${formatVND((order.total_amount || 0) * 100)}</h5>
                                     </div>
                                 </div>
                             </div>
@@ -1929,6 +3115,13 @@
                 }
                 loadOrdersData();
                 alert('Order status updated successfully!');
+                
+                // Log the action
+                logAdminAction(
+                    `Updated order #${orderId} status to: ${newStatus}`,
+                    'Edit',
+                    'Orders'
+                );
             })
             .catch(err => {
                 console.error('Error updating order:', err);
@@ -1973,11 +3166,11 @@
                 'CPU': 'danger',        // Red
                 'GPU': 'success',       // Green
                 'RAM': 'primary',       // Blue
-                'Storage': 'warning',   // Yellow
+                'Storage': 'warning',   // Yellow/Orange
                 'Motherboard': 'info',  // Cyan
-                'PSU': 'secondary',     // Gray
-                'Cooling': 'dark',      // Dark
-                'Case': 'purple',       // Purple (custom)
+                'PSU': 'warning',       // Orange (Power Supply)
+                'Cooling': 'info',      // Cyan (Cooling)
+                'Case': 'secondary',    // Gray (Case)
                 'General': 'light text-dark' // Light gray with dark text
             };
             return colors[section] || 'info';
@@ -1985,11 +3178,24 @@
 
         function filterPCParts() {
             const tbody = document.getElementById('pcparts-table-body');
+            const searchTerm = document.getElementById('pcparts-search').value.toLowerCase();
             const filterValue = document.getElementById('pcparts-section-filter').value;
             
             let filtered = allPCParts;
+            
+            // Apply section filter
             if (filterValue) {
-                filtered = allPCParts.filter(spec => (spec.section || 'General') === filterValue);
+                filtered = filtered.filter(spec => (spec.section || 'General') === filterValue);
+            }
+            
+            // Apply search filter
+            if (searchTerm) {
+                filtered = filtered.filter(spec => {
+                    const key = (spec.spec_key || '').toLowerCase();
+                    const value = (spec.spec_value || '').toLowerCase();
+                    const section = (spec.section || 'General').toLowerCase();
+                    return key.includes(searchTerm) || value.includes(searchTerm) || section.includes(searchTerm);
+                });
             }
 
             if (Array.isArray(filtered) && filtered.length > 0) {
@@ -2013,6 +3219,12 @@
                 tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No PC parts found.</td></tr>`;
             }
             updateSelectedPCPartsCount();
+        }
+
+        function clearPCPartsFilters() {
+            document.getElementById('pcparts-search').value = '';
+            document.getElementById('pcparts-section-filter').value = '';
+            filterPCParts();
         }
 
         // PC Parts filter event listener
@@ -2052,7 +3264,7 @@
                 return;
             }
 
-            if (!confirm(`Are you sure you want to delete ${selected.length} PC part(s)? This will remove them from all products using these specs.`)) {
+            if (!confirm(`⚠️ Are you sure you want to delete ${selected.length} PC part(s)? This will remove them from all products using these specs.\n\nThis requires OTP verification and cannot be undone.`)) {
                 return;
             }
 
@@ -2062,46 +3274,95 @@
                 return;
             }
 
-            try {
-                let deleteCount = 0;
-                let errorCount = 0;
-
-                for (const specId of selected) {
+            // REQUIRE OTP VERIFICATION
+            await requireOTPVerification(
+                `Xóa ${selected.length} PC part(s)`,
+                async () => {
                     try {
-                        const response = await fetch(`http://localhost:5000/api/pcspecs/${specId}`, {
-                            method: 'DELETE',
-                            headers: { 'Authorization': `Bearer ${token}` }
-                        });
+                        let deleteCount = 0;
+                        let errorCount = 0;
 
-                        if (response.ok) {
-                            deleteCount++;
+                        for (const specId of selected) {
+                            try {
+                                const response = await fetch(`http://localhost:5000/api/pcspecs/${specId}`, {
+                                    method: 'DELETE',
+                                    headers: { 'Authorization': `Bearer ${token}` }
+                                });
+
+                                if (response.ok) {
+                                    deleteCount++;
+                                } else {
+                                    errorCount++;
+                                }
+                            } catch (err) {
+                                errorCount++;
+                                console.error('Error deleting spec:', specId, err);
+                            }
+                        }
+
+                        if (deleteCount > 0) {
+                            alert(`✅ Successfully deleted ${deleteCount} PC part(s)` + (errorCount > 0 ? ` (${errorCount} failed)` : ''));
+                            
+                            // Log the action
+                            await logAdminAction(
+                                `Bulk deleted ${deleteCount} PC part(s)`,
+                                'Delete',
+                                'PC Parts'
+                            );
+                            
+                            loadPCPartsData();
                         } else {
-                            errorCount++;
+                            alert('❌ Failed to delete PC parts');
                         }
                     } catch (err) {
-                        errorCount++;
-                        console.error('Error deleting spec:', specId, err);
+                        console.error('Error deleting PC parts:', err);
+                        alert('❌ Error: ' + err.message);
                     }
                 }
-
-                if (deleteCount > 0) {
-                    alert(`Successfully deleted ${deleteCount} PC part(s)` + (errorCount > 0 ? ` (${errorCount} failed)` : ''));
-                    loadPCPartsData();
-                } else {
-                    alert('Failed to delete PC parts');
-                }
-            } catch (err) {
-                console.error('Error deleting PC parts:', err);
-                alert('Error: ' + err.message);
-            }
+            );
         }
 
         function openAddPCPartModal() {
-            alert('Add PC Part feature coming soon - for now, parts are created with products');
+            // Clear form for new entry
+            document.getElementById('pcpart-spec-id').value = '';
+            document.getElementById('pcpart-section').value = '';
+            document.getElementById('pcpart-key').value = '';
+            document.getElementById('pcpart-value').value = '';
+            document.getElementById('pcpart-display-order').value = 0;
+            
+            document.getElementById('pcPartModalTitle').textContent = 'Add New PC Part';
+            new bootstrap.Modal(document.getElementById('pcPartModal')).show();
         }
 
-        function editPCPart(specId) {
-            alert('Edit PC Part ' + specId + ' (Feature coming soon)');
+        async function editPCPart(specId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                // Find the spec in allPCParts array
+                const spec = allPCParts.find(s => s.spec_id == specId);
+                
+                if (!spec) {
+                    alert('PC part not found');
+                    return;
+                }
+
+                // Populate the form
+                document.getElementById('pcpart-spec-id').value = spec.spec_id;
+                document.getElementById('pcpart-section').value = spec.section || '';
+                document.getElementById('pcpart-key').value = spec.spec_key || '';
+                document.getElementById('pcpart-value').value = spec.spec_value || '';
+                document.getElementById('pcpart-display-order').value = spec.display_order || 0;
+                
+                document.getElementById('pcPartModalTitle').textContent = 'Edit PC Part';
+                new bootstrap.Modal(document.getElementById('pcPartModal')).show();
+            } catch (err) {
+                console.error('Error loading PC part:', err);
+                alert('Error: ' + err.message);
+            }
         }
 
         async function deletePCPart(specId) {
@@ -2123,6 +3384,14 @@
 
                 if (response.ok) {
                     alert('PC part deleted successfully');
+                    
+                    // Log the action
+                    await logAdminAction(
+                        `Deleted PC part ID: ${specId}`,
+                        'Delete',
+                        'PC Parts'
+                    );
+                    
                     loadPCPartsData();
                 } else {
                     const error = await response.json();
@@ -2133,6 +3402,552 @@
                 alert('Error: ' + err.message);
             }
         }
+
+        // ==========================
+        // GALLERY FUNCTIONS
+        // ==========================
+
+        let allItems = {}; // Map of item_id -> item name
+
+        async function loadGalleryData() {
+            const tbody = document.getElementById('gallery-table-body');
+            
+            try {
+                // Load both images and items concurrently
+                const [imagesRes, itemsRes] = await Promise.all([
+                    fetch('http://localhost:5000/api/view/item_images'),
+                    fetch('http://localhost:5000/api/view/items')
+                ]);
+                
+                if (!imagesRes.ok) {
+                    throw new Error(`Images API error: ${imagesRes.status}`);
+                }
+
+                const imagesResult = await imagesRes.json();
+                allGalleryImages = imagesResult.data;
+                
+                // Build items map for quick lookup
+                allItems = {};
+                if (itemsRes.ok) {
+                    const itemsResult = await itemsRes.json();
+                    if (Array.isArray(itemsResult.data)) {
+                        itemsResult.data.forEach(item => {
+                            allItems[item.item_id] = item.name;
+                        });
+                    }
+                }
+                
+                renderGalleryTable();
+            } catch (err) {
+                console.error('Error loading gallery images:', err);
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Error: ${err.message}</td></tr>`;
+            }
+        }
+
+        function renderGalleryTable() {
+            const tbody = document.getElementById('gallery-table-body');
+            
+            if (Array.isArray(allGalleryImages) && allGalleryImages.length > 0) {
+                tbody.innerHTML = allGalleryImages.map(image => {
+                    // Get item name, fallback to ID if not found
+                    const itemName = allItems[image.item_id] || `Item #${image.item_id}`;
+                    
+                    // Convert ibb.co short links to direct image URLs if needed
+                    let displayUrl = image.url;
+                    if (image.url.includes('ibb.co/') && !image.url.includes('i.ibb.co')) {
+                        // Try to convert short ibb.co link to direct link
+                        // Format: https://ibb.co/CODE -> https://i.ibb.co/CODE/image.png (best guess)
+                        displayUrl = image.url.replace('ibb.co/', 'i.ibb.co/');
+                    }
+                    
+                    // Use CORS proxy with compression for thumbnails (50x50, quality 75)
+                    const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(displayUrl)}&w=50&h=50&fit=cover&q=75`;
+                    return `
+                    <tr>
+                        <td><input type="checkbox" class="gallery-checkbox" value="${image.image_id}" onchange="updateSelectedGalleryCount()"></td>
+                        <td>${image.image_id}</td>
+                        <td>
+                            <div title="ID: ${image.item_id}">
+                                <strong>${itemName}</strong><br>
+                                <small class="text-muted">#${image.item_id}</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 5px; align-items: center;">
+                                <img src="${proxyUrl}" alt="${image.alt_text || 'Gallery Image'}" 
+                                     style="max-width: 50px; max-height: 50px; object-fit: cover; cursor: pointer; border-radius: 4px; border: 1px solid #ddd;" 
+                                     onclick="previewImage('${displayUrl}', '${(image.alt_text || '').replace(/'/g, '')}');">
+                                <a href="${displayUrl}" target="_blank" class="btn btn-sm btn-link p-0" title="Open image in new tab"><i class="bi bi-box-arrow-up-right"></i></a>
+                            </div>
+                        </td>
+                        <td>
+                            <small class="text-truncate d-block" style="max-width: 200px;" title="${image.url}">
+                                ${image.url}
+                            </small>
+                        </td>
+                        <td>${image.alt_text || '<span class="text-muted">-</span>'}</td>
+                        <td>${image.sort_order || 0}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning" onclick="editGalleryImage(${image.image_id})" title="Edit"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteGalleryImage(${image.image_id})" title="Delete"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                `}).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No images found.</td></tr>`;
+            }
+            updateSelectedGalleryCount();
+        }
+
+        function openAddGalleryImageModal() {
+            document.getElementById('gallery-image-id').value = '';
+            document.getElementById('gallery-item-id').value = '';
+            document.getElementById('gallery-image-url').value = '';
+            document.getElementById('gallery-alt-text').value = '';
+            document.getElementById('gallery-sort-order').value = 0;
+            document.getElementById('gallery-preview-img').style.display = 'none';
+            document.getElementById('gallery-preview-text').style.display = 'block';
+            
+            document.getElementById('galleryImageModalTitle').textContent = 'Add Image';
+            new bootstrap.Modal(document.getElementById('galleryImageModal')).show();
+        }
+
+        async function editGalleryImage(imageId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                const image = allGalleryImages.find(img => img.image_id == imageId);
+                
+                if (!image) {
+                    alert('Image not found');
+                    return;
+                }
+
+                document.getElementById('gallery-image-id').value = image.image_id;
+                document.getElementById('gallery-item-id').value = image.item_id;
+                document.getElementById('gallery-image-url').value = image.url;
+                document.getElementById('gallery-alt-text').value = image.alt_text || '';
+                document.getElementById('gallery-sort-order').value = image.sort_order || 0;
+                
+                // Show preview
+                const previewImg = document.getElementById('gallery-preview-img');
+                const previewText = document.getElementById('gallery-preview-text');
+                previewImg.src = image.url;
+                previewImg.style.display = 'block';
+                previewText.style.display = 'none';
+                
+                document.getElementById('galleryImageModalTitle').textContent = 'Edit Image';
+                new bootstrap.Modal(document.getElementById('galleryImageModal')).show();
+            } catch (err) {
+                console.error('Error loading image:', err);
+                alert('Error: ' + err.message);
+            }
+        }
+
+        async function deleteGalleryImage(imageId) {
+            if (!confirm('Are you sure you want to delete this image?')) {
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                const image = allGalleryImages.find(img => img.image_id == imageId);
+                const itemId = image ? image.item_id : null;
+
+                const response = await fetch(`http://localhost:5000/api/items/${itemId}/images/${imageId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    alert('Image deleted successfully');
+                    
+                    await logAdminAction(
+                        `Deleted gallery image ID: ${imageId}`,
+                        'Delete',
+                        'Gallery'
+                    );
+                    
+                    loadGalleryData();
+                } else {
+                    const error = await response.json();
+                    alert('Error: ' + (error.error || 'Failed to delete image'));
+                }
+            } catch (err) {
+                console.error('Error deleting image:', err);
+                alert('Error: ' + err.message);
+            }
+        }
+
+        function previewImage(url, altText) {
+            // Use CORS proxy with compression for preview (max 800px, quality 80)
+            const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=800&h=800&fit=inside&q=80`;
+            
+            // Create a simple modal to show full image
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                flex-direction: column;
+                gap: 10px;
+            `;
+            
+            const img = document.createElement('img');
+            img.src = proxyUrl;
+            img.style.cssText = `
+                max-width: 90%;
+                max-height: 80%;
+                object-fit: contain;
+                border-radius: 8px;
+            `;
+            
+            img.onerror = function() {
+                img.style.display = 'none';
+                const errorMsg = document.createElement('div');
+                errorMsg.style.cssText = `
+                    color: white;
+                    font-size: 18px;
+                    text-align: center;
+                    padding: 20px;
+                `;
+                errorMsg.innerHTML = `
+                    <p><i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i></p>
+                    <p>Image failed to load</p>
+                    <p style="font-size: 14px; margin-top: 10px;">Try opening it directly: <a href="${url}" target="_blank" style="color: #80d4ff;">Click here</a></p>
+                `;
+                modal.appendChild(errorMsg);
+            };
+            
+            modal.appendChild(img);
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = 'Close';
+            closeBtn.style.cssText = `
+                background: white;
+                border: none;
+                padding: 8px 20px;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: bold;
+            `;
+            closeBtn.onclick = () => modal.remove();
+            modal.appendChild(closeBtn);
+            
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+            document.body.appendChild(modal);
+        }
+
+        function toggleSelectAllGalleryImages(checkbox) {
+            const checkboxes = document.querySelectorAll('.gallery-checkbox');
+            checkboxes.forEach(cb => cb.checked = checkbox.checked);
+            updateSelectedGalleryCount();
+        }
+        
+        function filterGalleryImages() {
+            const searchTerm = document.getElementById('gallery-search').value.toLowerCase();
+            const sortFilter = document.getElementById('gallery-sort-filter').value;
+            
+            let filtered = allGalleryImages.filter(image => {
+                const itemName = (allItems[image.item_id] || '').toLowerCase();
+                const altText = (image.alt_text || '').toLowerCase();
+                const url = (image.url || '').toLowerCase();
+                
+                return itemName.includes(searchTerm) || 
+                       altText.includes(searchTerm) || 
+                       url.includes(searchTerm);
+            });
+            
+            // Apply sorting
+            if (sortFilter === 'name-asc') {
+                filtered.sort((a, b) => {
+                    const nameA = (allItems[a.item_id] || '').toLowerCase();
+                    const nameB = (allItems[b.item_id] || '').toLowerCase();
+                    return nameA.localeCompare(nameB);
+                });
+            } else if (sortFilter === 'name-desc') {
+                filtered.sort((a, b) => {
+                    const nameA = (allItems[a.item_id] || '').toLowerCase();
+                    const nameB = (allItems[b.item_id] || '').toLowerCase();
+                    return nameB.localeCompare(nameA);
+                });
+            } else if (sortFilter === 'id-asc') {
+                filtered.sort((a, b) => a.item_id - b.item_id);
+            } else if (sortFilter === 'id-desc') {
+                filtered.sort((a, b) => b.item_id - a.item_id);
+            }
+            
+            renderFilteredGalleryTable(filtered);
+        }
+        
+        function renderFilteredGalleryTable(imagesToRender) {
+            const tbody = document.getElementById('gallery-table-body');
+            
+            if (Array.isArray(imagesToRender) && imagesToRender.length > 0) {
+                tbody.innerHTML = imagesToRender.map(image => {
+                    const itemName = allItems[image.item_id] || `Item #${image.item_id}`;
+                    
+                    let displayUrl = image.url;
+                    if (image.url.includes('ibb.co/') && !image.url.includes('i.ibb.co')) {
+                        displayUrl = image.url.replace('ibb.co/', 'i.ibb.co/');
+                    }
+                    
+                    const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(displayUrl)}&w=50&h=50&fit=cover&q=75`;
+                    return `
+                    <tr>
+                        <td><input type="checkbox" class="gallery-checkbox" value="${image.image_id}" onchange="updateSelectedGalleryCount()"></td>
+                        <td>${image.image_id}</td>
+                        <td>
+                            <div title="ID: ${image.item_id}">
+                                <strong>${itemName}</strong><br>
+                                <small class="text-muted">#${image.item_id}</small>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 5px; align-items: center;">
+                                <img src="${proxyUrl}" alt="${image.alt_text || 'Gallery Image'}" 
+                                     style="max-width: 50px; max-height: 50px; object-fit: cover; cursor: pointer; border-radius: 4px; border: 1px solid #ddd;" 
+                                     onclick="previewImage('${displayUrl}', '${(image.alt_text || '').replace(/'/g, '')}');">
+                                <a href="${displayUrl}" target="_blank" class="btn btn-sm btn-link p-0" title="Open image in new tab"><i class="bi bi-box-arrow-up-right"></i></a>
+                            </div>
+                        </td>
+                        <td>
+                            <small class="text-truncate d-block" style="max-width: 200px;" title="${image.url}">
+                                ${image.url}
+                            </small>
+                        </td>
+                        <td>${image.alt_text || '<span class="text-muted">-</span>'}</td>
+                        <td>${image.sort_order || 0}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning" onclick="editGalleryImage(${image.image_id})" title="Edit"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteGalleryImage(${image.image_id})" title="Delete"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                `}).join('');
+            } else {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No images found.</td></tr>`;
+            }
+            updateSelectedGalleryCount();
+        }
+        
+        function clearGalleryFilters() {
+            document.getElementById('gallery-search').value = '';
+            document.getElementById('gallery-sort-filter').value = '';
+            renderGalleryTable();
+        }
+
+        function updateSelectedGalleryCount() {
+            const selected = document.querySelectorAll('.gallery-checkbox:checked');
+            const count = selected.length;
+            document.getElementById('selectedGalleryCount').textContent = count;
+            document.getElementById('deleteSelectedGalleryBtn').style.display = count > 0 ? 'block' : 'none';
+            
+            const selectAllCheckbox = document.getElementById('selectAllGallery');
+            const allCheckboxes = document.querySelectorAll('.gallery-checkbox');
+            if (selectAllCheckbox && allCheckboxes.length > 0) {
+                selectAllCheckbox.checked = count === allCheckboxes.length;
+                selectAllCheckbox.indeterminate = count > 0 && count < allCheckboxes.length;
+            }
+        }
+
+        async function deleteSelectedGalleryImages() {
+            const selected = Array.from(document.querySelectorAll('.gallery-checkbox:checked')).map(cb => cb.value);
+            
+            if (selected.length === 0) {
+                alert('No images selected');
+                return;
+            }
+
+            if (!confirm(`Are you sure you want to delete ${selected.length} image(s)?`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                let deleteCount = 0;
+                let errorCount = 0;
+
+                for (const imageId of selected) {
+                    try {
+                        const image = allGalleryImages.find(img => img.image_id == imageId);
+                        const itemId = image ? image.item_id : null;
+
+                        const response = await fetch(`http://localhost:5000/api/items/${itemId}/images/${imageId}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+
+                        if (response.ok) {
+                            deleteCount++;
+                        } else {
+                            errorCount++;
+                        }
+                    } catch (err) {
+                        errorCount++;
+                        console.error('Error deleting image:', imageId, err);
+                    }
+                }
+
+                if (deleteCount > 0) {
+                    alert(`✅ Successfully deleted ${deleteCount} image(s)` + (errorCount > 0 ? ` (${errorCount} failed)` : ''));
+                    
+                    await logAdminAction(
+                        `Bulk deleted ${deleteCount} gallery image(s)`,
+                        'Delete',
+                        'Gallery'
+                    );
+                    
+                    loadGalleryData();
+                } else {
+                    alert('❌ Failed to delete images');
+                }
+            } catch (err) {
+                console.error('Error deleting images:', err);
+                alert('❌ Error: ' + err.message);
+            }
+        }
+
+        // Gallery Image Form Handler
+        document.getElementById('galleryImageForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            const imageId = document.getElementById('gallery-image-id').value;
+            const itemId = document.getElementById('gallery-item-id').value;
+            const url = document.getElementById('gallery-image-url').value.trim();
+            const altText = document.getElementById('gallery-alt-text').value.trim();
+            const sortOrder = document.getElementById('gallery-sort-order').value || 0;
+
+            if (!itemId || !url) {
+                alert('Please fill in all required fields (Item ID and Image URL)');
+                return;
+            }
+
+            try {
+                if (imageId) {
+                    // For editing: delete old image first, then add new one
+                    const deleteResponse = await fetch(`http://localhost:5000/api/items/${itemId}/images/${imageId}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+
+                    if (!deleteResponse.ok) {
+                        throw new Error('Failed to delete old image');
+                    }
+
+                    // Wait a moment for delete to complete
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    // Now add the new image
+                    const addResponse = await fetch(`http://localhost:5000/api/items/${itemId}/images`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            images: [{
+                                url,
+                                alt_text: altText,
+                                sort_order: parseInt(sortOrder)
+                            }]
+                        })
+                    });
+
+                    if (!addResponse.ok) {
+                        throw new Error('Failed to add new image');
+                    }
+
+                    alert('✅ Image updated successfully!');
+                    
+                    await logAdminAction(
+                        `Updated gallery image: Item ${itemId}`,
+                        'Edit',
+                        'Gallery'
+                    );
+                } else {
+                    // Add new image
+                    const response = await fetch(`http://localhost:5000/api/items/${itemId}/images`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            images: [{
+                                url,
+                                alt_text: altText,
+                                sort_order: parseInt(sortOrder)
+                            }]
+                        })
+                    });
+
+                    if (response.ok) {
+                        alert('✅ Image added successfully!');
+                        
+                        await logAdminAction(
+                            `Added new gallery image for Item ${itemId}`,
+                            'Add',
+                            'Gallery'
+                        );
+                    } else {
+                        throw new Error('Failed to add image');
+                    }
+                }
+
+                const modal = bootstrap.Modal.getInstance(document.getElementById('galleryImageModal'));
+                if (modal) modal.hide();
+                loadGalleryData();
+            } catch (err) {
+                console.error('Error saving image:', err);
+                alert('❌ Error: ' + err.message);
+            }
+        });
+
+        // Gallery Image URL Preview
+        document.getElementById('gallery-image-url').addEventListener('change', function() {
+            const url = this.value.trim();
+            if (url) {
+                const previewImg = document.getElementById('gallery-preview-img');
+                const previewText = document.getElementById('gallery-preview-text');
+                previewImg.src = url;
+                previewImg.style.display = 'block';
+                previewText.style.display = 'none';
+                previewImg.onerror = function() {
+                    previewImg.style.display = 'none';
+                    previewText.style.display = 'block';
+                    previewText.textContent = 'Image failed to load. Check the URL.';
+                };
+            }
+        });
 
         // Select Existing Specs Modal
         async function openSelectExistingSpecsModal() {
@@ -2455,6 +4270,13 @@
                     }
 
                     alert('Product updated successfully!');
+                    
+                    // Log the action
+                    await logAdminAction(
+                        `Updated product: ${name} (ID: ${productId})`,
+                        'Edit',
+                        'Products'
+                    );
                 } else {
                     // Create new product
                     const productData = {
@@ -2484,6 +4306,13 @@
                     }
 
                     alert(`✅ Product "${name}" created successfully!\nProduct ID: ${result.item_id}`);
+                    
+                    // Log the action
+                    await logAdminAction(
+                        `Created new product: ${name} (ID: ${result.item_id})`,
+                        'Add',
+                        'Products'
+                    );
                 }
                 
                 // Close modal and reload products
@@ -2495,6 +4324,267 @@
                 alert('❌ Error saving product: ' + err.message);
             }
         });
+
+        // PC Part Form Submission Handler
+        document.getElementById('pcPartForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const specId = document.getElementById('pcpart-spec-id').value;
+            const section = document.getElementById('pcpart-section').value.trim();
+            const key = document.getElementById('pcpart-key').value.trim();
+            const value = document.getElementById('pcpart-value').value.trim();
+            const displayOrder = document.getElementById('pcpart-display-order').value || 0;
+            
+            if (!section || !key || !value) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login first');
+                return;
+            }
+
+            try {
+                const isNewPart = !specId;
+                const url = isNewPart ? 'http://localhost:5000/api/pcspecs' : `http://localhost:5000/api/pcspecs/${specId}`;
+                const method = isNewPart ? 'POST' : 'PUT';
+                
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        section,
+                        key,
+                        value,
+                        display_order: parseInt(displayOrder)
+                    })
+                });
+
+                if (response.ok) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('pcPartModal'));
+                    if (modal) modal.hide();
+                    
+                    if (isNewPart) {
+                        alert('✅ PC part added successfully!');
+                        
+                        // Log the action
+                        await logAdminAction(
+                            `Added new PC part: ${section} - ${key}: ${value}`,
+                            'Create',
+                            'PC Parts'
+                        );
+                    } else {
+                        alert('✅ PC part updated successfully!');
+                        
+                        // Log the action
+                        await logAdminAction(
+                            `Updated PC part: ${section} - ${key}: ${value}`,
+                            'Edit',
+                            'PC Parts'
+                        );
+                    }
+                    
+                    loadPCPartsData();
+                } else {
+                    const error = await response.json();
+                    alert('❌ Error: ' + (error.error || 'Failed to update PC part'));
+                }
+            } catch (err) {
+                console.error('Error updating PC part:', err);
+                alert('❌ Error: ' + err.message);
+            }
+        });
+
+        // Audit Logs Functions
+        let allAuditLogs = [];
+        let filteredAuditLogs = [];
+        let currentAuditLogPage = 1;
+        const logsPerPage = 20;
+
+        async function loadAuditLogsData() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('Please login first');
+                    return;
+                }
+
+                const response = await fetch('http://localhost:5000/api/audit-logs', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch audit logs');
+                }
+
+                const result = await response.json();
+                allAuditLogs = result.data || [];
+                filteredAuditLogs = allAuditLogs;
+                currentAuditLogPage = 1;
+                renderAuditLogsTable(filteredAuditLogs);
+                renderAuditLogsPagination();
+            } catch (err) {
+                console.error('Error loading audit logs:', err);
+                document.getElementById('auditlogs-table-body').innerHTML = 
+                    '<tr><td colspan="5" class="text-center text-danger">Error loading audit logs</td></tr>';
+            }
+        }
+
+        function filterAuditLogs() {
+            const searchTerm = document.getElementById('auditlog-search')?.value.toLowerCase() || '';
+            const categoryFilter = document.getElementById('auditlog-category-filter')?.value || '';
+            const changeInFilter = document.getElementById('auditlog-changein-filter')?.value || '';
+
+            filteredAuditLogs = allAuditLogs.filter(log => {
+                const matchesSearch = 
+                    log.user.toLowerCase().includes(searchTerm) ||
+                    log.change_made.toLowerCase().includes(searchTerm);
+                
+                const matchesCategory = !categoryFilter || log.category === categoryFilter;
+                const matchesChangeIn = !changeInFilter || log.change_in === changeInFilter;
+
+                return matchesSearch && matchesCategory && matchesChangeIn;
+            });
+
+            currentAuditLogPage = 1;
+            renderAuditLogsTable(filteredAuditLogs);
+            renderAuditLogsPagination();
+        }
+
+        function clearAuditLogFilters() {
+            document.getElementById('auditlog-search').value = '';
+            document.getElementById('auditlog-category-filter').value = '';
+            document.getElementById('auditlog-changein-filter').value = '';
+            filterAuditLogs();
+        }
+
+        function renderAuditLogsTable(logs) {
+            const tbody = document.getElementById('auditlogs-table-body');
+            if (!Array.isArray(logs) || logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No audit logs found.</td></tr>';
+                document.getElementById('auditlogs-showing-info').textContent = 'Showing 0-0 of 0 logs';
+                return;
+            }
+
+            // Pagination
+            const startIndex = (currentAuditLogPage - 1) * logsPerPage;
+            const endIndex = startIndex + logsPerPage;
+            const paginatedLogs = logs.slice(startIndex, endIndex);
+
+            tbody.innerHTML = paginatedLogs.map(log => {
+                const timestamp = new Date(log.time_stamp).toLocaleString('vi-VN');
+                const categoryClass = log.category === 'Add' ? 'success' : 
+                                     log.category === 'Edit' ? 'warning' : 
+                                     log.category === 'Delete' ? 'danger' : 'secondary';
+                
+                return `
+                    <tr>
+                        <td>${timestamp}</td>
+                        <td><strong>${log.user}</strong></td>
+                        <td><span class="badge bg-${categoryClass}">${log.category}</span></td>
+                        <td><span class="badge bg-secondary">${log.change_in}</span></td>
+                        <td>${log.change_made}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Update showing info
+            const showingStart = startIndex + 1;
+            const showingEnd = Math.min(endIndex, logs.length);
+            document.getElementById('auditlogs-showing-info').textContent = 
+                `Showing ${showingStart}-${showingEnd} of ${logs.length} logs`;
+        }
+
+        function renderAuditLogsPagination() {
+            const totalPages = Math.ceil(filteredAuditLogs.length / logsPerPage);
+            const pagination = document.getElementById('auditlogs-pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+            
+            // Previous button
+            html += `<li class="page-item ${currentAuditLogPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changeAuditLogPage(${currentAuditLogPage - 1}); return false;">Previous</a>
+            </li>`;
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentAuditLogPage - 2 && i <= currentAuditLogPage + 2)) {
+                    html += `<li class="page-item ${i === currentAuditLogPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="changeAuditLogPage(${i}); return false;">${i}</a>
+                    </li>`;
+                } else if (i === currentAuditLogPage - 3 || i === currentAuditLogPage + 3) {
+                    html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                }
+            }
+
+            // Next button
+            html += `<li class="page-item ${currentAuditLogPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" onclick="changeAuditLogPage(${currentAuditLogPage + 1}); return false;">Next</a>
+            </li>`;
+
+            pagination.innerHTML = html;
+        }
+
+        function changeAuditLogPage(page) {
+            const totalPages = Math.ceil(filteredAuditLogs.length / logsPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentAuditLogPage = page;
+            renderAuditLogsTable(filteredAuditLogs);
+            renderAuditLogsPagination();
+        }
+
+        // Helper function to log admin actions
+        async function logAdminAction(changeDescription, category, section) {
+            try {
+                const token = localStorage.getItem('token');
+                const userData = localStorage.getItem('userData');
+                
+                if (!token || !userData) return;
+                
+                const user = JSON.parse(userData);
+                
+                await fetch('http://localhost:5000/api/audit-logs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        user: user.username,
+                        change_made: changeDescription,
+                        category: category,
+                        change_in: section
+                    })
+                });
+            } catch (err) {
+                console.error('Error logging admin action:', err);
+            }
+        }
+
+        // Email Masking Function
+        function maskEmail(email) {
+            if (!email || email.length === 0) return '';
+            
+            const [localPart, domain] = email.split('@');
+            if (!domain) return email; // Invalid email format
+            
+            // Show first 3 characters, hide the rest
+            const maskedLocal = localPart.length > 3 
+                ? localPart.substring(0, 3) + '*'.repeat(localPart.length - 3)
+                : localPart;
+            
+            return maskedLocal + '@' + domain;
+        }
 
         // Initialize
         checkAdminAccess();

@@ -359,10 +359,15 @@
                     addToCartBtn.disabled = true;
                 }
 
-                // Setup price for quantity
+                // Setup price for quantity and set data attributes for global event listener
                 window.__productPrice = priceNum;
                 window.__productName = item.name;
                 window.__productImage = images[0] || item.image_url;
+                
+                // Set data attributes on the button so script.js can handle it
+                addToCartBtn.setAttribute('data-item-id', item.item_id || '');
+                addToCartBtn.setAttribute('data-product', item.name || 'Unknown Product');
+                addToCartBtn.setAttribute('data-price', priceNum || 0);
                 
                 function updateTotalPrice() {
                     const price = window.__productPrice || 0;
@@ -389,24 +394,9 @@
                 document.getElementById('quantity').addEventListener('change', updateTotalPrice);
                 updateTotalPrice();
 
-                // Add to cart
-                document.getElementById('addToCartBtn').addEventListener('click', () => {
-                    if (addToCartBtn.disabled) return;
-                    
-                    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-                    const qty = Number(document.getElementById('quantity').value || 1);
-                    
-                    cart.push({
-                        item_id: item.item_id,
-                        name: window.__productName,
-                        price: window.__productPrice,
-                        quantity: qty,
-                        image: window.__productImage
-                    });
-                    
-                    localStorage.setItem('cart', JSON.stringify(cart));
-                    alert('Đã thêm vào giỏ hàng!');
-                });
+                // Add to cart - remove old handler and use data attributes with script.js
+                // The button now has data-item-id, data-product, data-price attributes
+                // which script.js will automatically handle through its global event listener
 
                 // Image gallery functionality
                 const thumbnails = document.querySelectorAll('.thumbnail');

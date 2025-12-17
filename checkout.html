@@ -301,8 +301,50 @@
         let turnstileToken = null;
         let cartData = [];
 
-        // Load cart data from localStorage
-        function loadCart() {
+        // Load cart data from localStorage or server
+        async function loadCart() {
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            
+            // If logged in, try to load from server first
+            if (isLoggedIn && token) {
+                try {
+                    // Get cart from server
+                    const cartResponse = await fetch('http://localhost:5000/api/cart', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (cartResponse.ok) {
+                        const cartDataFromServer = await cartResponse.json();
+                        const cartId = cartDataFromServer.cart_id;
+                        
+                        // Get cart items
+                        const itemsResponse = await fetch(`http://localhost:5000/api/cart/${cartId}/items`, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        
+                        if (itemsResponse.ok) {
+                            const itemsData = await itemsResponse.json();
+                            cartData = itemsData.items || [];
+                            displayCart();
+                            calculateTotal();
+                            return;
+                        }
+                    }
+                } catch (err) {
+                    console.log('Failed to load cart from server, falling back to localStorage:', err);
+                }
+            }
+            
+            // Fallback to localStorage
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             cartData = cart;
             displayCart();
@@ -310,7 +352,7 @@
         }
 
         // Display cart items
-        function displayCart() {
+        async function displayCart() {
             const cartItemsContainer = document.getElementById('cartItems');
             
             if (cartData.length === 0) {
@@ -319,28 +361,49 @@
             }
 
             let html = '';
-            cartData.forEach(item => {
+            for (const item of cartData) {
+                // Always fetch image from API using item_id for real product data
+                let imageUrl = '/PC-Shop/images/placeholder.png';
+                
+                if (item.item_id) {
+                    try {
+                        const response = await fetch(`http://localhost:5000/api/public/items/${item.item_id}`);
+                        if (response.ok) {
+                            const data = await response.json();
+                            const product = data.item;
+                            // Get image from API - check images array first, then image_url
+                            if (product && product.images && product.images.length > 0) {
+                                imageUrl = product.images[0];
+                            } else if (product && product.image_url) {
+                                imageUrl = product.image_url;
+                            }
+                        }
+                    } catch (err) {
+                        console.log('Could not fetch product image for item', item.item_id);
+                    }
+                }
+
                 html += `
                     <div class="product-item">
                         <div class="position-relative">
-                            <img src="${item.image || 'images/placeholder.png'}" alt="${item.name}" class="product-image">
+                            <img src="${imageUrl}" alt="${item.name}" class="product-image" onerror="this.src='/PC-Shop/images/placeholder.png'">
                             <span class="quantity-badge">${item.quantity}</span>
                         </div>
                         <div class="product-details">
                             <div class="product-name">${item.name}</div>
                             <div class="product-variant">${item.variant || ''}</div>
                         </div>
-                        <div class="product-price">${formatPrice(item.price * item.quantity)} VNĐ</div>
+                        <div class="product-price">${formatPrice((item.price * 100) * item.quantity)} VNĐ</div>
                     </div>
                 `;
-            });
+            }
 
             cartItemsContainer.innerHTML = html;
         }
 
         // Calculate total
         function calculateTotal() {
-            const subtotal = cartData.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const subtotal = cartData.reduce((sum, item) => sum + ((item.price * 100) * item.quantity), 0);
             const shipping = 0; // Calculate based on address
             const total = subtotal + shipping;
 
@@ -481,7 +544,7 @@
 
             // Get form data
             const formData = new FormData(this);
-            const subtotalValue = cartData.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const subtotalValue = cartData.reduce((sum, item) => sum + ((item.price * 100) * item.quantity), 0);
             const orderData = {
                 email: formData.get('email'),
                 firstName: formData.get('firstName'),

@@ -357,8 +357,8 @@
                     cartContent.classList.remove('hidden');
         
                     cartItems.forEach((item, index) => {
-                        // Handle both number and string prices
-                        const priceNumber = typeof item.price === 'number' ? item.price : parseFloat((item.price || '0').replace(/[^0-9.-]+/g, ''));
+                        // Handle both number and string prices (multiply by 100 since DB stores as 1/100th)
+                        const priceNumber = (typeof item.price === 'number' ? item.price : parseFloat((item.price || '0').replace(/[^0-9.-]+/g, ''))) * 100;
                         const quantity = item.quantity || 1;
                         const itemTotal = priceNumber * quantity;
                         total += itemTotal;
