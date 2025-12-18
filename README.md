@@ -46,7 +46,7 @@ PC-Shop/
 
 This project was developed as a learning-oriented application with the following goals:
 
-* Applying frontend and backend concepts in a single project
+* Applying frontend and backend concepts
 * Practicing DOM manipulation and client-side state management
 * Understanding e-commerce workflows and user interaction patterns
 * Improving collaborative development practices
