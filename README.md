@@ -1,5 +1,7 @@
 # FirePC Shop – Web-Based E-Commerce Application
 
+FOR ENGLISH VERSION, CHECK MY PROFILE @ThatSinclair INSTEAD
+
 PC-Shop is a web-based e-commerce application that simulates an online computer hardware store. The project is designed to demonstrate core fullstack web development concepts using **HTML, CSS, and vanilla JavaScript**, without relying on external frameworks.
 
 The application focuses on clarity, maintainability, and practical implementation of real-world shopping features such as product browsing, cart management, and user flows.
@@ -46,7 +48,7 @@ PC-Shop/
 
 This project was developed as a learning-oriented application with the following goals:
 
-* Applying frontend and backend concepts in a single project
+* Applying frontend and backend concepts
 * Practicing DOM manipulation and client-side state management
 * Understanding e-commerce workflows and user interaction patterns
 * Improving collaborative development practices
