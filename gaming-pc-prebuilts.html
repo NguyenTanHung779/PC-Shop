@@ -185,7 +185,7 @@
 
             <div class="row g-4" id="product-grid">
                 <!-- Product Card 1 -->
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-4" data-out-of-stock="true" data-product-name="shadow bolt v3" data-cpu="ryzen 5 5600" data-gpu="rtx 5060" data-ram="32gb ddr4" data-storage="1tb" data-price="26990000">
                     <div class="product-card">
                         <a href="products\ShadowBolt-v3.html" class="product-link">
                             <div class="product-image-wrapper">
@@ -226,7 +226,7 @@
                 </div>
 
                 <!-- Product Card 2 -->
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-4" data-out-of-stock="true" data-product-name="frost nova v6" data-cpu="ryzen 5 5600x" data-gpu="rtx 5070" data-ram="16gb ddr4" data-storage="1tb" data-price="32990000">
                     <div class="product-card">
                         <a href="products/FrostNova-v6.html" class="product-link">
                             <div class="product-image-wrapper">
@@ -267,7 +267,7 @@
                 </div>
 
                 <!-- Product Card 3 -->
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-4" data-out-of-stock="true" data-product-name="obliterate v1" data-cpu="ryzen 7 9800x3d" data-gpu="rtx 5090" data-ram="32gb ddr5" data-storage="1tb" data-price="152990000">
                     <div class="product-card">
                         <a href="products\Obliterate-v1.html" class="product-link">
                             <div class="product-image-wrapper">
@@ -323,7 +323,7 @@
             </div>
             <div class="row g-4">
                 <!-- Limited Edition Card 1 - Dark Nova v1 -->
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-4" data-out-of-stock="true" data-product-name="dark nova v1" data-cpu="ryzen 5 5600" data-gpu="rtx 5060" data-ram="32gb ddr4" data-storage="1tb" data-price="29990000">
                     <div class="product-card product-card-smaller-image">
                         <a href="products\Dark Nova-v1.html" class="product-link">
                             <div class="product-image-wrapper">
@@ -364,7 +364,7 @@
                 </div>
 
                 <!-- Limited Edition Card 2 - Voyager -->
-                <div class="col-md-6 col-lg-4">
+                <div class="col-md-6 col-lg-4" data-out-of-stock="true" data-product-name="voyager" data-cpu="ryzen 5 9600x" data-gpu="rtx 5070" data-ram="32gb ddr5" data-storage="1tb" data-price="35990000">
                     <div class="product-card product-card-smaller-image">
                         <a href="products\Voyager.html" class="product-link">
                             <div class="product-image-wrapper">
@@ -946,12 +946,14 @@
                     const detailResponse = await fetch(`http://localhost:5000/api/public/items/${product.item_id}`);
                     let cpu = 'N/A', gpu = 'N/A', ram = 'N/A', storage = 'N/A';
                     let images = [];
+                    let stock = 1; // Default stock to 1 if not available
                     
                     if (detailResponse.ok) {
                         const detailData = await detailResponse.json();
                         const itemData = detailData.item || {};
                         const specs = itemData.specs || {};
                         images = itemData.images || [];
+                        stock = itemData.stock !== undefined ? itemData.stock : 1;
                         
                         if (specs.CPU && specs.CPU.length > 0) cpu = specs.CPU[0].value;
                         if (specs.GPU && specs.GPU.length > 0) gpu = specs.GPU[0].value;
@@ -983,11 +985,34 @@
                     productCard.setAttribute('data-storage', storage.toLowerCase());
                     productCard.setAttribute('data-price', product.price || 0);
                     
+                    // Check if item is out of stock
+                    const isOutOfStock = stock <= 0;
+                    productCard.setAttribute('data-out-of-stock', isOutOfStock ? 'true' : 'false');
+                    
+                    // Create button based on stock status
+                    let buttonHTML = '';
+                    if (isOutOfStock) {
+                        buttonHTML = `<div class="quick-add">
+                                    <button type="button" class="button button--secondary button--blur" disabled>Hết Hàng</button>
+                                </div>`;
+                    } else {
+                        buttonHTML = `<button type="button" class="btn btn-dark w-100 mt-3 add-to-cart-btn" data-item-id="${product.item_id}" data-product="${product.name || 'Unknown Product'}" data-price="${product.price || 0}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus me-2" viewBox="0 0 16 16" style="vertical-align: middle;">
+                                    <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9V5.5z"/>
+                                    <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                </svg>
+                                Thêm vào giỏ
+                            </button>`;
+                    }
+                    
                     productCard.innerHTML = `
                         <div class="product-card">
                             <a href="products/product.html?id=${product.item_id}" class="product-link">
                                 <div class="product-image-wrapper">
                                     ${imageHTML}
+                                    ${isOutOfStock ? `<div class="quick-add">
+                                        <button type="button" class="button button--secondary button--blur" disabled>Hết Hàng</button>
+                                    </div>` : ''}
                                 </div>
                                 <div class="product-info">
                                     <h3 class="product-title">${product.name}</h3>
@@ -1016,13 +1041,7 @@
                                     </div>
                                 </div>
                             </a>
-                            <button type="button" class="btn btn-dark w-100 mt-3 add-to-cart-btn" data-item-id="${product.item_id}" data-product="${product.name || 'Unknown Product'}" data-price="${product.price || 0}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus me-2" viewBox="0 0 16 16" style="vertical-align: middle;">
-                                    <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9V5.5z"/>
-                                    <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-                                </svg>
-                                Thêm vào giỏ
-                            </button>
+                            ${!isOutOfStock ? buttonHTML : ''}
                         </div>
                     `;
                     
@@ -1034,6 +1053,9 @@
             
             // Populate filters
             populateFilters();
+            
+            // Sort items: in-stock first, then out-of-stock
+            sortProductCards();
             
             console.log(`Successfully loaded ${products.length} dynamic products`);
         } catch (error) {
@@ -1091,7 +1113,24 @@
         });
     }
     
-    // Apply filters using CSS display property
+    // Sort product cards: in-stock first, then out-of-stock
+    function sortProductCards() {
+        const productGrid = document.getElementById('product-grid');
+        const allCards = Array.from(productGrid.querySelectorAll('[data-product-id], [data-out-of-stock]'));
+        
+        // Separate in-stock and out-of-stock items
+        const inStockCards = allCards.filter(card => card.getAttribute('data-out-of-stock') !== 'true');
+        const outOfStockCards = allCards.filter(card => card.getAttribute('data-out-of-stock') === 'true');
+        
+        // Clear and re-add in correct order
+        allCards.forEach(card => card.remove());
+        
+        [...inStockCards, ...outOfStockCards].forEach(card => {
+            productGrid.appendChild(card);
+        });
+    }
+    
+    // Apply filters and sort out-of-stock items to the end
     function applyFilters() {
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
         const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
@@ -1103,13 +1142,19 @@
         let visibleCount = 0;
         let matchedCount = 0;
         
-        document.querySelectorAll('[data-product-id]').forEach(card => {
+        // Collect all product cards (both static and dynamic)
+        const allCards = Array.from(document.querySelectorAll('[data-product-id], [data-out-of-stock]'));
+        const inStockCards = [];
+        const outOfStockCards = [];
+        
+        allCards.forEach(card => {
             const name = card.getAttribute('data-product-name');
             const cpu = card.getAttribute('data-cpu');
             const gpu = card.getAttribute('data-gpu');
             const ram = card.getAttribute('data-ram');
             const storage = card.getAttribute('data-storage');
             const price = parseFloat(card.getAttribute('data-price')) || 0;
+            const isOutOfStock = card.getAttribute('data-out-of-stock') === 'true';
             
             let matches = true;
             let isMatched = true;
@@ -1139,9 +1184,24 @@
                 card.classList.toggle('non-matched', !isMatched);
                 visibleCount++;
                 if (isMatched) matchedCount++;
+                
+                // Sort into in-stock and out-of-stock
+                if (isOutOfStock) {
+                    outOfStockCards.push(card);
+                } else {
+                    inStockCards.push(card);
+                }
             } else {
                 card.style.display = 'none';
             }
+        });
+        
+        // Reorder cards: in-stock first, then out-of-stock
+        const productGrid = document.getElementById('product-grid');
+        const sortedCards = [...inStockCards, ...outOfStockCards];
+        
+        sortedCards.forEach(card => {
+            productGrid.appendChild(card);
         });
         
         // Update results count
@@ -1160,12 +1220,15 @@
         document.getElementById('gpuFilter').value = '';
         document.getElementById('ramFilter').value = '';
         
-        document.querySelectorAll('[data-product-id]').forEach(card => {
+        document.querySelectorAll('[data-product-id], [data-out-of-stock]').forEach(card => {
             card.style.display = '';
             card.classList.remove('non-matched');
         });
         
-        document.getElementById('resultsCount').textContent = `Hiển thị ${allProducts.length} sản phẩm`;
+        // Re-sort items
+        sortProductCards();
+        
+        document.getElementById('resultsCount').textContent = `Hiển thị ${allProducts.length + document.querySelectorAll('[data-out-of-stock="true"]').length} sản phẩm`;
     }
     
     // Event listeners

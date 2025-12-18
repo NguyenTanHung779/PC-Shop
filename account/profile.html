@@ -826,6 +826,30 @@
                     <div style="border-top: 2px solid #e1e3e5; padding-top: 2rem;">
                         <h2 class="section-title" style="margin-bottom: 1.5rem;">Orders</h2>
 
+                        <!-- Filter Controls -->
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center;">
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <label for="status-filter" style="font-weight: 600; color: #202223;">Status:</label>
+                                <select id="status-filter" style="padding: 0.5rem 0.75rem; border: 1px solid #e1e3e5; border-radius: 6px; font-size: 0.9rem; cursor: pointer;">
+                                    <option value="all">All Orders</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="paid">Paid</option>
+                                    <option value="confirmed">Confirmed</option>
+                                    <option value="shipped">Shipped</option>
+                                    <option value="delivered">Delivered</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <label for="sort-filter" style="font-weight: 600; color: #202223;">Sort by:</label>
+                                <select id="sort-filter" style="padding: 0.5rem 0.75rem; border: 1px solid #e1e3e5; border-radius: 6px; font-size: 0.9rem; cursor: pointer;">
+                                    <option value="date">Newest First</option>
+                                    <option value="amount">Highest Amount</option>
+                                </select>
+                            </div>
+                            <button onclick="applyOrderFilters()" style="padding: 0.5rem 1rem; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); color: #fff; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;" onmouseover="this.style.background='linear-gradient(135deg, #ff5252 0%, #e63946 100%)'" onmouseout="this.style.background='linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)'">Apply Filter</button>
+                        </div>
+
                         <!-- Empty State -->
                         <div class="empty-state" id="empty-state" style="display: none;">
                             <h3>No orders yet</h3>
@@ -997,41 +1021,45 @@
             orderDiv.className = 'order-card';
             orderDiv.style.marginBottom = '1.5rem';
             
-            const orderDate = new Date(order.createdAt).toLocaleDateString('en-US', {
+            const orderDate = new Date(order.order_date).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
             });
             
-            // Multiply price by 100 to match original values (database stores prices divided by 100)
-            const subtotal = order.items.reduce((sum, item) => sum + ((item.price * 100) * item.quantity), 0);
+            // Multiply by 100 since prices are stored divided by 100 in database (for order totals only)
+            // BUT item.price_each is already in correct format, so don't multiply it again
+            const subtotal = (Number(order.total_amount) || 0) * 100;
             const shipping = 0;
             const taxes = subtotal * 0.1;
             const total = subtotal + shipping + taxes;
             
+            // Determine status badge text
+            const statusText = order.status === 'paid' ? 'Paid' : 
+                               order.status === 'confirmed' ? 'Confirmed' : 
+                               order.status === 'shipped' ? 'Shipped' : 
+                               order.status === 'delivered' ? 'Delivered' : 
+                               'Pending';
+            
             orderDiv.innerHTML = `
                 <div class="order-header">
-                    <div class="order-number">Order #${order.orderId}</div>
-                    <div class="order-date">Confirmed ${orderDate}</div>
-                    <span class="order-status-badge">${order.payment === 'cod' ? 'Pending Payment' : 'Confirmed'}</span>
+                    <div class="order-number">Order #<span>${order.order_id}</span></div>
+                    <div class="order-date">Placed ${orderDate}</div>
+                    <span class="order-status-badge ${order.status}">${statusText}</span>
                 </div>
                 <div class="order-items">
-                    ${order.items.map(item => `
+                    ${order.items && order.items.length > 0 ? order.items.map(item => `
                         <div class="order-item">
                             <div class="item-image">
-                                ${item.image ? `<img src="${item.image}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">` : `
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                                </svg>
-                                `}
+                                ${item.image_url ? `<img src="${item.image_url}" alt="${item.item_name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; display: block;">` : `<span style="color: #999;">No Image</span>`}
                             </div>
                             <div class="item-info">
-                                <div class="item-name">${item.name}</div>
+                                <div class="item-name">${item.item_name || 'Unknown Item'}</div>
                                 <div class="item-quantity">Quantity: ${item.quantity}</div>
                             </div>
-                            <div class="item-price">${formatMoney((item.price * 100) * item.quantity)}</div>
+                            <div class="item-price">${formatMoney(item.price_each * item.quantity)}</div>
                         </div>
-                    `).join('')}
+                    `).join('') : '<p style="padding: 1rem; color: #999;">No items in this order</p>'}
                 </div>
                 <div class="order-summary">
                     <div class="summary-row">
@@ -1054,10 +1082,11 @@
                 <div class="shipping-address-section">
                     <h3 style="font-size: 0.875rem; font-weight: 600; color: #202223; margin-bottom: 0.75rem; text-transform: uppercase;">Shipping Address</h3>
                     <p style="color: #616161; font-size: 0.9375rem; line-height: 1.6; margin: 0;">
-                        ${order.firstName} ${order.lastName}<br>
-                        ${order.address1}<br>
-                        ${order.province}<br>
-                        Phone: ${order.phone}
+                        ${order.shipping_name || 'N/A'}<br>
+                        ${order.shipping_address || 'N/A'}<br>
+                        ${order.shipping_city || ''} ${order.shipping_province || ''}<br>
+                        ${order.shipping_postal || ''}<br>
+                        Phone: ${order.shipping_phone || 'N/A'}
                     </p>
                 </div>
             `;
@@ -1065,9 +1094,69 @@
             return orderDiv;
         }
 
-        // Load orders: try server first, fall back to localStorage
-        async function loadOrders() {
-            // require logged in user data
+        // Load orders: fetch from API endpoint with user authentication
+        async function loadOrders(statusFilter = 'all', sortBy = 'date') {
+            const token = localStorage.getItem('token');
+            
+            if (!token) {
+                document.getElementById('empty-state').style.display = 'block';
+                document.getElementById('orders-container').style.display = 'none';
+                return;
+            }
+
+            try {
+                // Build query parameters
+                let url = 'http://localhost:5000/api/user/orders?';
+                if (statusFilter && statusFilter !== 'all') {
+                    url += `status=${statusFilter}&`;
+                }
+                url += `sortBy=${sortBy}`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    console.error('Failed to fetch orders from API:', response.status);
+                    // Fallback to localStorage
+                    loadOrdersFromLocalStorage();
+                    return;
+                }
+
+                const data = await response.json();
+                const userOrders = data.orders || [];
+
+                if (!userOrders || userOrders.length === 0) {
+                    document.getElementById('empty-state').style.display = 'block';
+                    document.getElementById('orders-container').style.display = 'none';
+                    return;
+                }
+
+                // Hide empty state and show orders
+                document.getElementById('empty-state').style.display = 'none';
+                document.getElementById('orders-container').style.display = 'block';
+
+                // Display each order
+                const ordersContainer = document.getElementById('orders-container');
+                ordersContainer.innerHTML = '';
+
+                userOrders.forEach(order => {
+                    const orderCard = createOrderCard(order);
+                    ordersContainer.appendChild(orderCard);
+                });
+
+            } catch (err) {
+                console.error('Error loading orders:', err);
+                // Fallback to localStorage
+                loadOrdersFromLocalStorage();
+            }
+        }
+
+        // Fallback function to load orders from localStorage
+        function loadOrdersFromLocalStorage() {
             const userDataRaw = localStorage.getItem('userData');
             const userEmail = localStorage.getItem('userEmail');
             let user = null;
@@ -1082,41 +1171,17 @@
                 return;
             }
 
-            // Attempt to fetch orders from server viewer endpoint.
-            // Treat server response as authoritative (even if empty).
-            let allOrders = [];
-            let fetchedFromServer = false;
-            try {
-                const res = await fetch('/api/view/orders');
-                if (res.ok) {
-                    const data = await res.json();
-                    // server viewer returns rows directly
-                    allOrders = Array.isArray(data) ? data : (data.data || []);
-                    fetchedFromServer = true;
-                } else {
-                    console.info('Server orders endpoint returned non-OK status', res.status);
-                }
-            } catch (err) {
-                // ignore and fall back to localStorage
-                console.info('Server orders not available, will fall back to local cache', err);
-            }
-
-            // If we couldn't fetch from server (network error / non-OK), use localStorage cache
-            if (!fetchedFromServer) {
-                allOrders = JSON.parse(localStorage.getItem('orders')) || [];
-            }
+            let allOrders = JSON.parse(localStorage.getItem('orders')) || [];
 
             // Normalize and filter by user id (preferred) or email
             const userId = user && (user.user_id || user.id || user.userId);
             const userIdentifierEmail = (user && user.email) || userEmail;
 
             const userOrders = allOrders.filter(order => {
-                // support different possible field names
-                if (userId && (order.user_id || order.userId || order.userId)) {
+                if (userId && (order.user_id || order.userId)) {
                     return Number(order.user_id || order.userId) === Number(userId);
                 }
                 if (userIdentifierEmail) {
-                    // some stored orders use `email` or `customerEmail`
                     return (order.email && order.email === userIdentifierEmail) || (order.customerEmail && order.customerEmail === userIdentifierEmail);
                 }
                 return false;
@@ -1128,15 +1193,12 @@
                 return;
             }
 
-            // Hide empty state and show orders
             document.getElementById('empty-state').style.display = 'none';
             document.getElementById('orders-container').style.display = 'block';
 
-            // Display each order
             const ordersContainer = document.getElementById('orders-container');
             ordersContainer.innerHTML = '';
 
-            // show newest first
             userOrders.reverse().forEach(order => {
                 const orderCard = createOrderCard(order);
                 ordersContainer.appendChild(orderCard);
@@ -1693,192 +1755,152 @@
             }
         });
 
-        // Initialize page
-        checkLogin();
-        loadProfileData();
-        loadUserEmail();
-        loadOrders();
-        loadProfileCart();
-
-        // Load and display cart items
+        // Load and display cart items from localStorage
         async function loadProfileCart() {
-            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
-            if (!token) {
-                document.getElementById('empty-cart-state').style.display = 'block';
-                document.getElementById('cart-items-container').style.display = 'none';
+            console.log('Loading cart from localStorage...');
+            
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            console.log('Cart items:', cartItems);
+
+            const emptyCartState = document.getElementById('empty-cart-state');
+            const cartItemsContainer = document.getElementById('cart-items-container');
+            const cartItemsList = document.getElementById('cart-items-list');
+            const cartTotalElement = document.getElementById('cart-total');
+
+            if (!emptyCartState || !cartItemsContainer || !cartItemsList || !cartTotalElement) {
+                console.error('Cart DOM elements not found');
                 return;
             }
 
-            try {
-                // Get or create cart
-                const cartResponse = await fetch('http://localhost:5000/api/cart', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!cartResponse.ok) {
-                    console.error('Failed to load cart');
-                    document.getElementById('empty-cart-state').style.display = 'block';
-                    document.getElementById('cart-items-container').style.display = 'none';
-                    return;
-                }
-
-                const cartData = await cartResponse.json();
-                const cartId = cartData.cart_id;
-
-                // Get cart items
-                const itemsResponse = await fetch(`http://localhost:5000/api/cart/${cartId}/items`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!itemsResponse.ok) {
-                    console.error('Failed to load cart items');
-                    document.getElementById('empty-cart-state').style.display = 'block';
-                    document.getElementById('cart-items-container').style.display = 'none';
-                    return;
-                }
-
-                const itemsData = await itemsResponse.json();
-                const items = itemsData.items || [];
-
-                if (items.length === 0) {
-                    document.getElementById('empty-cart-state').style.display = 'block';
-                    document.getElementById('cart-items-container').style.display = 'none';
-                    return;
-                }
-
-                // Display cart items
-                document.getElementById('empty-cart-state').style.display = 'none';
-                document.getElementById('cart-items-container').style.display = 'block';
-
-                const cartItemsList = document.getElementById('cart-items-list');
-                cartItemsList.innerHTML = '';
-
-                let total = 0;
-
-                items.forEach(item => {
-                    const itemTotal = (item.price * 100) * item.quantity; // price is in cents
-                    total += itemTotal;
-
-                    const cartItemDiv = document.createElement('div');
-                    cartItemDiv.className = 'cart-item-card';
-                    cartItemDiv.innerHTML = `
-                        <div class="cart-item-image">
-                            ${item.image ? `<img src="${item.image}" alt="${item.name}">` : '<span style="color: #999;">No Image</span>'}
-                        </div>
-                        <div class="cart-item-details">
-                            <div class="cart-item-name">${item.name}</div>
-                            ${item.sku ? `<div class="cart-item-sku">SKU: ${item.sku}</div>` : ''}
-                            <div class="cart-item-info-row">
-                                <span class="cart-item-info-label">Unit Price:</span>
-                                <span class="cart-item-info-value">$${(item.price * 100).toFixed(2)}</span>
-                            </div>
-                        </div>
-                        <div class="cart-item-actions">
-                            <div class="cart-item-price">$${itemTotal.toFixed(2)}</div>
-                            <div class="cart-item-quantity">
-                                <label style="font-size: 0.9rem; color: #999;">Qty:</label>
-                                <input type="number" class="quantity-input" value="${item.quantity}" min="1" onchange="updateProfileCartItemQuantity(${item.id}, this.value, '${token}')">
-                            </div>
-                            <button class="remove-btn" onclick="removeProfileCartItem(${item.id}, '${token}')">Remove</button>
-                        </div>
-                    `;
-                    cartItemsList.appendChild(cartItemDiv);
-                });
-
-                // Update total
-                document.getElementById('cart-total').textContent = '$' + total.toFixed(2);
-
-            } catch (err) {
-                console.error('Error loading profile cart:', err);
-                document.getElementById('empty-cart-state').style.display = 'block';
-                document.getElementById('cart-items-container').style.display = 'none';
+            if (cartItems.length === 0) {
+                console.log('Cart is empty');
+                emptyCartState.style.display = 'block';
+                cartItemsContainer.style.display = 'none';
+                return;
             }
+
+            // Display cart items
+            emptyCartState.style.display = 'none';
+            cartItemsContainer.style.display = 'block';
+            cartItemsList.innerHTML = '';
+
+            let total = 0;
+
+            for (let index = 0; index < cartItems.length; index++) {
+                const item = cartItems[index];
+                console.log('Processing item:', item);
+                
+                // Handle both number and string prices
+                const price = typeof item.price === 'number' ? item.price : parseFloat((item.price || '0').replace(/[^0-9.-]+/g, ''));
+                const quantity = item.quantity || 1;
+                const itemTotal = price * quantity;
+                total += itemTotal;
+
+                // Fetch image_url from backend if not present
+                let imageUrl = item.image_url || item.image;
+                if (!imageUrl && item.item_id) {
+                    try {
+                        const response = await fetch(`http://localhost:5000/api/public/items/${item.item_id}`);
+                        if (response.ok) {
+                            const itemData = await response.json();
+                            imageUrl = itemData.image_url;
+                            console.log('Fetched image_url from backend:', imageUrl);
+                        }
+                    } catch (err) {
+                        console.warn('Could not fetch image_url from backend:', err);
+                    }
+                }
+
+                const cartItemDiv = document.createElement('div');
+                cartItemDiv.className = 'cart-item-card';
+                cartItemDiv.innerHTML = `
+                    <div class="cart-item-image">
+                        ${imageUrl ? `<img src="${imageUrl}" alt="${item.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px; display: block;">` : '<span style="color: #999;">No Image</span>'}
+                    </div>
+                    <div class="cart-item-details">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-info-row">
+                            <span class="cart-item-info-label">Unit Price:</span>
+                            <span class="cart-item-info-value">$${price.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <div class="cart-item-price">$${itemTotal.toFixed(2)}</div>
+                        <div class="cart-item-quantity">
+                            <label style="font-size: 0.9rem; color: #999;">Qty:</label>
+                            <input type="number" class="quantity-input" value="${quantity}" min="1" onchange="updateProfileCartItemQuantity(${index}, this.value)">
+                        </div>
+                        <button class="remove-btn" onclick="removeProfileCartItem(${index})">Remove</button>
+                    </div>
+                `;
+                cartItemsList.appendChild(cartItemDiv);
+            }
+
+            // Update total
+            console.log('Cart total:', total);
+            cartTotalElement.textContent = '$' + total.toFixed(2);
         }
 
         // Update cart item quantity
-        async function updateProfileCartItemQuantity(itemId, newQuantity, token) {
+        function updateProfileCartItemQuantity(index, newQuantity) {
+            newQuantity = parseInt(newQuantity);
             if (newQuantity < 1) {
                 alert('Quantity must be at least 1');
                 return;
             }
 
-            try {
-                const cartResponse = await fetch('http://localhost:5000/api/cart', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const cartData = await cartResponse.json();
-                const cartId = cartData.cart_id;
-
-                const response = await fetch(`http://localhost:5000/api/cart/${cartId}/items/${itemId}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ quantity: parseInt(newQuantity) })
-                });
-
-                if (response.ok) {
-                    loadProfileCart();
-                } else {
-                    alert('Failed to update quantity');
-                }
-            } catch (err) {
-                console.error('Error updating cart item:', err);
-                alert('Error updating quantity');
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            if (index >= 0 && index < cartItems.length) {
+                cartItems[index].quantity = newQuantity;
+                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                loadProfileCart();
             }
         }
 
         // Remove cart item
-        async function removeProfileCartItem(itemId, token) {
+        function removeProfileCartItem(index) {
             if (!confirm('Remove this item from cart?')) {
                 return;
             }
 
-            try {
-                const cartResponse = await fetch('http://localhost:5000/api/cart', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const cartData = await cartResponse.json();
-                const cartId = cartData.cart_id;
-
-                const response = await fetch(`http://localhost:5000/api/cart/${cartId}/items/${itemId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    loadProfileCart();
-                    showNotification('Item removed from cart');
-                } else {
-                    alert('Failed to remove item');
-                }
-            } catch (err) {
-                console.error('Error removing cart item:', err);
-                alert('Error removing item');
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            if (index >= 0 && index < cartItems.length) {
+                cartItems.splice(index, 1);
+                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                loadProfileCart();
+                console.log('Item removed from cart');
             }
         }
+
+        // Apply order filters and reload orders
+        function applyOrderFilters() {
+            const statusFilter = document.getElementById('status-filter').value;
+            const sortFilter = document.getElementById('sort-filter').value;
+            
+            console.log('Applying filters:', { statusFilter, sortFilter });
+            loadOrders(statusFilter, sortFilter);
+        }
+
+        // Add event listeners for instant filtering
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusFilter = document.getElementById('status-filter');
+            const sortFilter = document.getElementById('sort-filter');
+            
+            if (statusFilter) {
+                statusFilter.addEventListener('change', applyOrderFilters);
+            }
+            
+            if (sortFilter) {
+                sortFilter.addEventListener('change', applyOrderFilters);
+            }
+        }, false);
+
+        // Initialize page - MUST be after all function definitions
+        checkLogin();
+        loadProfileData();
+        loadUserEmail();
+        loadOrders();
+        loadProfileCart();
     </script>
 </body>
 </html>

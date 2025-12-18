@@ -300,6 +300,37 @@
         // Global variables
         let turnstileToken = null;
         let cartData = [];
+        let authenticatedUser = null; // Store authenticated user data
+
+        // Load authenticated user profile
+        async function loadAuthenticatedUserProfile() {
+            const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+            
+            if (!token) {
+                return null; // Not logged in
+            }
+
+            try {
+                const response = await fetch('http://localhost:5000/api/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    authenticatedUser = user;
+                    console.log('✅ Loaded authenticated user:', user.email);
+                    return user;
+                }
+            } catch (err) {
+                console.error('Failed to load authenticated user profile:', err);
+            }
+
+            return null;
+        }
 
         // Load cart data from localStorage or server
         async function loadCart() {
@@ -442,6 +473,8 @@
                     sending_amount: momoAmount
                 });
                 
+                // **IMPORTANT: Pass the complete orderData to the backend**
+                // The backend will store it and create the order ONLY after payment succeeds
                 const resp = await fetch('http://localhost:5000/api/payment/momo', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -449,7 +482,8 @@
                         amount: momoAmount,
                         description: `Thanh toán đơn hàng PC Shop - ${orderData.email || ''}`,
                         items: orderData.items || [],
-                        orderId: `ORD${Date.now()}`
+                        orderId: `ORD${Date.now()}`,
+                        orderData: orderData  // **NEW: Send full order data**
                     })
                 });
                 const data = await resp.json();
@@ -545,8 +579,14 @@
             // Get form data
             const formData = new FormData(this);
             const subtotalValue = cartData.reduce((sum, item) => sum + ((item.price * 100) * item.quantity), 0);
+            
+            // **IMPORTANT: Use authenticated user's email if logged in, otherwise use form input**
+            const emailToUse = authenticatedUser ? authenticatedUser.email : formData.get('email');
+            const userIdToUse = authenticatedUser ? authenticatedUser.user_id : null;
+            
             const orderData = {
-                email: formData.get('email'),
+                email: emailToUse,
+                user_id: userIdToUse, // Send authenticated user_id if available
                 firstName: formData.get('firstName'),
                 lastName: formData.get('lastName'),
                 // Keep original fields for backward compatibility
@@ -576,27 +616,20 @@
             };
 
             try {
-                // If Momo payment, redirect to Momo pay URL
+                // If Momo payment, redirect to Momo pay URL WITHOUT creating order first
+                // The order will be created AFTER successful payment via the Momo callback
                 if (orderData.payment === 'momo') {
                     const payUrl = await generateMomoPayment(orderData);
                     document.getElementById('loadingOverlay').classList.remove('active');
 
                     if (payUrl) {
-                        // Create order first in the database
-                        const createResp = await fetch('http://localhost:5000/api/orders/create', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(orderData)
-                        });
-
-                        const createResult = await createResp.json();
+                        // **IMPORTANT: DO NOT create order here for Momo payment**
+                        // The order will be created by the Momo callback after payment succeeds
                         
-                        if (!createResp.ok) {
-                            alert('❌ Lỗi khi tạo đơn hàng: ' + (createResult.error || 'Unknown error'));
-                            return;
-                        }
-
-                        // Clear cart and checkout items
+                        // Store order data in localStorage in case user needs it
+                        localStorage.setItem('pendingMomoOrder', JSON.stringify(orderData));
+                        
+                        // Clear cart before redirect
                         localStorage.removeItem('cart');
                         localStorage.removeItem('cartItems');
                         localStorage.removeItem('checkoutItems');
@@ -607,7 +640,7 @@
                     }
 
                 } else {
-                    // Process other payment methods
+                    // Process other payment methods (COD, Bank)
                     await processOrder(orderData);
                 }
 
@@ -668,7 +701,19 @@
         }
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load authenticated user first if logged in
+            const authenticatedUserData = await loadAuthenticatedUserProfile();
+            
+            // If user is authenticated, pre-fill email field and make it read-only
+            if (authenticatedUserData) {
+                const emailInput = document.getElementById('email');
+                emailInput.value = authenticatedUserData.email;
+                emailInput.setAttribute('readonly', 'readonly');
+                emailInput.style.backgroundColor = '#f0f0f0';
+                emailInput.title = 'Your email is pre-filled from your account and cannot be changed';
+            }
+            
             // Sync cart from shop page
             const checkoutItems = JSON.parse(localStorage.getItem('checkoutItems') || '[]');
             if (checkoutItems.length > 0) {
@@ -694,8 +739,14 @@
             document.getElementById('debugBtn').addEventListener('click', async function() {
                 const formData = new FormData(document.getElementById('checkoutForm'));
                 const debugSubtotal = cartData.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                
+                // **NEW: Use authenticated user if available, otherwise use form data**
+                const emailToUse = authenticatedUser ? authenticatedUser.email : (formData.get('email') || 'debug@test.com');
+                const userIdToUse = authenticatedUser ? authenticatedUser.user_id : null;
+                
                 const orderData = {
-                    email: formData.get('email') || 'debug@test.com',
+                    email: emailToUse,
+                    user_id: userIdToUse, // Send authenticated user_id if available
                     firstName: formData.get('firstName') || 'Debug',
                     lastName: formData.get('lastName') || 'User',
                     // Keep original fields
@@ -722,7 +773,7 @@
                     turnstileToken: 'debug'
                 };
 
-                alert('🐛 DEBUG: Forcing successful purchase...');
+                alert('🐛 DEBUG: Forcing successful purchase' + (authenticatedUser ? ` for ${authenticatedUser.email}` : ' as guest') + '...');
                 await processOrder(orderData);
             });
         });

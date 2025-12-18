@@ -279,7 +279,7 @@
                                 <div class="col-md-4">
                                     <input type="text" class="form-control form-control-sm" id="order-search" placeholder="Search by order ID, user, or email..." onkeyup="filterOrders()">
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-3">
                                     <select class="form-select form-select-sm" id="order-status-filter" onchange="filterOrders()">
                                         <option value="">All Statuses</option>
                                         <option value="pending">Pending</option>
@@ -288,9 +288,14 @@
                                         <option value="cancelled">Cancelled</option>
                                     </select>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <button class="btn btn-sm btn-outline-secondary w-100" onclick="clearOrderFilters()">
                                         <i class="bi bi-x-circle"></i> Clear
+                                    </button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-sm btn-danger w-100" id="mass-delete-btn" onclick="showMassDeleteModal()" style="display: none;">
+                                        <i class="bi bi-trash"></i> Delete Selected
                                     </button>
                                 </div>
                             </div>
@@ -303,6 +308,7 @@
                                 <table class="table table-hover">
                                     <thead class="table-light">
                                         <tr>
+                                            <th><input type="checkbox" id="select-all-orders" onchange="toggleSelectAllOrders()"></th>
                                             <th>Order ID</th>
                                             <th>User</th>
                                             <th>Email</th>
@@ -315,7 +321,7 @@
                                     </thead>
                                     <tbody id="orders-table-body">
                                         <tr>
-                                            <td colspan="8" class="text-center text-muted">No orders found. Connect to backend API.</td>
+                                            <td colspan="9" class="text-center text-muted">No orders found. Connect to backend API.</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1022,36 +1028,128 @@
         </div>
     </div>
 
+    <!-- Session Timeout Dialog -->
+    <div id="session-timeout-modal" class="modal fade" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%) !important; border: none;">
+                    <h5 class="modal-title" style="color: white;"><i class="bi bi-clock"></i> Session Timeout</h5>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="fs-5 mb-3">Your session has expired.</p>
+                    <p class="text-muted">For security reasons, please login again to continue.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-primary" onclick="redirectToLogin()">Login Again</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Check if user is admin
-        function checkAdminAccess() {
+        async function checkAdminAccess() {
             const token = localStorage.getItem('token');
-            const isAdmin = localStorage.getItem('isAdmin') === 'true';
             const userData = localStorage.getItem('userData');
 
             // If no token, redirect to login
             if (!token) {
                 console.warn('No token found, redirecting to login');
-                alert('Please login first');
-                window.location.href = '../login.html';
+                showSessionTimeoutDialog();
                 return;
             }
 
-            // Load admin name
             try {
-                if (userData) {
-                    const user = JSON.parse(userData);
-                    document.getElementById('admin-name').textContent = user.username || user.email || 'Admin';
+                // Verify admin status with the backend
+                const response = await fetch('http://localhost:5000/api/verify-admin', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Update localStorage with the verified admin status
+                    localStorage.setItem('isAdmin', data.isAdmin ? 'true' : 'false');
+
+                    // Load admin name
+                    try {
+                        if (userData) {
+                            const user = JSON.parse(userData);
+                            document.getElementById('admin-name').textContent = user.username || user.email || 'Admin';
+                        } else {
+                            document.getElementById('admin-name').textContent = 'Admin';
+                        }
+                    } catch (err) {
+                        console.warn('Could not parse user data:', err);
+                        document.getElementById('admin-name').textContent = 'Admin';
+                    }
+
+                    // If not admin, show session timeout dialog
+                    if (!data.isAdmin) {
+                        console.warn('User does not have admin privileges - session expired');
+                        showSessionTimeoutDialog();
+                    }
+                } else if (response.status === 401) {
+                    // Token is invalid or expired
+                    console.warn('Token is invalid or expired');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('isAdmin');
+                    localStorage.removeItem('userData');
+                    showSessionTimeoutDialog();
                 } else {
-                    document.getElementById('admin-name').textContent = 'Admin';
+                    // Server error or other issue
+                    console.error('Error verifying admin status:', response.status);
+                    // Fall back to localStorage check
+                    const isAdmin = localStorage.getItem('isAdmin') === 'true';
+                    if (!isAdmin) {
+                        showSessionTimeoutDialog();
+                    }
                 }
             } catch (err) {
-                console.warn('Could not parse user data:', err);
-                document.getElementById('admin-name').textContent = 'Admin';
+                console.error('Error checking admin access:', err);
+                // Fall back to localStorage check if request fails
+                const isAdmin = localStorage.getItem('isAdmin') === 'true';
+                if (!isAdmin) {
+                    console.warn('User session verification failed');
+                    showSessionTimeoutDialog();
+                } else {
+                    // User appears to be admin based on localStorage
+                    try {
+                        if (userData) {
+                            const user = JSON.parse(userData);
+                            document.getElementById('admin-name').textContent = user.username || user.email || 'Admin';
+                        } else {
+                            document.getElementById('admin-name').textContent = 'Admin';
+                        }
+                    } catch (err) {
+                        console.warn('Could not parse user data:', err);
+                        document.getElementById('admin-name').textContent = 'Admin';
+                    }
+                }
             }
+        }
 
-            // Note: We'll verify admin privileges when calling protected APIs
-            // The backend will return 403 if user is not admin
+        // Show session timeout dialog
+        function showSessionTimeoutDialog() {
+            const modal = new bootstrap.Modal(document.getElementById('session-timeout-modal'));
+            modal.show();
+        }
+
+        // Redirect to login page
+        function redirectToLogin() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('isAdmin');
+            localStorage.removeItem('userData');
+            window.location.href = '../login.html';
+        }
+
+        // Redirect to home page
+        function redirectToHome() {
+            window.location.href = '../home.html';
         }
 
         // Section Navigation
@@ -1168,7 +1266,7 @@
                 
                 // Calculate revenue from delivered orders only
                 const totalRevenue = Array.isArray(orders) 
-                    ? orders.filter(o => o.status === 'delivered').reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0) * 100
+                    ? orders.filter(o => o.status === 'delivered').reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0)
                     : 0;
                 document.getElementById('total-revenue').textContent = formatVND(totalRevenue);
                 
@@ -1194,7 +1292,7 @@
                         const left = document.createElement('div');
                         left.innerHTML = `<strong>#${o.order_id}</strong> — ${o.username || o.email || 'Customer'} <div class="small text-muted">${new Date(o.order_date || o.created_at || Date.now()).toLocaleString()}</div>`;
                         const right = document.createElement('div');
-                        right.innerHTML = `<span class="badge bg-${getStatusColor(o.status)} me-2">${o.status}</span> ${formatVND((o.total_amount||0) * 100)}`;
+                        right.innerHTML = `<span class="badge bg-${getStatusColor(o.status)} me-2">${o.status}</span> ${formatVND(o.total_amount||0)}`;
                         item.appendChild(left);
                         item.appendChild(right);
                         ul.appendChild(item);
@@ -1577,22 +1675,24 @@
         function renderOrdersTable(orders) {
             const tbody = document.getElementById('orders-table-body');
             if (!Array.isArray(orders) || orders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">No orders found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">No orders found.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = orders.map(order => `
                 <tr>
+                    <td><input type="checkbox" class="order-checkbox" value="${order.order_id}" onchange="updateMassDeleteButton()"></td>
                     <td><strong>#${order.order_id}</strong></td>
                     <td>${order.username || 'Guest'}</td>
                     <td>${order.email || '-'}</td>
                     <td><span class="badge bg-secondary">${order.item_count || 0} item${order.item_count !== 1 ? 's' : ''}</span></td>
-                    <td>${formatVND((order.total_amount || 0) * 100)}</td>
+                    <td>${formatVND(order.total_amount || 0)}</td>
                     <td><span class="badge bg-${getStatusColor(order.status)}">${order.status}</span></td>
                     <td>${order.order_date ? new Date(order.order_date).toLocaleDateString('vi-VN') : '-'}</td>
                     <td>
                         <button class="btn btn-sm btn-info" onclick="viewOrder(${order.order_id})" title="View details"><i class="bi bi-eye"></i></button>
                         <button class="btn btn-sm btn-warning" onclick="updateOrderStatus(${order.order_id})" title="Update status"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteOrderConfirm(${order.order_id})" title="Delete order"><i class="bi bi-trash"></i></button>
                     </td>
                 </tr>
             `).join('');
@@ -1612,7 +1712,124 @@
             return colors[status] || 'secondary';
         }
 
+        // ===== ORDER DELETION FUNCTIONS =====
+        let pendingOrderIds = []; // Store order IDs pending deletion
+        let isDeletingBatch = false; // Flag for batch deletion
+
+        function updateMassDeleteButton() {
+            const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+            const massDeleteBtn = document.getElementById('mass-delete-btn');
+            if (checkboxes.length > 0) {
+                massDeleteBtn.style.display = 'block';
+            } else {
+                massDeleteBtn.style.display = 'none';
+            }
+        }
+
+        function toggleSelectAllOrders() {
+            const selectAllCheckbox = document.getElementById('select-all-orders');
+            const orderCheckboxes = document.querySelectorAll('.order-checkbox');
+            orderCheckboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+            updateMassDeleteButton();
+        }
+
+        // ===== ORDER DELETION FUNCTIONS =====
+
+        function showMassDeleteModal() {
+            const checkboxes = document.querySelectorAll('.order-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert('Please select at least one order to delete.');
+                return;
+            }
+
+            // Store pending order IDs
+            pendingOrderIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            isDeletingBatch = true;
+
+            // Use the standard admin OTP verification
+            const actionDesc = `Xóa hàng loạt ${pendingOrderIds.length} đơn hàng`;
+            requireOTPVerification(actionDesc, performOrderDeletion);
+        }
+
+        function deleteOrderConfirm(orderId) {
+            // Single delete
+            pendingOrderIds = [orderId];
+            isDeletingBatch = false;
+
+            // Use the standard admin OTP verification
+            const actionDesc = `Xóa đơn hàng #${orderId}`;
+            requireOTPVerification(actionDesc, performOrderDeletion);
+        }
+
+        async function performOrderDeletion() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('❌ Session expired. Please login again.');
+                    window.location.href = '../login.html';
+                    return;
+                }
+
+                let response;
+                let deleteEndpoint;
+
+                if (isDeletingBatch) {
+                    // Batch delete
+                    deleteEndpoint = 'http://localhost:5000/api/orders/delete-batch';
+                    response = await fetch(deleteEndpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            orderIds: pendingOrderIds
+                        })
+                    });
+                } else {
+                    // Single delete
+                    deleteEndpoint = `http://localhost:5000/api/orders/${pendingOrderIds[0]}`;
+                    response = await fetch(deleteEndpoint, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                }
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Show success message
+                    const deletedCount = isDeletingBatch ? data.deleted_count : 1;
+                    alert(`✅ ${deletedCount} đơn hàng đã được xóa thành công!`);
+                    
+                    // Log admin action FIRST (before reloading)
+                    try {
+                        await logAdminAction(
+                            `Deleted ${deletedCount} order(s): ${pendingOrderIds.join(', ')}`,
+                            'Delete',
+                            'Orders Management'
+                        );
+                        console.log('✅ Order deletion logged to audit log');
+                    } catch (logErr) {
+                        console.error('Error logging order deletion:', logErr);
+                    }
+
+                    // Reload orders after logging
+                    loadOrdersData();
+                } else {
+                    alert(`❌ ${data.error || 'Failed to delete order(s)'}`);
+                }
+            } catch (err) {
+                console.error('Error deleting order:', err);
+                alert('❌ Error: ' + err.message);
+            }
+        }
+
         // Load Products Data
+
         async function loadProductsData() {
             const tbody = document.getElementById('products-table-body');
             
@@ -2470,7 +2687,7 @@
                                             <tr>
                                                 <td>#${o.order_id}</td>
                                                 <td>${new Date(o.order_date).toLocaleDateString()}</td>
-                                                <td>${formatVND((o.total_amount || 0) * 100)}</td>
+                                                <td>${formatVND(o.total_amount || 0)}</td>
                                                 <td><span class="badge bg-${getStatusColor(o.status)}">${o.status}</span></td>
                                             </tr>
                                         `).join('')}
@@ -3005,7 +3222,7 @@
                                         </tbody>
                                     </table>
                                     <div class="text-end">
-                                        <h5>Total: ${formatVND((order.total_amount || 0) * 100)}</h5>
+                                        <h5>Total: ${formatVND(order.total_amount || 0)}</h5>
                                     </div>
                                 </div>
                             </div>
@@ -4549,11 +4766,14 @@
                 const token = localStorage.getItem('token');
                 const userData = localStorage.getItem('userData');
                 
-                if (!token || !userData) return;
+                if (!token || !userData) {
+                    console.warn('No token or user data available for logging');
+                    return;
+                }
                 
                 const user = JSON.parse(userData);
                 
-                await fetch('http://localhost:5000/api/audit-logs', {
+                const response = await fetch('http://localhost:5000/api/audit-logs', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -4566,8 +4786,19 @@
                         change_in: section
                     })
                 });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Audit log error:', errorData);
+                    return false;
+                }
+
+                const result = await response.json();
+                console.log('✅ Audit log created:', result);
+                return true;
             } catch (err) {
                 console.error('Error logging admin action:', err);
+                return false;
             }
         }
 
