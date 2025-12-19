@@ -309,9 +309,9 @@ $(document).ready(function () {
             window.appState.cartItems.forEach(item => {
                 let priceNumber;
                 if (typeof item.price === 'number') {
-                    priceNumber = item.price * 100;
+                    priceNumber = item.price;
                 } else {
-                    priceNumber = parseFloat((item.price || '0').replace(/[^0-9.-]+/g, '')) * 100;
+                    priceNumber = parseFloat((item.price || '0').replace(/[^0-9.-]+/g, ''));
                 }
                 subtotal += priceNumber * (item.quantity || 1);
             });
@@ -346,12 +346,12 @@ $(document).ready(function () {
                 
                 const img = `<div class="drawer-item-media"><img src="${imageUrl}" alt="${item.name}" class="drawer-thumb" onerror="this.src='/PC-Shop/images/placeholder.png'"></div>`;
                 
-                // Format price for display (multiply by 100 since DB stores as 1/100th)
+                // Format price for display
                 let displayPriceNum;
                 if (typeof item.price === 'number') {
-                    displayPriceNum = item.price * 100;
+                    displayPriceNum = item.price;
                 } else {
-                    displayPriceNum = parseFloat((item.price || '0').replace(/[^0-9.-]+/g, '')) * 100;
+                    displayPriceNum = parseFloat((item.price || '0').replace(/[^0-9.-]+/g, ''));
                 }
                 const displayPrice = formatMoney(displayPriceNum);
                 const info = `<div class="drawer-item-info flex-grow-1"><div class="name">${item.name}</div><div class="price text-muted">${displayPrice}</div></div>`;

@@ -424,7 +424,7 @@
                             <div class="product-name">${item.name}</div>
                             <div class="product-variant">${item.variant || ''}</div>
                         </div>
-                        <div class="product-price">${formatPrice((item.price * 100) * item.quantity)} VNĐ</div>
+                        <div class="product-price">${formatPrice(item.price * item.quantity)} VNĐ</div>
                     </div>
                 `;
             }
@@ -434,7 +434,7 @@
 
         // Calculate total
         function calculateTotal() {
-            const subtotal = cartData.reduce((sum, item) => sum + ((item.price * 100) * item.quantity), 0);
+            const subtotal = cartData.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const shipping = 0; // Calculate based on address
             const total = subtotal + shipping;
 
@@ -578,7 +578,7 @@
 
             // Get form data
             const formData = new FormData(this);
-            const subtotalValue = cartData.reduce((sum, item) => sum + ((item.price * 100) * item.quantity), 0);
+            const subtotalValue = cartData.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             
             // **IMPORTANT: Use authenticated user's email if logged in, otherwise use form input**
             const emailToUse = authenticatedUser ? authenticatedUser.email : formData.get('email');

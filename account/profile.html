@@ -1027,9 +1027,8 @@
                 day: 'numeric'
             });
             
-            // Multiply by 100 since prices are stored divided by 100 in database (for order totals only)
-            // BUT item.price_each is already in correct format, so don't multiply it again
-            const subtotal = (Number(order.total_amount) || 0) * 100;
+            // Prices are stored as-is in database (no multiplication/division needed)
+            const subtotal = Number(order.total_amount) || 0;
             const shipping = 0;
             const taxes = subtotal * 0.1;
             const total = subtotal + shipping + taxes;

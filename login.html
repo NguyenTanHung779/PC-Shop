@@ -339,7 +339,7 @@
             const otpResponse = await fetch('http://localhost:5000/api/verify-otp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: userEmail, otp, purpose: 'login' })
+                body: JSON.stringify({ email: userEmail, otp, purpose: loginCredentials.isGoogleAuth ? 'admin_verification' : 'login' })
             });
             
             const otpData = await otpResponse.json();
@@ -352,45 +352,65 @@
                 return;
             }
             
-            // OTP verified, now complete login
-            const loginResponse = await fetch('http://localhost:5000/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(loginCredentials)
-            });
-            
-            const loginData = await loginResponse.json();
-            
-            if (loginResponse.ok) {
-                const isAdmin = loginData?.user?.role === 'admin';
-                
+            // If Google auth, complete login with token
+            if (loginCredentials.isGoogleAuth) {
+                localStorage.setItem('token', loginCredentials.token);
                 localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('isAdmin', isAdmin.toString());
-                localStorage.setItem('token', loginData.token);
-                
-                try {
-                    localStorage.setItem('userData', JSON.stringify(loginData.user));
-                } catch (err) {
-                    console.warn('Failed to save user data:', err);
-                }
-                
+                localStorage.setItem('isAdmin', (loginCredentials.role === 'admin').toString());
+                try { localStorage.setItem('userData', JSON.stringify(loginCredentials.user || {})); } catch (err) { }
+
                 $('#otp-verifying-spinner').hide();
                 $('#otp-status-text').html('✅ Xác thực thành công!<br>Đang chuyển hướng...').css('color', 'green');
                 
                 // Redirect after brief delay
                 setTimeout(() => {
-                    if (isAdmin) {
+                    if (loginCredentials.role === 'admin') {
                         window.location.href = 'admin/dashboard.html';
                     } else {
                         window.location.href = 'account/profile.html';
                     }
                 }, 1500);
             } else {
-                $('#otp-verifying-spinner').hide();
-                $('#otp-status-text').text(`❌ ${loginData?.error || 'Login failed'}`).css('color', 'red');
-                setTimeout(() => {
-                    $('#back-to-login').click();
-                }, 2000);
+                // Regular login flow
+                const loginResponse = await fetch('http://localhost:5000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(loginCredentials)
+                });
+                
+                const loginData = await loginResponse.json();
+                
+                if (loginResponse.ok) {
+                    const isAdmin = loginData?.user?.role === 'admin';
+                    
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('isAdmin', isAdmin.toString());
+                    localStorage.setItem('token', loginData.token);
+                    
+                    try {
+                        localStorage.setItem('userData', JSON.stringify(loginData.user));
+                    } catch (err) {
+                        console.warn('Failed to save user data:', err);
+                    }
+                    
+                    $('#otp-verifying-spinner').hide();
+                    $('#otp-status-text').html('✅ Xác thực thành công!<br>Đang chuyển hướng...').css('color', 'green');
+                    
+                    // Redirect after brief delay
+                    setTimeout(() => {
+                        if (isAdmin) {
+                            window.location.href = 'admin/dashboard.html';
+                        } else {
+                            window.location.href = 'account/profile.html';
+                        }
+                    }, 1500);
+                } else {
+                    $('#otp-verifying-spinner').hide();
+                    $('#otp-status-text').text(`❌ ${loginData?.error || 'Login failed'}`).css('color', 'red');
+                    setTimeout(() => {
+                        $('#back-to-login').click();
+                    }, 2000);
+                }
             }
         } catch (error) {
             console.error('Error:', error);
@@ -551,18 +571,48 @@
                 const data = e.data;
                 if (!data || !data.token) return;
 
-                // Save token and user info (follow your existing pattern)
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('isAdmin', (data.role === 'admin').toString());
-                try { localStorage.setItem('userData', JSON.stringify(data.user || {})); } catch (err) { }
+                // Save user email for OTP
+                userEmail = data.email;
+                
+                // Store credentials for OTP verification
+                loginCredentials = { 
+                    token: data.token, 
+                    isGoogleAuth: true,
+                    role: data.role,
+                    user: data.user
+                };
 
-                // Redirect based on role
-                if (data.role === 'admin') {
-                    window.location.href = 'admin/dashboard.html';
-                } else {
-                    window.location.href = 'account/profile.html';
-                }
+                // Step 1: Send OTP to user's email
+                fetch('http://localhost:5000/api/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail, purpose: 'admin_verification' })
+                })
+                .then(res => res.json())
+                .then(otpData => {
+                    if (!otpData.expiresIn) {
+                        throw new Error('Failed to send OTP');
+                    }
+
+                    // Step 2: Show OTP verification screen
+                    $('#otp-verification-section').show();
+                    $('#user-email-display').text(maskEmail(userEmail));
+                    $('#otp-input').val('').focus();
+
+                    // Start countdown
+                    otpExpiryTime = Date.now() + (otpData.expiresIn * 1000);
+                    startOTPCountdown();
+
+                    // Enable resend after 60 seconds
+                    setTimeout(() => {
+                        $('#resend-otp-btn').prop('disabled', false);
+                    }, 60000);
+                })
+                .catch(err => {
+                    console.error('Failed to send OTP:', err);
+                    alert('❌ Failed to send OTP. Please try again.');
+                });
+
             } catch (err) {
                 console.error('OAuth message handler error', err);
             }
