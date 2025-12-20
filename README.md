@@ -1,6 +1,7 @@
 # FirePC Shop – Web-Based E-Commerce Application
 
-FOR ENGLISH VERSION, CHECK MY PROFILE @ThatSinclair INSTEAD
+THE WEBSITE DESIGN AND FRONTEND IS ENTIRELY ON FIRERISKY IDEA, N HAVE NO RESPONSIBILY IN THE COPYFIGHTED AND FRONTEND THAT STRAIGHT UP STOLEN FROM ZTT WEBSITE.
+I (THATSINCLAIR) ONLY WORK ON THE BACKEND AND OTHER FUNCTIONALITY, THAT'S ALL.
 
 PC-Shop is a web-based e-commerce application that simulates an online computer hardware store. The project is designed to demonstrate core fullstack web development concepts using **HTML, CSS, and vanilla JavaScript**.
 
